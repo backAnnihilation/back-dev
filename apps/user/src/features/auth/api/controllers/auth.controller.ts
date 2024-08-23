@@ -43,7 +43,13 @@ import { OutputId } from '../../../../../core/api/dto/output-id.dto';
 import { handleErrors } from '../../../../../core/utils/handle-response-errors';
 import { extractDeviceInfo } from '../../infrastructure/utils/device-info-extractor';
 import { DeleteActiveSessionCommand } from '../../../security/application/use-cases/commands/delete-active-session.command';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiResponse,
+  ApiTags,
+  getSchemaPath,
+} from '@nestjs/swagger';
 import {
   ErrorType,
   makeErrorsMessages,
@@ -99,6 +105,9 @@ export class AuthController {
           captureToken: 'token',
         } as UserCredentialsWithCaptureTokenDto,
       },
+    },
+    schema: {
+      $ref: getSchemaPath(UserCredentialsWithCaptureTokenDto),
     },
   })
   @UseGuards(CustomThrottlerGuard, LocalAuthGuard, CaptureGuard)
