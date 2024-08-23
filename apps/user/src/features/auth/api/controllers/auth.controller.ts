@@ -147,7 +147,7 @@ export class AuthController {
     return resultNotification.data;
   }
   @PasswordRecoveryEndpoint()
-  @UseGuards(CustomThrottlerGuard)
+  @UseGuards(CustomThrottlerGuard, CaptureGuard)
   @Post(AuthNavigate.PasswordRecovery)
   @HttpCode(HttpStatus.NO_CONTENT)
   async recoveryPassword(@Body() data: RegistrationEmailDto) {
@@ -220,7 +220,7 @@ export class AuthController {
     return { accessToken };
   }
   @ConfirmPasswordEndpoint()
-  @UseGuards(CustomThrottlerGuard, CaptureGuard)
+  @UseGuards(CustomThrottlerGuard)
   @Post(AuthNavigate.NewPassword)
   @HttpCode(HttpStatus.NO_CONTENT)
   async confirmPasswordRecovery(@Body() body: RecoveryPassDto) {

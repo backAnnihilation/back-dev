@@ -1,5 +1,5 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiCookieAuth } from '@nestjs/swagger';
 import { UnauthorizedViaTokenApiResponse } from './shared/authorization.response';
 
 export const LogoutEndpoint = () =>
@@ -7,12 +7,12 @@ export const LogoutEndpoint = () =>
     ApiOperation({
       summary: 'Log out of the current device',
       description:
-        'In cookie client must send correct refreshToken that will be revoked',
+        'Client must send a correct refreshToken in a cookie that will be revoked',
     }),
     ApiResponse({
       status: HttpStatus.NO_CONTENT,
       description: 'No Content',
     }),
     UnauthorizedViaTokenApiResponse(),
-    ApiBearerAuth('refreshToken'),
+    ApiCookieAuth('refreshToken'), // Используйте имя 'refreshToken' для куков
   );
