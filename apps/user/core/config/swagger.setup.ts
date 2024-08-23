@@ -16,13 +16,16 @@ export function swaggerSetup(app: INestApplication) {
       },
       'accessToken',
     )
-    .addCookieAuth('refreshToken', {
-      type: 'apiKey',
-      name: 'refresh-Token',
-      in: 'cookie',
-      description:
-        'JWT refreshToken inside cookie. Must be correct, and must not be expired',
-    })
+    .addApiKey(
+      {
+        type: 'apiKey',
+        name: 'refresh-Token',
+        in: 'cookie',
+        description:
+          'JWT refreshToken inside cookie. Must be correct, and must not be expired',
+      },
+      'refreshToken',
+    )
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

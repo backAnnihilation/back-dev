@@ -5,7 +5,7 @@ export enum RoutingEnum {
   admins = '/sa/users',
   auth = '/auth',
   security = '/security/devices',
-  helloWorld = '/helloWorld'
+  helloWorld = '/helloWorld',
 }
 
 export enum ApiTagsEnum {

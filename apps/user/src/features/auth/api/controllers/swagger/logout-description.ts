@@ -1,5 +1,5 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
-import { ApiOperation, ApiResponse, ApiCookieAuth } from '@nestjs/swagger';
+import { ApiOperation, ApiResponse, ApiCookieAuth, ApiSecurity } from '@nestjs/swagger';
 import { UnauthorizedViaTokenApiResponse } from './shared/authorization.response';
 
 export const LogoutEndpoint = () =>
@@ -14,5 +14,5 @@ export const LogoutEndpoint = () =>
       description: 'No Content',
     }),
     UnauthorizedViaTokenApiResponse(),
-    ApiCookieAuth('refreshToken'), // Используйте имя 'refreshToken' для куков
+    ApiSecurity('refreshToken')
   );
