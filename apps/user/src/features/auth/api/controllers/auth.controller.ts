@@ -74,8 +74,8 @@ export class AuthController {
   // todo authCUDService
   @SignInEndpoint()
   @ApiOperation({
-    summary: 'Логин юзера с каптчей',
-    description: 'авторизация с капчей.',
+    summary: 'User authorization with captcha',
+    description: 'Try login user to the system with reCAPTCHA',
   })
   @ApiResponse({
     status: 429,
@@ -84,11 +84,23 @@ export class AuthController {
   @ApiResponse({ status: 400, type: ErrorMessageDto })
   @ApiResponse({
     status: 200,
-    description: 'Успешный логин',
+    description:
+      'Returns JWT accessToken (expired after 10 seconds) in body and JWT refreshToken in cookie (http-only, secure) (expired after 20 seconds).',
     type: AccessTokenResponseDto,
   })
   @ApiResponse({ status: 401, description: 'Неверные учетные данные' })
-  @ApiBody({ type: UserCredentialsWithCaptureTokenDto })
+  @ApiBody({
+    type: UserCredentialsWithCaptureTokenDto,
+    examples: {
+      example1: {
+        value: {
+          email: 'geniusEmail@gmail.com',
+          password: '12345',
+          captureToken: 'token',
+        } as UserCredentialsWithCaptureTokenDto,
+      },
+    },
+  })
   @UseGuards(CustomThrottlerGuard, LocalAuthGuard, CaptureGuard)
   @HttpCode(HttpStatus.OK)
   @Post(AuthNavigate.Login)
@@ -134,15 +146,25 @@ export class AuthController {
   }
 
   @ApiOperation({
-    summary: 'регистрация',
-    description: 'жесткая логика регистрации',
+    summary: 'Registration in the system',
+    description:
+      'Registration in the system. Email with confirmation code will be send to passed email address',
   })
   @ApiResponse({
     status: 429,
     description: 'More than 20 attempts from one IP-address during 20 seconds',
   })
-  @ApiResponse({ status: 400, type: ErrorMessageDto })
-  @ApiResponse({ status: 204, description: 'Зарегался' })
+  @ApiResponse({
+    status: 400,
+    description:
+      'If the inputModel has incorrect values (in particular if the user with the given email or login already exists)',
+    type: ErrorMessageDto,
+  })
+  @ApiResponse({
+    status: 204,
+    description:
+      'Input data is accepted. Email with confirmation code will be send to passed email address',
+  })
   @ApiBody({ type: UserCredentialsWithCaptureTokenDto })
   @Post(AuthNavigate.Registration)
   @UseGuards(CustomThrottlerGuard)
@@ -174,8 +196,9 @@ export class AuthController {
     return resultNotification.data;
   }
   @ApiOperation({
-    summary: 'восстановить пароль',
-    description: 'туда сюда пароль здесь',
+    summary: 'Password recovery via email confirmation',
+    description:
+      'Password recovery via email confirmation. Email should be sent with recoveryCode inside',
   })
   @ApiResponse({
     status: 429,
@@ -185,13 +208,11 @@ export class AuthController {
     status: 400,
     description:
       'If the inputModel has invalid email (for example 222^gmail.com)',
-    type: ErrorMessageDto,
   })
   @ApiResponse({
     status: 204,
     description:
       'Even if current email is not registered (for prevent user`s email detection)',
-    type: RegistrationEmailDto,
   })
   @ApiBody({ type: RegistrationEmailDto })
   @UseGuards(CustomThrottlerGuard)
