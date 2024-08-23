@@ -42,9 +42,9 @@ import { UpdatePasswordUseCase } from './features/auth/application/use-cases/upd
   ],
   controllers: [
     AppController,
-    SecurityController,
+    // SecurityController,
     AuthController,
-    SAController,
+    // SAController,
   ],
   providers: [
     AppService,

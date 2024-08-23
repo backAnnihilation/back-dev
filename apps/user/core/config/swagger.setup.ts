@@ -6,7 +6,6 @@ export function swaggerSetup(app: INestApplication) {
     .setTitle('Incubator-apprenticeship')
     .setDescription('OpenAPI documentation')
     .setVersion('1.0')
-    .addTag('hummingbird')
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api/v1', app, document);
