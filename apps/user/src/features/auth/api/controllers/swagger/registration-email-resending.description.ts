@@ -7,18 +7,18 @@ import {
 } from '@nestjs/swagger';
 import { TooManyRequestsApiResponse } from './shared/too-many-requests-api-response';
 
-export const PasswordRecoveryEndpoint = () =>
+export const RegistrationEmailResendingEndpoint = () =>
   applyDecorators(
     ApiOperation({
-      summary: 'Password recovery via email confirmation',
+      summary: 'Resend confirmation registration email if user exist',
       description:
-        'Password recovery via email confirmation. Email should be sent with recoveryCode inside',
+        'Send a new code to the email to confirm registration if the user exists',
     }),
-    ApiBody({ type: RecoveryPasswordBodyDto, required: true }),
+    ApiBody({ type: EmailBodyDto, required: true }),
     ApiResponse({
       status: HttpStatus.NO_CONTENT,
       description:
-        'Even if current email is not registered (for prevent user`s email detection)',
+        'Input data is accepted.Email with confirmation code will be send to passed email address.Confirmation code should be inside link as query param, for example: https://some-front.com/confirm-registration?code=youtcodehere',
     }),
     ApiResponse({
       status: HttpStatus.BAD_REQUEST,
@@ -28,7 +28,7 @@ export const PasswordRecoveryEndpoint = () =>
     TooManyRequestsApiResponse(),
   );
 
-class RecoveryPasswordBodyDto {
+class EmailBodyDto {
   @ApiProperty({
     required: true,
     example: 'example@mail.com',

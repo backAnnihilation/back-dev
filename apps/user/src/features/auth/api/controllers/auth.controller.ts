@@ -15,7 +15,6 @@ import { ApiTagsEnum, RoutingEnum } from '../../../../../core/routes/routing';
 import { LocalAuthGuard } from '../../infrastructure/guards/local-auth.guard';
 import { CustomThrottlerGuard } from '../../../../../core/infrastructure/guards/custom-throttler.guard';
 import { AuthNavigate } from '../../../../../core/routes/auth-navigate';
-import { SignInEndpoint } from './swagger/signIn/signIn.description';
 import { CommandBus } from '@nestjs/cqrs';
 import { AuthService } from '../../application/auth.service';
 import { ConfirmEmailCommand } from '../../application/use-cases/commands/confirm-email.command';
@@ -43,28 +42,23 @@ import { OutputId } from '../../../../../core/api/dto/output-id.dto';
 import { handleErrors } from '../../../../../core/utils/handle-response-errors';
 import { extractDeviceInfo } from '../../infrastructure/utils/device-info-extractor';
 import { DeleteActiveSessionCommand } from '../../../security/application/use-cases/commands/delete-active-session.command';
-import {
-  ApiBody,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-  getSchemaPath,
-} from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 import {
   ErrorType,
   makeErrorsMessages,
 } from '../../../../../core/utils/error-handler';
 import { Response } from 'express';
 import { CaptureGuard } from '../../infrastructure/guards/validate-capture.guard';
-import { RefreshTokenEndpoint } from './swagger/refresh-token.description';
-import { ErrorMessageDto } from './swagger/shared/error-message-response';
-import { AccessTokenResponseDto } from './swagger/shared/accessToken-response.dto';
 
-class UserInfoDto {
-  login: string;
-  email: string;
-  userId: string;
-}
+import { PasswordRecoveryEndpoint } from './swagger/recovery-password.description';
+import { LogoutEndpoint } from './swagger/logout-description';
+import { GetProfileEndpoint } from './swagger/get-user-profile.description';
+import { RefreshTokenEndpoint } from './swagger/refresh-token.description';
+import { ConfirmPasswordEndpoint } from './swagger/confirm-password-recovery.description';
+import { RegistrationConfirmationEndpoint } from './swagger/registration-confirmation.description';
+import { RegistrationEmailResendingEndpoint } from './swagger/registration-email-resending.description';
+import { SignInEndpoint } from './swagger/sign-in.description';
+import { SignUpEndpoint } from './swagger/sign-up.description';
 
 // todo Response from express doesn't work
 @ApiTags(ApiTagsEnum.Auth)
@@ -79,37 +73,6 @@ export class AuthController {
 
   // todo authCUDService
   @SignInEndpoint()
-  @ApiOperation({
-    summary: 'User authorization with captcha',
-    description: 'Try login user to the system with reCAPTCHA',
-  })
-  @ApiResponse({
-    status: 429,
-    description: 'More than 20 attempts from one IP-address during 20 seconds',
-  })
-  @ApiResponse({ status: 400, type: ErrorMessageDto })
-  @ApiResponse({
-    status: 200,
-    description:
-      'Returns JWT accessToken (expired after 10 seconds) in body and JWT refreshToken in cookie (http-only, secure) (expired after 20 seconds).',
-    type: AccessTokenResponseDto,
-  })
-  @ApiResponse({ status: 401, description: 'Неверные учетные данные' })
-  @ApiBody({
-    type: UserCredentialsWithCaptureTokenDto,
-    examples: {
-      example1: {
-        value: {
-          email: 'geniusEmail@gmail.com',
-          password: '12345',
-          captureToken: 'token',
-        } as UserCredentialsWithCaptureTokenDto,
-      },
-    },
-    schema: {
-      $ref: getSchemaPath(UserCredentialsWithCaptureTokenDto),
-    },
-  })
   @UseGuards(CustomThrottlerGuard, LocalAuthGuard, CaptureGuard)
   @HttpCode(HttpStatus.OK)
   @Post(AuthNavigate.Login)
@@ -153,28 +116,7 @@ export class AuthController {
     // res.header('accessToken', accessToken);
     return { accessToken };
   }
-
-  @ApiOperation({
-    summary: 'Registration in the system',
-    description:
-      'Registration in the system. Email with confirmation code will be send to passed email address',
-  })
-  @ApiResponse({
-    status: 429,
-    description: 'More than 20 attempts from one IP-address during 20 seconds',
-  })
-  @ApiResponse({
-    status: 400,
-    description:
-      'If the inputModel has incorrect values (in particular if the user with the given email or login already exists)',
-    type: ErrorMessageDto,
-  })
-  @ApiResponse({
-    status: 204,
-    description:
-      'Input data is accepted. Email with confirmation code will be send to passed email address',
-  })
-  @ApiBody({ type: UserCredentialsWithCaptureTokenDto })
+  @SignUpEndpoint()
   @Post(AuthNavigate.Registration)
   @UseGuards(CustomThrottlerGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -204,26 +146,7 @@ export class AuthController {
     const resultNotification = await this.commandBus.execute(command);
     return resultNotification.data;
   }
-  @ApiOperation({
-    summary: 'Password recovery via email confirmation',
-    description:
-      'Password recovery via email confirmation. Email should be sent with recoveryCode inside',
-  })
-  @ApiResponse({
-    status: 429,
-    description: 'More than 20 attempts from one IP-address during 20 seconds',
-  })
-  @ApiResponse({
-    status: 400,
-    description:
-      'If the inputModel has invalid email (for example 222^gmail.com)',
-  })
-  @ApiResponse({
-    status: 204,
-    description:
-      'Even if current email is not registered (for prevent user`s email detection)',
-  })
-  @ApiBody({ type: RegistrationEmailDto })
+  @PasswordRecoveryEndpoint()
   @UseGuards(CustomThrottlerGuard)
   @Post(AuthNavigate.PasswordRecovery)
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -243,13 +166,7 @@ export class AuthController {
 
     await this.commandBus.execute<PasswordRecoveryCommand, boolean>(command);
   }
-  @ApiOperation({
-    summary: 'Log out of the current device',
-    description:
-      'In cookie client must send correct refreshToken that will be revoked',
-  })
-  @ApiResponse({ status: 401 })
-  @ApiResponse({ status: 204 })
+  @LogoutEndpoint()
   @UseGuards(RefreshTokenGuard)
   @Post(AuthNavigate.Logout)
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -258,12 +175,7 @@ export class AuthController {
     await this.commandBus.execute(command);
   }
 
-  @ApiOperation({
-    summary: 'Get info about the current user',
-    description: 'Get email, login and userId about the current user',
-  })
-  @ApiResponse({ status: 401 })
-  @ApiResponse({ status: 200, type: UserInfoDto })
+  @GetProfileEndpoint()
   @UseGuards(AccessTokenGuard)
   @Get(AuthNavigate.GetProfile)
   async getProfile(
@@ -278,18 +190,7 @@ export class AuthController {
 
     return { email, login, userId };
   }
-  @ApiOperation({
-    summary: 'Generate new pair of access and refresh tokens',
-    description:
-      'Generate new pair of access and refresh tokens (in cookie client must send correct refreshToken that will be revoked after refreshing) Device LastActiveDate should be overrode by issued Date of new refresh token',
-  })
-  @ApiResponse({ status: 401 })
-  @ApiResponse({
-    status: 200,
-    description:
-      'Returns JWT accessToken (expired after 10 seconds) in body and JWT refreshToken in cookie (http-only, secure) (expired after 20 seconds).',
-  })
-  //@RefreshTokenEndpoint()
+  @RefreshTokenEndpoint()
   @UseGuards(RefreshTokenGuard)
   @HttpCode(HttpStatus.OK)
   @Post(AuthNavigate.RefreshToken)
@@ -318,24 +219,7 @@ export class AuthController {
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
     return { accessToken };
   }
-  @ApiOperation({
-    summary: 'Confirm password recovery',
-    description: 'Confirm password recovery and set a new password',
-  })
-  @ApiResponse({
-    status: 400,
-    description:
-      'If the inputModel has incorrect value (for incorrect password length) or RecoveryCode is incorrect or expired',
-  })
-  @ApiBody({ type: RecoveryPassDto })
-  @ApiResponse({
-    status: 204,
-    description: 'If code is valid and new password is accepted',
-  })
-  @ApiResponse({
-    status: 429,
-    description: 'More than 20 attempts from one IP-address during 20 seconds',
-  })
+  @ConfirmPasswordEndpoint()
   @UseGuards(CustomThrottlerGuard, CaptureGuard)
   @Post(AuthNavigate.NewPassword)
   @HttpCode(HttpStatus.NO_CONTENT)
@@ -353,27 +237,7 @@ export class AuthController {
 
     return this.commandBus.execute(command);
   }
-
-  @ApiOperation({
-    summary: 'Confirm registration',
-    description:
-      'Confirm your registration with the code that was sent to your email by registration',
-  })
-  @ApiResponse({
-    status: 400,
-    description:
-      'If the confirmation code is incorrect, expired or already been applied',
-    type: ErrorMessageDto,
-  })
-  @ApiBody({ type: RegistrationCodeDto })
-  @ApiResponse({
-    status: 204,
-    description: 'Email was verified. Account was activated',
-  })
-  @ApiResponse({
-    status: 429,
-    description: 'More than 20 attempts from one IP-address during 20 seconds',
-  })
+  @RegistrationConfirmationEndpoint()
   @UseGuards(CustomThrottlerGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
   @Post(AuthNavigate.RegistrationConfirmation)
@@ -394,26 +258,7 @@ export class AuthController {
     //   res.status(HttpStatus.BAD_REQUEST).send(errors);
     // }
   }
-  @ApiOperation({
-    summary: 'Resend confirmation registration email if user exist',
-    description:
-      'Send a new code to the email to confirm registration if the user exists',
-  })
-  @ApiResponse({
-    status: 400,
-    description: 'If the inputModel has incorrect values',
-    type: ErrorMessageDto,
-  })
-  @ApiBody({ type: RegistrationCodeDto })
-  @ApiResponse({
-    status: 204,
-    description:
-      'Input data is accepted.Email with confirmation code will be send to passed email address.Confirmation code should be inside link as query param, for example: https://some-front.com/confirm-registration?code=youtcodehere',
-  })
-  @ApiResponse({
-    status: 429,
-    description: 'More than 20 attempts from one IP-address during 20 seconds',
-  })
+  @RegistrationEmailResendingEndpoint()
   @UseGuards(CustomThrottlerGuard)
   @Post(AuthNavigate.RegistrationEmailResending)
   @HttpCode(HttpStatus.NO_CONTENT)
