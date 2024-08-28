@@ -4,17 +4,17 @@ import { LayerNoticeInterceptor } from '../../../../../core/utils/notification';
 import { ResponseIdType } from '../../api/models/outputSA.models.ts/user-models';
 import { UsersRepository } from '../../infrastructure/users.repo';
 import { CreateSACommand } from '../commands/create-sa.command';
-import { UserModelDto } from '../dto/create-user.dto';
+import { UserModelDTO } from '../dto/create-user.dto';
 
 @CommandHandler(CreateSACommand)
 export class CreateSAUseCase implements ICommandHandler<CreateSACommand> {
   constructor(
     private bcryptAdapter: BcryptAdapter,
-    private usersRepo: UsersRepository,
+    private usersRepo: UsersRepository
   ) {}
 
   async execute(
-    command: CreateSACommand,
+    command: CreateSACommand
   ): Promise<LayerNoticeInterceptor<ResponseIdType>> {
     let notice = new LayerNoticeInterceptor<ResponseIdType>();
 
@@ -23,11 +23,11 @@ export class CreateSAUseCase implements ICommandHandler<CreateSACommand> {
     const { passwordHash } = await this.bcryptAdapter.createHash(password);
 
     const isConfirmed = true;
-    const userDto = new UserModelDto(
+    const userDto = new UserModelDTO(
       userName,
       email,
       passwordHash,
-      isConfirmed,
+      isConfirmed
     );
 
     const savedUser = await this.usersRepo.save(userDto);

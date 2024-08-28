@@ -1,49 +1,77 @@
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { BcryptAdapter } from '../../../../../core/adapters/bcrypt.adapter';
-import { LayerNoticeInterceptor } from '../../../../../core/utils/notification';
+import {
+  GetErrors,
+  LayerNoticeInterceptor,
+} from '../../../../../core/utils/notification';
 import { UserIdType } from '../../../admin/api/models/outputSA.models.ts/user-models';
 import { UsersRepository } from '../../../admin/infrastructure/users.repo';
 import { CreateUserCommand } from './commands/create-user.command';
+import { UserModelDTO } from '../../../admin/application/dto/create-user.dto';
+import { AuthRepository } from '../../infrastructure/auth.repository';
+import { EmailNotificationEvent } from './events/email-notification-event';
 
 @CommandHandler(CreateUserCommand)
 export class CreateUserUseCase implements ICommandHandler<CreateUserCommand> {
+  private location = this.constructor.name;
   constructor(
     private usersRepo: UsersRepository,
     private bcryptAdapter: BcryptAdapter,
-    private eventBus: EventBus,
+    private authRepo: AuthRepository,
+    private eventBus: EventBus
   ) {}
 
   async execute(
-    command: CreateUserCommand,
+    command: CreateUserCommand
   ): Promise<LayerNoticeInterceptor<UserIdType> | null> {
     const { email, userName, password } = command.createDto;
-
     const notice = new LayerNoticeInterceptor<any>();
 
-    const { passwordSalt, passwordHash } =
-      await this.bcryptAdapter.createHash(password);
-
-    const userDto = {
+    const existedUser = await this.authRepo.findExistedUserByEmailOrName({
       userName,
       email,
-      passwordSalt,
+    });
+
+    if (existedUser) {
+      if (existedUser.email === email) {
+        notice.addError(
+          `User with email ${email} already exists`,
+          this.location,
+          GetErrors.IncorrectModel
+        );
+      }
+      if (existedUser.userName === userName) {
+        notice.addError(
+          `User with userName ${userName} already exists`,
+          this.location,
+          GetErrors.IncorrectModel
+        );
+      }
+      return notice;
+    }
+
+    const { passwordHash } = await this.bcryptAdapter.createHash(password);
+
+    const isConfirmed = false;
+    const userDto = new UserModelDTO(
+      userName,
+      email,
       passwordHash,
-      isConfirmed: false,
-    };
+      isConfirmed
+    );
 
-    notice.addData(userDto);
-    // const user = UserAccount.create(userDto);
+    const unconfirmedUserTheSameEmail =
+      await this.usersRepo.getUnconfirmedUserByEmailOrName(email, userName);
 
-    // const result = await this.usersRepo.save(user);
+    if (unconfirmedUserTheSameEmail) {
+      await this.usersRepo.deleteUser(unconfirmedUserTheSameEmail.id);
+    }
 
-    // if (!result) {
-    //   notice.addError('Could not create user', 'db', GetErrors.DatabaseFail);
-    // } else {
-    //   notice.addData({ userId: result.userId });
-    // }
+    const result = await this.usersRepo.save(userDto);
 
-    // const event = new EmailNotificationEvent(email, user.confirmation_code);
-    // this.eventBus.publish(event);
+    const event = new EmailNotificationEvent(email, userDto.confirmationCode);
+    this.eventBus.publish(event);
+    notice.addData({ userId: result.id });
 
     return notice;
   }

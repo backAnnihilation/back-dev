@@ -1,7 +1,5 @@
 import { Module } from '@nestjs/common';
-import { AppController } from './app.controller';
-import { AppService } from './app.service';
-import { ConfigurationModule } from '../core/app-config.module';
+import { ConfigurationModule } from '../core/config/app-config.module';
 import { CqrsModule } from '@nestjs/cqrs';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { AuthService } from './features/auth/application/auth.service';
@@ -19,7 +17,7 @@ import { SAController } from './features/admin/api/controllers/sa.controller';
 import { UsersQueryRepo } from './features/admin/api/query-repositories/users.query.repo';
 import { SACudApiService } from './features/admin/application/sa-cud-api.service';
 import { BasicSAAuthGuard } from './features/auth/infrastructure/guards/basic-auth.guard';
-import { BasicSAStrategy } from './features/auth/infrastructure/guards/strategies/basic-strategy';
+import { BasicSAStrategy } from './features/auth/infrastructure/guards/strategies/basic.strategy';
 import { CreateSAUseCase } from './features/admin/application/use-cases/create-sa.use.case';
 import { BcryptAdapter } from '../core/adapters/bcrypt.adapter';
 import { UsersRepository } from './features/admin/infrastructure/users.repo';
@@ -30,6 +28,21 @@ import { AuthRepository } from './features/auth/infrastructure/auth.repository';
 import { SecurityRepository } from './features/security/infrastructure/security.repository';
 import { UpdateIssuedTokenUseCase } from './features/auth/application/use-cases/update-issued-token.use-case';
 import { UpdatePasswordUseCase } from './features/auth/application/use-cases/update-password.use-case';
+import { SendRecoveryMessageEventHandler } from './features/auth/application/use-cases/send-recovery-msg.event';
+import { UserCreatedNoticeEventHandler } from './features/auth/application/use-cases/events/handlers/user-created-notification.event-handler';
+import { CreateUserUseCase } from './features/auth/application/use-cases/create-user.use-case';
+import { LocalStrategy } from './features/auth/infrastructure/guards/strategies/local.strategy';
+import { UpdateConfirmationCodeUseCase } from './features/auth/application/use-cases/update-confirmation-code.use-case';
+import { ConfirmRegistrationUseCase } from './features/auth/application/use-cases/confirm-registration.use-case';
+import { UserService } from './features/auth/application/user.service';
+import { AccessTokenStrategy } from './features/auth/infrastructure/guards/strategies/access-token.strategy';
+import { RefreshTokenStrategy } from './features/auth/infrastructure/guards/strategies/refresh-token.strategy';
+import { DeleteActiveSessionUseCase } from './features/security/application/use-cases/delete-active-session.use-case';
+import { AuthenticationApiService } from './features/auth/application/auth-token-response.service';
+import { PasswordRecoveryUseCase } from './features/auth/application/use-cases/password-recovery.use-case';
+import { DeleteOtherUserSessionsUseCase } from './features/security/application/use-cases/delete-other-user-sessions.use-case';
+import { DropDbSaUseCase } from "./features/admin/application/use-cases/drop-ba.sa.use.case";
+import { DropBbRepository } from "./features/admin/infrastructure/drop.repo";
 
 @Module({
   imports: [
@@ -40,15 +53,10 @@ import { UpdatePasswordUseCase } from './features/auth/application/use-cases/upd
     PrismaModule,
     ThrottlerModule.forRoot([{ limit: 20, ttl: Math.pow(20, 3) }]),
   ],
-  controllers: [
-    AppController,
-    SecurityController,
-    AuthController,
-    SAController,
-  ],
+  controllers: [SecurityController, AuthController, SAController],
   providers: [
-    AppService,
     AuthService,
+    UserService,
     AuthQueryRepository,
     CaptureAdapter,
     SecurityQueryRepo,
@@ -58,16 +66,30 @@ import { UpdatePasswordUseCase } from './features/auth/application/use-cases/upd
     SACudApiService,
     BasicSAAuthGuard,
     BasicSAStrategy,
+    LocalStrategy,
     CreateSAUseCase,
     BcryptAdapter,
     UsersRepository,
     CaptureGuard,
     VerificationCredentialsUseCase,
     CreateUserSessionUseCase,
+    CreateUserUseCase,
     AuthRepository,
     SecurityRepository,
     UpdateIssuedTokenUseCase,
     UpdatePasswordUseCase,
+    SendRecoveryMessageEventHandler,
+    UserCreatedNoticeEventHandler,
+    UpdateConfirmationCodeUseCase,
+    DeleteActiveSessionUseCase,
+    ConfirmRegistrationUseCase,
+    AuthenticationApiService,
+    AccessTokenStrategy,
+    RefreshTokenStrategy,
+    PasswordRecoveryUseCase,
+    DeleteOtherUserSessionsUseCase,
+    DropDbSaUseCase,
+    DropBbRepository
   ],
 })
 export class AppModule {}

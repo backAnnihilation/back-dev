@@ -1,13 +1,12 @@
 import { Injectable } from '@nestjs/common';
-import { UserIdType } from '../api/models/outputSA.models.ts/user-models';
-import { PrismaService } from '../../../../core/db/prisma/prisma.service';
 import { Prisma, UserAccount } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
+import { DatabaseService } from '../../../../core/db/prisma/prisma.service';
 
 @Injectable()
 export class UsersRepository {
   private readonly userAccounts: Prisma.UserAccountDelegate<DefaultArgs>;
-  constructor(private prisma: PrismaService) {
+  constructor(private prisma: DatabaseService) {
     this.userAccounts = this.prisma.userAccount;
   }
 
@@ -17,6 +16,20 @@ export class UsersRepository {
     } catch (error) {
       console.log(error);
       throw new Error(`user is not saved: ${error}`);
+    }
+  }
+
+  async getUnconfirmedUserByEmailOrName(
+    email: string,
+    userName: string,
+  ): Promise<UserAccount | null> {
+    try {
+      return await this.userAccounts.findFirst({
+        where: { OR: [{ email }, { userName }], isConfirmed: false },
+      });
+    } catch (error) {
+      console.log(`error in getUserByEmail: ${error}`);
+      return null;
     }
   }
 
@@ -102,11 +115,9 @@ export class UsersRepository {
   //   }
   // }
 
-  async deleteUser(userId: string): Promise<boolean> {
+  async deleteUser(userId: string): Promise<UserAccount> {
     try {
-      // const result = await manager.delete(UserAccount, userId);
-      const result = await this.userAccounts.delete({ where: { id: userId } });
-      return !!result;
+      return await this.userAccounts.delete({ where: { id: userId } });
     } catch (error) {
       throw new Error(`error in deleteUser: ${error}`);
     }

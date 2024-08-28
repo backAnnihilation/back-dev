@@ -3,19 +3,13 @@ export type LoginCredentials = {
   password: string;
 };
 
-export type LoginOrEmailType = {
-  login?: string;
-  email?: string;
-  loginOrEmail?: string;
-};
-
 export type EmailDtoType = {
   email: string;
-}
+};
 
 export type AuthUserType = {
   id?: string;
-  login: string;
+  userName: string;
   email: string;
-  password: string;
+  password?: string;
 };

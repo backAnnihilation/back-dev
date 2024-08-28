@@ -1,5 +1,5 @@
 import { plainToInstance } from 'class-transformer';
-import { IsString, IsNumber, IsEnum, validateSync } from 'class-validator';
+import { IsEnum, IsNumber, IsString, IsUrl, validateSync } from 'class-validator';
 
 export enum Environment {
   DEVELOPMENT = 'DEVELOPMENT',
@@ -33,8 +33,11 @@ export class EnvironmentVariables {
   @IsString()
   EMAIL_SERVICE: string;
 
-  // @IsUrl()
-  // DATABASE_URL: string;
+  @IsString()
+  DATABASE_URL: string;
+
+  @IsString()
+  DATABASE_URL_FOR_TESTS: string;
 
   // @IsOptional()
   // @IsString()
@@ -106,8 +109,6 @@ export class EnvironmentVariables {
 
   // @IsString()
   // STRIPE_WEBHOOK_SECRET: string;
-  @IsString()
-  USERS_DATABASE_URL: string;
 
   @IsString()
   GOOGLE_CAPTURE_SECRET: string;
@@ -191,7 +192,6 @@ export default () => {
   return getConfig(environmentVariables, currentEnvironment);
 };
 
-// todo
 export const validate = (config: Record<string, unknown>) => {
   const validatedConfig = plainToInstance(EnvironmentVariables, config, {
     enableImplicitConversion: true,

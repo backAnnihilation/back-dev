@@ -1,27 +1,27 @@
 import { Payload } from '../auth-input.models.ts/jwt.types';
 
-export class UserSessionDto {
+export class UserSessionDTO {
   ip: string;
-  user_agent_info: string;
-  user_id: string;
-  device_id: string;
-  refresh_token: string;
+  userAgentInfo: string;
+  deviceId: string;
+  refreshToken: string;
   rtIssuedAt: Date;
   rtExpirationDate: Date;
+  userId: string;
 
   constructor(
     ipAddress: string,
     userAgentInfo: string,
-    userId: string,
     userPayload: Payload,
     refreshToken: string,
   ) {
+    const { deviceId, exp, iat, userId } = userPayload;
     this.ip = ipAddress;
-    this.user_agent_info = userAgentInfo;
-    this.user_id = userId;
-    this.device_id = userPayload.deviceId;
-    this.refresh_token = refreshToken;
-    this.rtIssuedAt = new Date(userPayload.iat! * 1000);
-    this.rtExpirationDate = new Date(userPayload.exp! * 1000);
+    this.userAgentInfo = userAgentInfo;
+    this.deviceId = deviceId;
+    this.userId = userId;
+    this.refreshToken = refreshToken;
+    this.rtIssuedAt = new Date(iat! * 1000);
+    this.rtExpirationDate = new Date(exp! * 1000);
   }
 }

@@ -6,16 +6,16 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("USERS_DATABASE_URL")
+  url      = env("DATABASE_URL") 
 }
 
 model UserAccount {
   id                           String         @id @default(uuid())
   userName                     String         @unique
   email                        String         @unique
-  passwordHash                 String
-  confirmationCode             String
-  confirmationExpDate          DateTime
+  passwordHash                 String?
+  confirmationCode             String?
+  confirmationExpDate          DateTime?
   isConfirmed                  Boolean
   passwordRecoveryCode         String?
   passwordRecoveryExpDate      DateTime?
@@ -29,7 +29,7 @@ model UserSession {
   id                String         @id @default(uuid())
   ip                String
   userAgentInfo     String         
-  deviceId          String         
+  deviceId          String         @unique
   refreshToken      String         
   rtIssuedAt        DateTime       
   rtExpirationDate  DateTime       

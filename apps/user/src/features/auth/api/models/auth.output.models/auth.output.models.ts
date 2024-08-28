@@ -1,20 +1,23 @@
 import { SAViewType } from '../../../../admin/api/models/user.view.models/userAdmin.view-type';
 
 export type UserType = {
-  login: string;
+  userName: string;
   email: string;
   createdAt: string;
   passwordSalt: string;
   passwordHash: string;
 };
 
-export type UserProfileType = Pick<UserType, 'login' | 'email'> & {
+export type UserProfileType = Pick<UserType, 'userName' | 'email'> & {
   userId: string;
 };
 
 export type UserRecoveryType = {
   recoveryCode: string;
   expirationDate: Date;
+};
+export type UpdateConfirmationCodeDto = UserRecoveryType & {
+  id: string;
 };
 
 export type UserAccountType = {

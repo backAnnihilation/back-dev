@@ -5,10 +5,12 @@ export enum RoutingEnum {
   admins = '/sa/users',
   auth = '/auth',
   security = '/security/devices',
+  base = '/',
 }
 
 export enum ApiTagsEnum {
   Users = 'users',
   Auth = 'auth',
   Security = 'security',
+  Admin = 'sa',
 }

@@ -58,7 +58,7 @@ type QueryType = Record<string, string | string[]>;
 export class PaginationFilter {
   public readonly pageNumber: number;
   public readonly pageSize: number;
-  public readonly sortDirection: 'ASC' | 'DESC' | 1 | -1;
+  public readonly sortDirection: SortDirection | 1 | -1;
   public readonly sortBy: string;
 
   constructor(query: QueryType, sortProperties: string[] = []) {
@@ -69,7 +69,7 @@ export class PaginationFilter {
   }
 
   public getSortDirectionInNumericFormat(): number {
-    return this.sortDirection === 'ASC' ? 1 : -1;
+    return this.sortDirection === SortDirection.ASC ? 1 : -1;
   }
 
   public getSkipItemsCount() {
@@ -77,7 +77,7 @@ export class PaginationFilter {
   }
 
   public getSortDirection(query: QueryType) {
-    return query.sortDirection === 'ASC' ? 1 : -1;
+    return query.sortDirection === SortDirection.ASC ? 1 : -1;
   }
 
   public getSortBy(query: QueryType, sortProperties: string[]): string {
@@ -102,4 +102,9 @@ export class PaginationFilter {
 
     return result;
   }
+}
+
+export enum SortDirection {
+  ASC = 'ASC',
+  DESC = 'DESC',
 }

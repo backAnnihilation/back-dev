@@ -6,8 +6,6 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
-import { ConfigurationType } from './configuration';
-import { ConfigService } from '@nestjs/config';
 
 type ErrorResponse = {
   errorsMessages: ErrorsMessageType[];
@@ -19,7 +17,7 @@ type ErrorsMessageType = {
 
 @Catch(HttpException)
 export class HttpExceptionFilter implements ExceptionFilter {
-  constructor(private config: ConfigService<ConfigurationType>) {}
+  constructor(private currentENV: string) {}
   catch(exception: HttpException, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
@@ -47,9 +45,8 @@ export class HttpExceptionFilter implements ExceptionFilter {
         prodErrorResponse.errorsMessages.push({ message });
       }
 
-      const env = this.config.getOrThrow('env').toUpperCase();
-
-      const envCondition = env === 'DEVELOPMENT' || env === 'TESTING';
+      const envCondition =
+        this.currentENV === 'DEVELOPMENT' || this.currentENV === 'TESTING';
 
       const errorResponse = !envCondition
         ? devErrorResponse

@@ -9,7 +9,7 @@ import { LayerInterceptorExtension, GetErrors } from './notification';
 // toDo refactor -> make more flexible
 export const handleErrors = (
   code: number,
-  extension: LayerInterceptorExtension,
+  extension: LayerInterceptorExtension
 ) => {
   const {
     DatabaseFail,

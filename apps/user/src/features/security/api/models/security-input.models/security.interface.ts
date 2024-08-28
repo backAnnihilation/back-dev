@@ -6,7 +6,7 @@ export interface SecurityInterface {
     userInfo: UserSessionDto,
   ): Promise<SecurityViewDeviceModel[]>;
   terminateOtherUserSessions(userInfo: UserSessionDto): Promise<void>;
-  terminateSpecificSession(
+  deleteSession(
     deviceId: string,
     userInfo: UserSessionDto,
   ): Promise<void>;

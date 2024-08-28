@@ -19,8 +19,14 @@ import { UserSessionDto } from './models/security-input.models/security-session-
 import { SecurityInterface } from './models/security-input.models/security.interface';
 import { SecurityViewDeviceModel } from './models/security.view.models/security.view.types';
 import { SecurityQueryRepo } from './query-repositories/security.query.repo';
+import { ApiTags } from '@nestjs/swagger';
+import { ApiTagsEnum, RoutingEnum } from '../../../../core/routes/routing';
+import { GetUserActiveSessionsEndpoint } from './swagger/get-sessions.description';
+import { TerminateOtherUserSessionsEndpoint } from './swagger/terminate-other-sessions.description';
+import { DeleteSessionEndpoint } from './swagger/terminate-specific-session.description';
 
-@Controller('security/devices')
+@ApiTags(ApiTagsEnum.Security)
+@Controller(RoutingEnum.security)
 @UseGuards(RefreshTokenGuard)
 export class SecurityController implements SecurityInterface {
   constructor(
@@ -28,6 +34,7 @@ export class SecurityController implements SecurityInterface {
     private commandBus: CommandBus,
   ) {}
 
+  @GetUserActiveSessionsEndpoint()
   @Get()
   async getUserActiveSessions(
     @UserPayload() userInfo: UserSessionDto,
@@ -44,16 +51,18 @@ export class SecurityController implements SecurityInterface {
     return securityData;
   }
 
+  @TerminateOtherUserSessionsEndpoint()
   @Delete()
   @HttpCode(HttpStatus.NO_CONTENT)
   async terminateOtherUserSessions(@UserPayload() userInfo: UserSessionDto) {
-    const command = new DeleteOtherUserSessionsCommand(userInfo.deviceId);
+    const command = new DeleteOtherUserSessionsCommand(userInfo);
     await this.commandBus.execute(command);
   }
 
+  @DeleteSessionEndpoint()
   @Delete(':id')
   @HttpCode(HttpStatus.NO_CONTENT)
-  async terminateSpecificSession(
+  async deleteSession(
     @Param('id') deviceId: string,
     @UserPayload() userInfo: UserSessionDto,
   ) {

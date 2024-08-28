@@ -3,7 +3,7 @@ import { validateOrReject, ValidationError } from 'class-validator';
 export class LayerNoticeInterceptor<D = null> {
   public data: D | null = null;
   public extensions: LayerInterceptorExtension[];
-  public code = 0;
+  public code: number = 0;
 
   constructor(
     data: D | null = null,

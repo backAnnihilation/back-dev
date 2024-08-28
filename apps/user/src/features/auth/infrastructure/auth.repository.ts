@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { UserRecoveryType } from '../api/models/auth.output.models/auth.output.models';
+import {
+  UpdateConfirmationCodeDto,
+  UserRecoveryType,
+} from '../api/models/auth.output.models/auth.output.models';
 import { EmailDtoType } from '../api/models/auth.output.models/auth.user.types';
 import { CreateTempAccountDto } from '../api/models/temp-account.models.ts/temp-account-models';
 import { UpdatePasswordDto } from '../api/models/auth-input.models.ts/password-recovery.types';
 import { OutputId } from '../../../../core/api/dto/output-id.dto';
 import { Prisma, UserAccount } from '@prisma/client';
-import { PrismaService } from '../../../../core/db/prisma/prisma.service';
+import { DatabaseService } from '../../../../core/db/prisma/prisma.service';
 import { DefaultArgs } from '@prisma/client/runtime/library';
 
 type BanInfoType = {
@@ -14,32 +17,10 @@ type BanInfoType = {
 
 @Injectable()
 export class AuthRepository {
-  private tempUserAccounts: any;
   private userAccounts: Prisma.UserAccountDelegate<DefaultArgs>;
   private userBans: any;
-  constructor(private readonly prisma: PrismaService) {
+  constructor(private readonly prisma: DatabaseService) {
     this.userAccounts = this.prisma.userAccount;
-  }
-
-  async createTemporaryUserAccount(
-    createDto: CreateTempAccountDto,
-  ): Promise<OutputId | null> {
-    try {
-      const { recoveryCode, expirationDate, email } = createDto;
-
-      const result = await this.tempUserAccounts.insert({
-        email: email,
-        recovery_code: recoveryCode,
-        code_expiration_time: expirationDate,
-      });
-
-      return result.raw[0].id;
-    } catch (error) {
-      console.error(
-        `While creating the temp user account occurred some errors: ${error}`,
-      );
-      return null;
-    }
   }
 
   async getUserBanInfo(userId: string): Promise<BanInfoType> {
@@ -54,68 +35,77 @@ export class AuthRepository {
     } catch (error) {}
   }
 
-  async findTemporaryAccountByRecoveryCode(
-    recoveryCode: string,
-  ): Promise<any | null> {
-    try {
-      const result = await this.tempUserAccounts.findOneBy({
-        recovery_code: recoveryCode,
-      });
-
-      if (!result) return null;
-
-      return result;
-    } catch (error) {
-      console.error(
-        `While find the temporary account occurred some errors: ${error}`,
-      );
-      return null;
-    }
-  }
-
-  async deleteTemporaryUserAccount(recoveryCode: string): Promise<boolean> {
-    try {
-      const result = await this.tempUserAccounts.delete({
-        recovery_code: recoveryCode,
-      });
-
-      return result.affected !== 0;
-    } catch (error) {
-      console.error('Database fails operate with deleting user', error);
-      return false;
-    }
-  }
-
   async findUserAccountByConfirmationCode(
-    confirmationCode: string,
+    confirmationCode: string
   ): Promise<UserAccount | null> {
     try {
-      const currentTime = new Date();
-
-      const result = await this.userAccounts.findFirst({});
+      const result = await this.userAccounts.findFirst({
+        where: { confirmationCode },
+      });
 
       if (!result) return null;
 
       return result;
     } catch (e) {
       console.error(
-        `there were some problems during find user's account by confirmation code, ${e}`,
+        `there were some problems during find user's account by confirmation code, ${e}`
       );
       return null;
     }
   }
-
-  async findUserByEmail(inputData: EmailDtoType): Promise<UserAccount | null> {
+  async findConfirmedUserByEmailOrName({
+    userName,
+    email,
+  }): Promise<UserAccount | null> {
     try {
-      const { email } = inputData;
+      return await this.userAccounts.findFirst({
+        where: { OR: [{ email }, { userName }], AND: { isConfirmed: true } },
+      });
+    } catch (error) {
+      console.log(`findByEmailOrName: ${error}`);
+      return null;
+    }
+  }
+  async findExistedUserByEmailOrName({
+    userName,
+    email,
+  }): Promise<UserAccount | null> {
+    try {
+      return await this.userAccounts.findFirst({
+        where: { OR: [{ email }, { userName }] },
+      });
+    } catch (error) {
+      console.log(`findByEmailOrName: ${error}`);
+      return null;
+    }
+  }
 
-      const result = await this.userAccounts.findFirst({ where: { email } });
+  async findUserByEmail(email: string): Promise<UserAccount | null> {
+    try {
+      const result = await this.userAccounts.findUnique({ where: { email } });
 
       if (!result) return null;
 
       return result;
     } catch (e) {
       console.error(`there were some problems during find user by email, ${e}`);
+      return null;
+    }
+  }
+  async findUserByRecoveryCode(code: string): Promise<UserAccount | null> {
+    try {
+      return await this.userAccounts.findFirst({
+        where: {
+          AND: [
+            { passwordRecoveryCode: code },
+            { passwordRecoveryExpDate: { gte: new Date() } },
+          ],
+        },
+      });
+    } catch (e) {
+      console.error(
+        `there were some problems during find user by recovery code, ${e}`
+      );
       return null;
     }
   }
@@ -130,29 +120,30 @@ export class AuthRepository {
       return !!result;
     } catch (error) {
       console.error(
-        `there were some problems during update user's confirmation code: ${error}`,
+        `there were some problems during update user's confirmation code: ${error}`
       );
       return false;
     }
   }
 
-  // todo add user id
   async updateConfirmationCode(
-    email: string,
-    confirmationCode: string,
-    newConfirmationExpDate: Date,
+    confirmationData: UpdateConfirmationCodeDto
   ): Promise<boolean> {
     try {
-      // const result = await this.userAccounts.update({
-      //   where: { email },
-      //   data: { confirmationCode, confirmationExpDate: newConfirmationExpDate },
-      // });
+      const { id, expirationDate, recoveryCode } = confirmationData;
 
-      // return !!result;
-      return true;
+      const result = await this.userAccounts.update({
+        where: { id },
+        data: {
+          confirmationCode: recoveryCode,
+          confirmationExpDate: expirationDate,
+        },
+      });
+
+      return !!result;
     } catch (error) {
       console.error(
-        `Database fails operate during update confirmation code operation ${error}`,
+        `Database fails operate during update confirmation code operation ${error}`
       );
       return false;
     }
@@ -160,46 +151,41 @@ export class AuthRepository {
 
   async updateRecoveryCode(
     email: string,
-    recoveryData: UserRecoveryType,
-  ): Promise<boolean> {
+    recoveryData: UserRecoveryType
+  ): Promise<void> {
     try {
-      // const result = await this.userAccounts.update(
-      //   { email: email },
-      //   {
-      //     password_recovery_code: recoveryData.recoveryCode,
-      //     password_recovery_expiration_date: recoveryData.expirationDate,
-      //   },
-      // );
-
-      return true;
+      await this.userAccounts.update({
+        where: { email },
+        data: {
+          passwordRecoveryCode: recoveryData.recoveryCode,
+          passwordRecoveryExpDate: recoveryData.expirationDate,
+        },
+      });
     } catch (error) {
       console.error(
-        `Database fails operate during update recovery code operation ${error}`,
+        `Database fails operate during update recovery code operation ${error}`
       );
-      return false;
+      throw new Error(error);
     }
   }
 
-  async updateUserPassword(updateData: UpdatePasswordDto): Promise<boolean> {
+  async updateUserPassword(updateData: UpdatePasswordDto): Promise<void> {
     try {
-      const { passwordHash, passwordSalt, recoveryCode } = updateData;
+      const { passwordHash, userId } = updateData;
 
-      // const result = await this.userAccounts.update(
-      //   { password_recovery_code: recoveryCode },
-      //   {
-      //     password_recovery_code: '',
-      //     password_recovery_expiration_date: '',
-      //     password_hash: passwordHash,
-      //     password_salt: passwordSalt,
-      //   },
-      // );
-
-      return true;
+      await this.userAccounts.update({
+        where: { id: userId },
+        data: {
+          passwordHash,
+          passwordRecoveryCode: null,
+          passwordRecoveryExpDate: null,
+        },
+      });
     } catch (error) {
       console.error(
-        `Database fails operate with update user password ${error}`,
+        `Database fails operate with update user password ${error}`
       );
-      return false;
+      throw new Error(error);
     }
   }
 }

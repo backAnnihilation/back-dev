@@ -45,4 +45,21 @@ export class BaseCUDApiService<TCommand, TViewModel> {
       throw error;
     }
   }
+  async dropDataBase(command: TCommand): Promise<void> {
+    const notification = await this.commandBus.execute<
+      TCommand,
+      LayerNoticeInterceptor
+    >(command);
+
+    if (notification.hasError) {
+      const { error } = handleErrors(
+        notification.code,
+        notification.extensions[0],
+      );
+      throw error;
+    }
+    return notification.data
+  }
 }
+
+

@@ -26,9 +26,7 @@ export class VerificationCredentialsUseCase
     const notice = new LayerNoticeInterceptor<UserIdType>();
     const { email, password } = command.verificationDto;
 
-    const userAccount = await this.authRepo.findUserByEmail({
-      email,
-    });
+    const userAccount = await this.authRepo.findUserByEmail(email);
 
     if (!userAccount) {
       notice.addError('User not found', this.location, GetErrors.NotFound);

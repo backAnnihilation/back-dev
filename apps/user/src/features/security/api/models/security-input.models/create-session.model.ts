@@ -1,42 +1,17 @@
 import {
-  IsObject,
-  IsDefined,
-  IsString,
   IsNotEmpty,
-  IsIP,
+  IsObject,
   IsOptional,
+  IsString
 } from 'class-validator';
-import { Payload } from '../../../../auth/api/models/auth-input.models.ts/jwt.types';
-import { DeviceInfo } from '../../../../auth/infrastructure/utils/device-info-extractor';
-
+import { ClientInfo } from '../../../../auth/api/models/auth-input.models.ts/client-info.type';
 
 export class SessionCreationDto {
   @IsObject()
-  @IsDefined()
-  userPayload: Payload;
-
-  @IsString()
-  @IsNotEmpty()
-  @IsIP()
-  ipAddress: string;
-
-  @IsString()
-  @IsNotEmpty()
-  browser: string;
-
-  @IsString()
-  @IsNotEmpty()
-  deviceType: string;
-
-  @IsObject()
   @IsOptional()
-  userAgentInfo?: DeviceInfo;
+  clientInfo?: ClientInfo;
 
   @IsString()
   @IsNotEmpty()
   userId: string;
-
-  @IsString()
-  @IsNotEmpty()
-  refreshToken: string;
 }
