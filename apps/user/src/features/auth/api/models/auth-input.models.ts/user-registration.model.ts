@@ -1,5 +1,4 @@
 import { IsOptional } from 'class-validator';
-
 import {
   userNameLength,
   stringMatch,

@@ -1,6 +1,5 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
-
-import { DatabaseService } from '../../src/core/db/prisma/prisma.service';
+import { DatabaseService } from '../../core/db/prisma/prisma.service';
 import { initSettings } from '../tools/initSettings';
 import { UsersTestManager } from '../tools/managers/UsersTestManager';
 import {
@@ -9,12 +8,12 @@ import {
   skipSettings,
 } from '../tools/skipSettings';
 import { dbCleaner, databaseService as dbService } from '../setupTests.e2e';
-import { FillOutProfileInputModel } from '../../src/features/profile/api/models/input/fill-out-profile.model';
+import { FillOutProfileInputModel } from '../../src/features/user/api/models/input/fill-out-profile.model';
 import {
   constantsTesting,
   InputConstantsType,
 } from '../tools/utils/test-constants';
-import { EditProfileInputModel } from '../../src/features/profile/api/models/input/edit-profile.model';
+import { EditProfileInputModel } from '../../src/features/user/api/models/input/edit-profile.model';
 
 aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))('UserController', () => {
   let app: INestApplication;

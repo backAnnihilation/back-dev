@@ -1,11 +1,7 @@
-import { RoutingEnum } from '@shared/routing';
+import { RoutingEnum } from "../../../../../libs/shared/routing";
 
-import { BaseRouting } from './base-api.routing';
-
-export class SecurityRouting extends BaseRouting {
-  constructor() {
-    super(RoutingEnum.security);
-  }
+export class SecurityRouting {
+  constructor(private readonly baseUrl = RoutingEnum.security) {}
   getUserSessions = () => this.baseUrl;
   removeOtherSessions = () => this.baseUrl;
   removeSession = (deviceId: string) => `${this.baseUrl}/${deviceId}`;

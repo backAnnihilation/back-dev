@@ -28,7 +28,7 @@ export const ConfirmPasswordEndpoint = () =>
     TooManyRequestsApiResponse(),
   );
 
-class ConfirmPasswordDto {
+export class ConfirmPasswordDto {
   @PasswordDescription()
   newPassword: string;
 

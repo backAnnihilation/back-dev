@@ -1,8 +1,7 @@
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-
-import { applyAppSettings } from './core/config/app-settings';
-import { EnvironmentVariables } from './core/config/configuration';
+import { applyAppSettings } from '../core/config/app-settings';
+import { EnvironmentVariables } from '../core/config/configuration';
 import { AppModule } from './app.module';
 
 (async () => {

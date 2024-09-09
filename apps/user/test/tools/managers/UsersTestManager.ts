@@ -2,24 +2,22 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
 import * as request from 'supertest';
-
-import { DatabaseService } from '../../../src/core/db/prisma/prisma.service';
+import { DatabaseService } from '../../../core/db/prisma/prisma.service';
 import { SAViewType } from '../../../src/features/admin/api/models/user.view.models/userAdmin.view-type';
 import { JwtTokens } from '../../../src/features/auth/api/models/auth-input.models.ts/jwt.types';
 import { RecoveryPassDto } from '../../../src/features/auth/api/models/auth-input.models.ts/recovery.model';
 import { UserProfileType } from '../../../src/features/auth/api/models/auth.output.models/auth.output.models';
 import { AuthUserType } from '../../../src/features/auth/api/models/auth.output.models/auth.user.types';
 import { SecurityViewDeviceModel } from '../../../src/features/security/api/models/security.view.models/security.view.types';
-import { FillOutProfileInputModel } from '../../../src/features/profile/api/models/input/fill-out-profile.model';
+import { FillOutProfileInputModel } from '../../../src/features/user/api/models/input/fill-out-profile.model';
 import { SuperTestBody } from '../models/body.response.model';
 import { AuthUsersRouting } from '../routes/auth-users.routing';
 import { ProfileRouting } from '../routes/profile-user.routing';
 import { SAUsersRouting } from '../routes/sa-users.routing';
 import { SecurityRouting } from '../routes/security.routing';
-import { UserProfileViewModel } from '../../../src/features/profile/api/models/output/profile.view.model';
-import { EditProfileInputModel } from '../../../src/features/profile/api/models/input/edit-profile.model';
-
 import { BaseTestManager } from './BaseTestManager';
+import { UserProfileViewModel } from '../../../src/features/user/api/models/output/profile.view.model';
+import { EditProfileInputModel } from '../../../src/features/user/api/models/input/edit-profile.model';
 
 export class UsersTestManager extends BaseTestManager {
   protected readonly routing: AuthUsersRouting;

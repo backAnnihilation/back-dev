@@ -1,5 +1,4 @@
 import { UserAccount } from '@prisma/client';
-
 import { UserAccountViewModel } from './auth.output.models';
 
 export const getUserAccountViewModel = (

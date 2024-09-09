@@ -1,6 +1,5 @@
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
-
-import { EmailManager } from '../../../../core/managers/email-manager';
+import { EmailManager } from '../../../../../core/managers/email-manager';
 import { SendRecoveryMsgType } from '../../api/models/auth-input.models.ts/password-recovery.types';
 
 export class SendRecoveryMessageEvent {

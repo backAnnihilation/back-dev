@@ -1,16 +1,5 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
-import {
-  ApiBody,
-  ApiHeader,
-  ApiProperty,
-  ApiResponse,
-  ApiSecurity,
-} from '@nestjs/swagger';
-import {
-  emailMatches,
-  passwordMatch,
-} from '@shared/validation/input-constants';
-
+import { ApiBody, ApiHeader, ApiProperty, ApiResponse, ApiSecurity } from '@nestjs/swagger';
 import { AccessTokenResponseDto } from './shared/accessToken-response.dto';
 import { UnauthorizedViaPasswordApiResponse } from './shared/authorization.response';
 import { CaptchaHeader, CaptureUsing } from './shared/capture-using';
@@ -31,7 +20,8 @@ export const SignInEndpoint = () =>
     TooManyRequestsApiResponse(),
     CaptureUsing(),
     CaptchaHeader(),
-    ApiSecurity('captchaToken'),
+    ApiSecurity('captchaToken')
+
   );
 
 class SignInDto {
@@ -39,7 +29,7 @@ class SignInDto {
     description: 'User email',
     example: 'example@example.com',
     uniqueItems: true,
-    pattern: emailMatches.toString(),
+    pattern: '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$',
   })
   email: string;
 
@@ -47,7 +37,7 @@ class SignInDto {
     description: 'User password',
     example: 'password123',
     uniqueItems: true,
-    pattern: passwordMatch.toString(),
+    pattern: '^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)[a-zA-Z\\d]{8,}$',
   })
   password: string;
 }

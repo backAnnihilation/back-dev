@@ -3,11 +3,10 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { TestingModuleBuilder } from '@nestjs/testing';
 import { v4 as uuidv4 } from 'uuid';
-
-import { EnvironmentVariables } from '../../src/core/config/configuration';
-import { DatabaseService } from '../../src/core/db/prisma/prisma.service';
-import { EmailManager } from '../../src/core/managers/email-manager';
-import { ErrorField } from '../../src/core/utils/error-handler';
+import { EnvironmentVariables } from '../../core/config/configuration';
+import { DatabaseService } from '../../core/db/prisma/prisma.service';
+import { EmailManager } from '../../core/managers/email-manager';
+import { ErrorField } from '../../core/utils/error-handler';
 import { JwtTokens } from '../../src/features/auth/api/models/auth-input.models.ts/jwt.types';
 import { AuthService } from '../../src/features/auth/application/auth.service';
 import { CaptureGuard } from '../../src/features/auth/infrastructure/guards/validate-capture.guard';
@@ -298,7 +297,7 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.AUTH))('AuthController', () => {
     describe('refresh-token', () => {
       beforeAll(async () => {
         const createdUserData = usersTestManager.createInputData({});
-        const admin = await usersTestManager.createSA(createdUserData);
+        let admin = await usersTestManager.createSA(createdUserData);
 
         const { accessToken, refreshToken } =
           await usersTestManager.signIn(admin);

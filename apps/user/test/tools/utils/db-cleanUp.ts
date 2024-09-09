@@ -1,4 +1,4 @@
-import { DatabaseService } from '../../../src/core/db/prisma/prisma.service';
+import { DatabaseService } from '../../../core/db/prisma/prisma.service';
 
 export const databaseCleanUp = async (dbService: DatabaseService) => {
   await dbService.$transaction([

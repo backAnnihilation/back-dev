@@ -2,7 +2,7 @@ import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-import { EnvironmentVariables } from '@user/core/config/configuration';
+import { EnvironmentVariables } from '../../../../../core/config/configuration';
 
 @Injectable()
 export class SetUserIdGuard implements CanActivate {

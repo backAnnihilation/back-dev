@@ -1,14 +1,16 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { PaginationViewModel } from '@shared/sorting-base-filter';
 import * as request from 'supertest';
-
+import { BaseTestManager } from './BaseTestManager';
+import { ErrorsMessages } from '../../../core/utils/error-handler';
+import { PaginationViewModel } from '../../../core/utils/sorting-base-filter';
 import { SAQueryFilter } from '../../../src/features/admin/api/models/outputSA.models.ts/query-filters';
 import { SAViewType } from '../../../src/features/admin/api/models/user.view.models/userAdmin.view-type';
 import { AuthUserType } from '../../../src/features/auth/api/models/auth.output.models/auth.user.types';
+import {
+  AuthConstantsType,
+  constantsForDataTesting,
+} from '../utils/test-constants';
 import { SAUsersRouting } from '../routes/sa-users.routing';
-import { AuthConstantsType } from '../utils/test-constants';
-
-import { BaseTestManager } from './BaseTestManager';
 
 export class SATestManager extends BaseTestManager {
   protected readonly constants: AuthConstantsType;
@@ -16,6 +18,7 @@ export class SATestManager extends BaseTestManager {
   constructor(protected readonly app: INestApplication) {
     super(app);
     this.routing = new SAUsersRouting();
+    this.constants = constantsForDataTesting.auth;
   }
 
   createInputData(field?: AuthUserType | any, i: number = 1): AuthUserType {

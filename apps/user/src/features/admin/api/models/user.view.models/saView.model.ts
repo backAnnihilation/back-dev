@@ -1,5 +1,4 @@
 import { UserAccount } from '@prisma/client';
-
 import { SAViewType } from './userAdmin.view-type';
 
 export const getSAViewModel = (user: UserAccount): SAViewType => ({

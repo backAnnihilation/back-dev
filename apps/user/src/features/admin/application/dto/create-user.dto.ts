@@ -1,7 +1,6 @@
 import { Provider } from '@prisma/client';
 import { add } from 'date-fns';
 import { v4 as uuidv4 } from 'uuid';
-
 import { CreateOAuthUserCommand } from '../../../auth/application/use-cases/create-oauth-user.use-case';
 
 export class UserModelDTO {

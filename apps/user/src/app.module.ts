@@ -1,17 +1,16 @@
 import { Module } from '@nestjs/common';
+import { ConfigurationModule } from '../core/config/app-config.module';
 import { CqrsModule } from '@nestjs/cqrs';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { SecurityController } from './features/security/api/security.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-
-import { SecurityController } from './features/security/api/security.controller';
-import { ConfigurationModule } from './core/config/app-config.module';
 import { AuthController } from './features/auth/api/controllers/auth.controller';
-import { PrismaModule } from './core/db/prisma/prisma.module';
+import { PrismaModule } from '../core/db/prisma/prisma.module';
 import { SAController } from './features/admin/api/controllers/sa.controller';
-import { providers } from './core/settings/app-providers';
-import { UserProfilesController } from './features/profile/api/profiles.controller';
-import { PostModule } from './features/post/post.module';
+import { providers } from '../core/settings/app-providers';
+import { UserProfilesController } from './features/user/api/profiles.controller';
+import { UserPostsController } from './features/post/api/posts.controller';
 
 @Module({
   imports: [
@@ -19,7 +18,6 @@ import { PostModule } from './features/post/post.module';
     PassportModule,
     ConfigurationModule,
     CqrsModule,
-    PostModule,
     PrismaModule,
     ThrottlerModule.forRoot([{ limit: 20, ttl: Math.pow(20, 3) }]),
   ],
@@ -28,6 +26,7 @@ import { PostModule } from './features/post/post.module';
     AuthController,
     SAController,
     UserProfilesController,
+    UserPostsController,
   ],
   providers,
 })

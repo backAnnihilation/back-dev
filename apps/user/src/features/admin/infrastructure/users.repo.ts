@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, UserAccount } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
-import { BaseRepository } from '@user/core/db/base.repository';
-import { DatabaseService } from '@user/core/db/prisma/prisma.service';
+import { BaseRepository } from '../../../../core/db/base.repository';
+import { DatabaseService } from '../../../../core/db/prisma/prisma.service';
 
 @Injectable()
 export class UsersRepository extends BaseRepository {

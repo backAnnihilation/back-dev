@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
-
-import { DatabaseService } from '../../../../core/db/prisma/prisma.service';
+import { DatabaseService } from '../../../../../core/db/prisma/prisma.service';
 import { SAQueryFilter } from '../models/outputSA.models.ts/query-filters';
 import { getSAViewModel } from '../models/user.view.models/saView.model';
 import { SAViewType } from '../models/user.view.models/userAdmin.view-type';

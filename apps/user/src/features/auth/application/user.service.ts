@@ -1,10 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { UserAccount } from '@prisma/client';
-
-import {
-  LayerNoticeInterceptor,
-  GetErrors,
-} from '../../../../../../libs/shared/notification';
+import { LayerNoticeInterceptor, GetErrors } from '../../../../../../libs/shared/notification';
 
 export const userValidationOptions = {
   isConfirmed: true,

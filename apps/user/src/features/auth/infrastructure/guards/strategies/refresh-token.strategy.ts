@@ -3,9 +3,8 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-
-import { EnvironmentVariables } from '../../../../../core/config/configuration';
-import { StrategyType } from '../../../../../core/infrastructure/guards/models/strategy.enum';
+import { EnvironmentVariables } from '../../../../../../core/config/configuration';
+import { StrategyType } from '../../../../../../core/infrastructure/guards/models/strategy.enum';
 import { SecurityRepository } from '../../../../security/infrastructure/security.repository';
 import { IPayload } from '../../../api/models/auth-input.models.ts/jwt.types';
 

@@ -1,7 +1,6 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 import { ApiOperation, ApiResponse, ApiSecurity } from '@nestjs/swagger';
-
-import { UnauthorizedViaTokenApiResponse } from '../../../auth/api/swagger/shared/authorization.response';
+import { UnauthorizedViaTokenApiResponse } from './shared/authorization.response';
 
 export const TerminateOtherUserSessionsEndpoint = () =>
   applyDecorators(

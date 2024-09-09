@@ -5,7 +5,6 @@ import {
   ApiProperty,
   ApiResponse,
 } from '@nestjs/swagger';
-
 import { UnauthorizedViaTokenApiResponse } from './shared/authorization.response';
 
 export const GetProfileEndpoint = () =>
@@ -23,8 +22,8 @@ export const GetProfileEndpoint = () =>
     ApiBearerAuth('accessToken'),
   );
 
-class UserProfileResponseDto {
-  @ApiProperty({})
+export class UserProfileResponseDto {
+  @ApiProperty()
   email: string;
   @ApiProperty()
   userName: string;

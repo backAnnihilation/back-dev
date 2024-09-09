@@ -1,6 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-
-import { BcryptAdapter } from '../../../../core/adapters/bcrypt.adapter';
+import { BcryptAdapter } from '../../../../../core/adapters/bcrypt.adapter';
 import { ResponseIdType } from '../../api/models/outputSA.models.ts/user-models';
 import { UsersRepository } from '../../infrastructure/users.repo';
 import { CreateSACommand } from '../commands/create-sa.command';
@@ -20,7 +19,7 @@ export class CreateSAUseCase implements ICommandHandler<CreateSACommand> {
   async execute(
     command: CreateSACommand,
   ): Promise<LayerNoticeInterceptor<ResponseIdType>> {
-    const notice = new LayerNoticeInterceptor<ResponseIdType>();
+    let notice = new LayerNoticeInterceptor<ResponseIdType>();
 
     const { email, userName, password } = command.createData;
     const theSameUser = await this.usersRepo.getUserByNameOrEmail(

@@ -1,7 +1,6 @@
 import { HttpServer, INestApplication } from '@nestjs/common';
-import { SortDirection } from '@shared/sorting-base-filter';
-
 import { AuthConstantsType, constantsTesting } from '../utils/test-constants';
+import { SortDirection } from '../../../../../libs/shared/sorting-base-filter';
 
 export class BaseTestManager {
   protected readonly constants: AuthConstantsType;

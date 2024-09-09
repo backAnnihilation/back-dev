@@ -1,5 +1,4 @@
 import { UserSession } from '@prisma/client';
-
 import { SecurityViewDeviceModel } from './security.view.types';
 
 export const getSessionViewModel = (

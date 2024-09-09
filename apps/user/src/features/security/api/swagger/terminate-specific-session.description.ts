@@ -5,8 +5,7 @@ import {
   ApiResponse,
   ApiSecurity,
 } from '@nestjs/swagger';
-
-import { UnauthorizedViaTokenApiResponse } from '../../../auth/api/swagger/shared/authorization.response';
+import { UnauthorizedViaTokenApiResponse } from './shared/authorization.response';
 
 export const DeleteSessionEndpoint = () =>
   applyDecorators(

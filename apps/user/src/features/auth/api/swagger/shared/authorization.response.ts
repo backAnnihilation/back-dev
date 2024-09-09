@@ -1,5 +1,5 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
-import { ApiBasicAuth, ApiResponse } from '@nestjs/swagger';
+import { HttpStatus } from '@nestjs/common';
+import { ApiResponse } from '@nestjs/swagger';
 
 export const UnauthorizedViaPasswordApiResponse = () =>
   ApiResponse({
@@ -12,12 +12,3 @@ export const UnauthorizedViaTokenApiResponse = () =>
     status: HttpStatus.UNAUTHORIZED,
     description: 'Unauthorized - Invalid or missing token',
   });
-
-export const BasicAuthApi = () =>
-  applyDecorators(
-    ApiBasicAuth(),
-    ApiResponse({
-      status: HttpStatus.UNAUTHORIZED,
-      description: 'Unauthorized - Basic Auth',
-    }),
-  );

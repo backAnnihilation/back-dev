@@ -1,11 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-
 import { SecurityRepository } from '../../../security/infrastructure/security.repository';
+import { UpdateIssuedTokenCommand } from './commands/update-Issued-token.command';
 import { AuthService } from '../auth.service';
 import { JwtTokens } from '../../api/models/auth-input.models.ts/jwt.types';
 import { LayerNoticeInterceptor } from '../../../../../../../libs/shared/notification';
-
-import { UpdateIssuedTokenCommand } from './commands/update-Issued-token.command';
 
 @CommandHandler(UpdateIssuedTokenCommand)
 export class UpdateIssuedTokenUseCase

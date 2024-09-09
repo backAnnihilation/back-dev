@@ -1,10 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-
 import { AuthRepository } from '../../infrastructure/auth.repository';
 import { UserService, userValidationOptions } from '../user.service';
-import { LayerNoticeInterceptor } from '../../../../../../../libs/shared/notification';
-
 import { ConfirmEmailCommand } from './commands/confirm-email.command';
+import { LayerNoticeInterceptor } from '../../../../../../../libs/shared/notification';
 
 @CommandHandler(ConfirmEmailCommand)
 export class ConfirmRegistrationUseCase

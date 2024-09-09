@@ -1,24 +1,15 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
-import {
-  ApiBody,
-  ApiOperation,
-  ApiProperty,
-  ApiResponse,
-} from '@nestjs/swagger';
-import {
-  emailMatches,
-  nameInitialsMatch,
-} from '@shared/validation/input-constants';
-
-import { SingUpErrorResponse } from '../../../../auth/api/swagger/shared/error-message-response';
-import { PasswordDescription } from '../../../../auth/api/swagger/shared/password-description';
-import { BasicAuthApi } from '../../../../auth/api/swagger/shared/authorization.response';
+import { ApiBasicAuth, ApiBody, ApiOperation, ApiProperty, ApiResponse, ApiSecurity } from "@nestjs/swagger";
+import { BasicAuthApi, UnauthorizedViaTokenApiResponse } from "./shared/authorization.response";
+import { PasswordDescription } from "../../../../auth/api/swagger/shared/password-description";
+import { SingUpErrorResponse } from "../../../../auth/api/swagger/shared/error-message-response";
 
 export const CreateSaUserEndpoint = () =>
   applyDecorators(
     ApiOperation({
       summary: 'Create user',
-      description: 'Create new user. Super-admin API',
+      description:
+        'Create new user. Super-admin API',
     }),
     ApiBody({ required: true, type: CreateUserDto }),
     ApiResponse({
@@ -29,13 +20,14 @@ export const CreateSaUserEndpoint = () =>
     BasicAuthApi(),
   );
 
+
 class CreateUserDto {
   @ApiProperty({
     required: true,
     example: 'example@mail.com',
     format: 'Email must be a valid email address',
     description: 'must be unique',
-    pattern: emailMatches.toString(),
+    pattern: '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$',
   })
   email: string;
 
@@ -50,7 +42,7 @@ class CreateUserDto {
     description: 'must be unique',
     format:
       'Username should consist of letters, numbers, underscores, or dashes',
-    pattern: nameInitialsMatch.toString(),
+    pattern: '^[a-zA-Z0-9_-]+$',
   })
   userName: string;
 }

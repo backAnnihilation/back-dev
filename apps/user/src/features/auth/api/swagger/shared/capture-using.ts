@@ -6,9 +6,8 @@ export const CaptureUsing = () =>
     description: 'Sign in user with reCAPTCHA validation to prevent bots.',
   });
 
-export const CaptchaHeader = () =>
-  ApiHeader({
-    name: 'captchaToken',
-    description: 'Google reCAPTCHA token for validating the request',
-    required: true,
-  });
+export const CaptchaHeader = () => ApiHeader({
+  name: 'captchaToken',
+  description: 'Google reCAPTCHA token for validating the request',
+  required: true,
+})

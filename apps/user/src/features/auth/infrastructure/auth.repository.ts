@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, Provider, UserAccount } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
-import { DatabaseService } from '@user/core/db/prisma/prisma.service';
-
+import { DatabaseService } from '../../../../core/db/prisma/prisma.service';
 import { UpdatePasswordDto } from '../api/models/auth-input.models.ts/password-recovery.types';
 import {
   UpdateConfirmationCodeDto,

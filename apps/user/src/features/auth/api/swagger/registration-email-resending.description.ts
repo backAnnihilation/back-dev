@@ -3,11 +3,8 @@ import {
   ApiBody,
   ApiOperation,
   ApiProperty,
-  ApiResponse,
-  ApiSecurity,
+  ApiResponse, ApiSecurity,
 } from '@nestjs/swagger';
-import { emailMatches } from '@shared/validation/input-constants';
-
 import { TooManyRequestsApiResponse } from './shared/too-many-requests-api-response';
 import { CaptchaHeader } from './shared/capture-using';
 
@@ -39,7 +36,7 @@ class EmailBodyDto {
     required: true,
     example: 'example@mail.com',
     description: 'Email must be a valid email address',
-    pattern: emailMatches.toString(),
+    pattern: '^[\\w-\\.]+@([\\w-]+\\.)+[\\w-]{2,4}$',
   })
   email: string;
 }

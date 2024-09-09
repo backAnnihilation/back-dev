@@ -1,14 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-
-import { BcryptAdapter } from '../../../../core/adapters/bcrypt.adapter';
+import { BcryptAdapter } from '../../../../../core/adapters/bcrypt.adapter';
 import { SecurityRepository } from '../../../security/infrastructure/security.repository';
 import { AuthRepository } from '../../infrastructure/auth.repository';
-import {
-  GetErrors,
-  LayerNoticeInterceptor,
-} from '../../../../../../../libs/shared/notification';
-
 import { UpdatePasswordCommand } from './commands/update-password.command';
+import { GetErrors, LayerNoticeInterceptor } from '../../../../../../../libs/shared/notification';
 
 @CommandHandler(UpdatePasswordCommand)
 export class UpdatePasswordUseCase

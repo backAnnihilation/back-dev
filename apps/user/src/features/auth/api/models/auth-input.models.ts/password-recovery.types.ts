@@ -1,5 +1,4 @@
 import { IsOptional, IsString, Matches } from 'class-validator';
-
 import { emailMatches } from '../../../../../../../../libs/shared/validation/input-constants';
 
 export type PasswordRecoveryType = {
