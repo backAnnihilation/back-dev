@@ -1,17 +1,19 @@
-// import { Injectable } from '@nestjs/common';
-// import { CommandBus } from '@nestjs/cqrs';
-// import { BaseCUDApiService } from '../../../../core/api/services/base-cud-api.service';
-// import { UserProfileViewModel } from '../../api/models/output/post.view.model';
-// import { ProfilesQueryRepo } from '../../api/query-repositories/profiles.query.repo';
-// import { EditProfileCommand } from '../use-cases/create-post.use-case';
-// import { FillOutProfileCommand } from '../use-cases/fill-out-profile.use-case';
+import { Injectable } from '@nestjs/common';
+import { CommandBus } from '@nestjs/cqrs';
+import { PostQueryRepo } from '../../api/query-repositories/post.query.repo';
+// import { EditPostCommand } from '../use-cases/edit-post.use-case';
+import { UserPostViewModel } from '../../api/models/output/post.view.model';
+import { DeletePostCommand } from '../use-cases/delete-post.use-case';
+import { CreatePostCommand } from '../use-cases/create-post.use-case';
+import { BaseCUDApiService } from '@file/core/api/services/base-cud-api.service';
+import { EditPostCommand } from '../use-cases/edit-post.use-case';
 
-// @Injectable()
-// export class UserProfilesApiService extends BaseCUDApiService<
-//   FillOutProfileCommand | EditProfileCommand,
-//   UserProfileViewModel
-// > {
-//   constructor(commandBus: CommandBus, queryRepo: ProfilesQueryRepo) {
-//     super(commandBus, queryRepo);
-//   }
-// }
+@Injectable()
+export class UserPostApiService extends BaseCUDApiService<
+EditPostCommand | DeletePostCommand | CreatePostCommand,
+UserPostViewModel
+> {
+  constructor(commandBus: CommandBus, queryRepo: PostQueryRepo) {
+    super(commandBus, queryRepo);
+  }
+}

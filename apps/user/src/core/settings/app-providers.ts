@@ -46,6 +46,12 @@ import { CaptureAdapter } from '../adapters/capture.adapter';
 import { EmailAdapter } from '../adapters/email.adapter';
 import { RMQAdapter } from '../adapters/rmq.adapter';
 import { EmailManager } from '../managers/email-manager';
+import { PostQueryRepo } from '../../features/post/api/query-repositories/post.query.repo';
+import { UserPostApiService } from '../../features/post/application/services/post-api.service';
+import { CreatePostUseCase } from '../../features/post/application/use-cases/create-post.use-case';
+import { EditPostUseCase } from '../../features/post/application/use-cases/edit-post.use-case';
+import { PostsRepository } from '../../features/post/infrastructure/posts.repo';
+import { DeletePostUseCase } from '../../features/post/application/use-cases/delete-post.use-case';
 
 const adapters: Provider[] = [
   BcryptAdapter,
@@ -70,6 +76,7 @@ export const providers: Provider[] = [
   LocalStrategy,
   CreateSAUseCase,
   UsersRepository,
+  PostsRepository,
   CaptureGuard,
   VerificationCredentialsUseCase,
   CreateUserSessionUseCase,
@@ -85,6 +92,7 @@ export const providers: Provider[] = [
   ConfirmRegistrationUseCase,
   AuthenticationApiService,
   UserProfilesApiService,
+  UserPostApiService,
   AccessTokenStrategy,
   RefreshTokenStrategy,
   GithubStrategy,
@@ -94,11 +102,15 @@ export const providers: Provider[] = [
   EmailNotificationOauthEventHandler,
   CreateOAuthUserUseCase,
   ProfilesQueryRepo,
+  PostQueryRepo,
   ProfilesRepository,
   FillOutProfileUseCase,
   EditProfileUseCase,
+  EditPostUseCase,
   ImageFilePipe,
   UserProfileService,
+  DeletePostUseCase,
+  CreatePostUseCase,
   // {
   //   provide: 'FILES_SERVICE',
   //   useFactory: (configService: ConfigService<RmqConfig>) => {

@@ -17,10 +17,12 @@ import {
   ClientProxyFactory,
 } from '@nestjs/microservices';
 import { RmqConfig } from '@config/rmq.config';
+// import { CreatePostUseCase } from 'apps/user/src/features/post/application/use-cases/create-post.use-case';
 
 export const providers: Provider[] = [
   FilesRepository,
   UploadFileUseCase,
+  // CreatePostUseCase,
   ApiKeyGuard,
   FilesScheduleService,
   FileExtractPipe,

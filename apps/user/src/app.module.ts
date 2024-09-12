@@ -11,6 +11,8 @@ import { SAController } from './features/admin/api/controllers/sa.controller';
 import { providers } from './core/settings/app-providers';
 import { UserProfilesController } from './features/profile/api/profiles.controller';
 import { PostModule } from './features/post/post.module';
+import { PostsController } from './features/post/api/post.controller';
+import { UserPostApiService } from './features/post/application/services/post-api.service';
 
 @Module({
   imports: [
@@ -27,6 +29,8 @@ import { PostModule } from './features/post/post.module';
     AuthController,
     SAController,
     UserProfilesController,
+    PostsController,
+    // UserPostApiService,
   ],
   providers,
 })
