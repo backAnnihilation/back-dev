@@ -81,7 +81,7 @@ export class UserProfilesController {
 
   @FillOutProfileEndpoint()
   @UseGuards(AccessTokenGuard)
-  @Post(UserNavigate.FillOutProfile)
+  @Post(UserNavigate.FillOutProfile) 
   async fillOutProfile(
     @UserPayload() userPayload: UserSessionDto,
     @Body() profileDto: FillOutProfileInputModel,

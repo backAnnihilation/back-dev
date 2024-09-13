@@ -10,11 +10,13 @@ import { PostQueryRepo } from './query-repositories/post.query.repo';
 import { UserPostViewModel } from './models/output/post.view.model';
 import { CreatePostInputModel } from './models/input/create-post.model';
 import { CreatePostCommand } from '../application/use-cases/create-post.use-case';
-// import { UserPostApiService } from '../application/services/user-api.service';
 import { UserPostApiService } from '../application/services/post-api.service';
 import { EditPostInputModel } from './models/input/edit-profile.model';
 import { EditPostCommand } from '../application/use-cases/edit-post.use-case';
 import { DeletePostCommand } from '../application/use-cases/delete-post.use-case';
+import { GetUserPostsEndpoint } from './swagger/get-posts.description';
+import { GetUserPostEndpoint } from './swagger/get-post.description';
+import { CreateUserPostEndpoint } from './swagger/create-post.description';
 
 @ApiTags(ApiTagsEnum.Posts)
 @Controller(RoutingEnum.posts) 
@@ -27,6 +29,7 @@ export class PostsController {
 
   // @Get(UserNavigate.GetProfile)
 
+  @GetUserPostsEndpoint()
   @Get()
   async getLastUserPosts(
   ): Promise<UserPostViewModel> {  
@@ -37,6 +40,7 @@ export class PostsController {
     return post;
   }
 
+  @GetUserPostEndpoint()
   @Get(":id")
   async getUserPost(
     @Param() postId: {id: string},
@@ -50,6 +54,7 @@ export class PostsController {
   }
 
     // @UseGuards(AccessTokenGuard)
+    @CreateUserPostEndpoint()
     @Post("create")
     async createPost(
       // @UserPayload() userPayload: UserSessionDto,
@@ -91,10 +96,6 @@ export class PostsController {
     @Param() postId: {id: string},
     // @UserPayload() userPayload: UserSessionDto,
   ) {
-
-    console.log("qqqqq")
-    console.log(postId)
-
     const command = new DeletePostCommand({
       userId: postId.id,
       postId: "1234567",
@@ -102,19 +103,4 @@ export class PostsController {
     return this.userPostApiService.updateOrDelete(command);
   }
 
-
-
-
-  // @HttpCode(HttpStatus.NO_CONTENT)
-  @Post()
-  @UseGuards(AccessTokenGuard)
-  async uploadProfilePhoto(
-    @UserPayload() userPayload: UserSessionDto,
-    image: FileType,
-  ): Promise<any> {
-    // return this.profileService.uploadProfilePhoto({
-    //   image,
-    //   userId: userPayload.userId,
-    // });
-  }
 }
