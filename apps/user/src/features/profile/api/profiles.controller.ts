@@ -60,7 +60,6 @@ export class UserProfilesController {
 
   @ApiExcludeEndpoint()
   @Post(UserNavigate.UploadPhoto)
-  // @HttpCode(HttpStatus.NO_CONTENT)
   @UseInterceptors(FileInterceptor('image'))
   @UseGuards(AccessTokenGuard)
   async uploadProfilePhoto(
@@ -73,10 +72,6 @@ export class UserProfilesController {
       userId: userPayload.userId,
     });
     return result.data;
-    // return this.profileService.uploadProfilePhoto({
-    //   image,
-    //   userId: userPayload.userId,
-    // });
   }
 
   @FillOutProfileEndpoint()

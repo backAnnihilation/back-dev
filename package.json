@@ -6,7 +6,7 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "prisma:deploy": "cd apps/user && npx prisma migrate deploy",
+    "prisma:deploy": "npx prisma migrate deploy --schema=./apps/user/prisma/schemas",
     "prisma:migrate": "node ./apps/user/prisma/tools/add-migration.js",
     "prisma:generate": "npx prisma generate --schema=./apps/user/prisma/schemas",
     "prisma:studio": "npx prisma studio --schema=./apps/user/prisma/schemas",
