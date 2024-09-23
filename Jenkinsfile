@@ -29,23 +29,23 @@ pipeline {
                        nvm use --lts
                        yarn install
                        yarn run prisma:generate
-                       yarn test
+                       yarn test:user:unit
                     '''
                 }
             }
         }
-        // stage('e2e tests') {
-        //     steps {
-        //         script {
-        //             sh '''
-        //                export NVM_DIR="$HOME/.nvm"
-        //                [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-        //                nvm use --lts
-        //                yarn test:e2e
-        //             '''
-        //         }
-        //     }
-        // }
+        stage('e2e tests') {
+            steps {
+                script {
+                    sh '''
+                       export NVM_DIR="$HOME/.nvm"
+                       [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+                       nvm use --lts
+                       yarn test:user:e2e
+                    '''
+                }
+            }
+        }
         stage('Build docker image') {
             steps {
                 echo "Build image started..."

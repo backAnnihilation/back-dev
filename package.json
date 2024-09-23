@@ -30,7 +30,7 @@
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e:local": "sh set-env-dev.sh sh -c 'pnpm test:e2e'",
     "test:user:e2e": "jest --config apps/user/test/jest-e2e.json --runInBand --watchAll",
-    "test:user:unit": "jest --config apps/user/jest-user.unit.json --watch",
+    "test:user:unit": "jest --config apps/user/jest-user.unit.json --watchAll",
     "test:lib": "jest --config ./libs/jest-lib.json --watch"
   },
   "dependencies": {
