@@ -40,9 +40,6 @@ export class EnvironmentVariables {
   DATABASE_LOCAL_URL: string;
 
   @IsOptional()
-  API_KEY: string;
-
-  @IsOptional()
   AWS_REGION: string;
   @IsOptional()
   AWS_ACCESS_KEY_ID: string;
