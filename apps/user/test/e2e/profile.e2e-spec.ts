@@ -148,7 +148,7 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
       });
     });
 
-    describe.only('profile-photo-upload', () => {
+    describe('profile-photo-upload', () => {
       afterAll(async () => {
         await dbCleaner();
       });
