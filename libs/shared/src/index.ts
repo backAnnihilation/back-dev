@@ -1,6 +1,11 @@
 // rmq
 export * from './rmq/rmq.module';
 export * from './rmq/rmq.service';
+export * from './rmq/rmq.config';
+
+// tcp
+export * from './tcp/tcp.module';
+export * from './tcp/tcp.service';
 
 // api/services
 export * from './api/services/base-cud-api.service';

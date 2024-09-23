@@ -62,6 +62,11 @@ export class EnvironmentVariables {
   @IsOptional()
   RMQ_FILES_QUEUE: string;
 
+  @IsNumber()
+  TCP_PORT: number;
+  @IsOptional()
+  TCP_HOST: string;
+
   @IsEnum(Storage)
   STORAGE: Storage;
 

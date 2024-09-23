@@ -3,7 +3,13 @@ import { CqrsModule } from '@nestjs/cqrs';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { JwtModule } from '@nestjs/jwt';
 import { PassportModule } from '@nestjs/passport';
-import { QUEUE_NAME, RmqModule } from '@app/shared';
+import {
+  QUEUE_NAME,
+  QUEUE_TOKEN,
+  RmqModule,
+  SERVICE_TOKEN,
+  TcpModule,
+} from '@app/shared';
 import { SecurityController } from './features/security/api/security.controller';
 import { ConfigurationModule } from './core/config/app-config.module';
 import { AuthController } from './features/auth/api/controllers/auth.controller';
@@ -17,6 +23,7 @@ import { PostsController } from './features/post/api/controllers/posts.controlle
   imports: [
     JwtModule.register({}),
     RmqModule.register({ name: QUEUE_NAME.FILES }),
+    TcpModule.register({ name: SERVICE_TOKEN.FILES }),
     ThrottlerModule.forRoot([{ limit: 20, ttl: Math.pow(20, 3) }]),
     PassportModule,
     ConfigurationModule,

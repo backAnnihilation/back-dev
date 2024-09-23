@@ -21,6 +21,7 @@
     "paths": {
       "@app/shared": ["libs/shared/src/."],
       "@app/utils": ["libs/shared/utils/."],
+      "@box/asshole": ["libs/shared/utils/."],
       "@models/*": ["libs/shared/models/*"],
       "@config/*": ["libs/shared/config/*"],
       "@user/core/*": ["apps/user/src/core/*"],

@@ -10,8 +10,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SchedulerRegistry, CronExpression } from '@nestjs/schedule';
 import { CronJob } from 'cron';
-
-import { AwsConfigType } from '../../../../core/configuration/configuration';
+import { AwsConfigType } from '@file/core/configuration/configuration';
 
 @Injectable()
 export class FilesScheduleService {

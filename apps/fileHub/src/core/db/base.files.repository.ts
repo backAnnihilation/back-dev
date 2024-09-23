@@ -1,5 +1,5 @@
-import { Model, Document } from 'mongoose';
 import { OutputId } from '@app/shared';
+import { Document, Model } from 'mongoose';
 
 export class BaseRepository<T extends Document> {
   constructor(private readonly model: Model<T>) {}
@@ -33,4 +33,5 @@ export class BaseRepository<T extends Document> {
       return false;
     }
   }
+
 }

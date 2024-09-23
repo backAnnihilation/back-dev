@@ -22,4 +22,7 @@ export class RmqService {
     const originalMessage = context.getMessage();
     channel.ack(originalMessage);
   }
+
+  getRetryCount = (originalMessage: Record<string, any>) =>
+    originalMessage?.properties?.headers?.['x-retry-count'] || 0;
 }

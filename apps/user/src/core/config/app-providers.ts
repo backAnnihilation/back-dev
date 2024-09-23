@@ -39,11 +39,6 @@ import { CreateUserSessionUseCase } from '../../features/security/application/us
 import { DeleteActiveSessionUseCase } from '../../features/security/application/use-cases/delete-active-session.use-case';
 import { DeleteOtherUserSessionsUseCase } from '../../features/security/application/use-cases/delete-other-user-sessions.use-case';
 import { SecurityRepository } from '../../features/security/infrastructure/security.repository';
-import { AxiosAdapter } from '../adapters/axios.adapter';
-import { BcryptAdapter } from '../adapters/bcrypt.adapter';
-import { CaptureAdapter } from '../adapters/capture.adapter';
-import { EmailAdapter } from '../adapters/email.adapter';
-import { RMQAdapter } from '../adapters/rmq.adapter';
 import { EmailManager } from '../managers/email-manager';
 import { PostCudApiService } from '../../features/post/application/services/post-cud-api.service';
 import { PostQueryRepository } from '../../features/post/api/query-repositories/post.query.repository';
@@ -52,6 +47,14 @@ import { DeletePostUseCase } from '../../features/post/application/use-cases/del
 import { CreatePostUseCase } from '../../features/post/application/use-cases/create-post.use-case';
 import { PostsRepository } from '../../features/post/infrastructure/posts.repository';
 import { AuthService } from '../../features/auth/application/services/auth.service';
+import {
+  AxiosAdapter,
+  BcryptAdapter,
+  CaptureAdapter,
+  EmailAdapter,
+  RMQAdapter,
+  TcpAdapter,
+} from '../adapters';
 
 const adapters: Provider[] = [
   BcryptAdapter,
@@ -59,6 +62,7 @@ const adapters: Provider[] = [
   EmailAdapter,
   RMQAdapter,
   AxiosAdapter,
+  TcpAdapter,
 ];
 
 export const providers: Provider[] = [

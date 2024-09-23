@@ -28,19 +28,3 @@ export class BaseEventsApiService<
     return responseModel as Promise<TViewModel>;
   }
 }
-
-// export class BaseEventsApiService<TCommand, TViewModel> {
-//   constructor(
-//     private readonly baseCUDApiService: BaseCUDApiService<TCommand, TViewModel>,
-//     private readonly rmqService: RmqService,
-//   ) {}
-
-//   async uploadImage(
-//     command: TCommand,
-//     context: RmqContext,
-//   ): Promise<TViewModel> {
-//     const responseModel = await this.baseCUDApiService.handleCommand(command);
-//     this.rmqService.ack(context);
-//     return responseModel as Promise<TViewModel>;
-//   }
-// }

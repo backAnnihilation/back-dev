@@ -16,6 +16,7 @@ import { ProfilesQueryRepository } from '../../features/file/api/profile-image.q
 import { FilesApiService } from '../../features/file/application/services/file.base.service';
 import { PostsApiService } from '../../features/file/application/services/posts-api.service';
 import { ProfilesApiService } from '../../features/file/application/services/profiles-api.service';
+import { ValidatePayloadPipe } from '../../features/file/infrastructure/pipes/input-data-validate.pipe';
 
 export const providers: Provider[] = [
   PostsRepository,

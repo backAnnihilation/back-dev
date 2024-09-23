@@ -7,9 +7,13 @@ import { lastValueFrom } from 'rxjs';
 export class RMQAdapter {
   constructor(@Inject(FILES_SERVICE) private rmqClient: ClientProxy) {}
 
-  async sendMessage(payload: any, command: EVENT_COMMANDS): Promise<any> {
+  async sendMessage(payload: any, command: EVENT_COMMANDS | any): Promise<any> {
     try {
-      return await lastValueFrom(this.rmqClient.send(command, payload));
+      const response = await lastValueFrom(
+        this.rmqClient.send(command, payload),
+      );
+      console.log({ response });
+      return response;
     } catch (error) {
       console.log(`Send message to file service corrupted with error:`, error);
     }

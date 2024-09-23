@@ -76,6 +76,11 @@ export class EnvironmentVariables {
   @IsOptional()
   RMQ_ROUTING_KEY_EMAIL: string;
 
+  @IsNumber()
+  TCP_PORT: number;
+  @IsOptional()
+  TCP_HOST: string;
+
   @IsEnum(Environment)
   ENV: Environment;
 }
