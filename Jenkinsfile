@@ -33,7 +33,7 @@ pipeline {
                 //        yarn test:user:unit
                 //     '''
                 // }
-                echo "unit tests are completed"
+                echo "unit tests complited"
 
             }
         }
@@ -50,7 +50,7 @@ pipeline {
                     //     yarn test:user:e2e --ci
                     //     '''
                     // }
-                echo "e2e tests are acomplished"
+                echo "e2e tests complited"
             }
         }
         stage('Build docker image') {
