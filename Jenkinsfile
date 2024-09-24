@@ -40,16 +40,17 @@ pipeline {
         stage('e2e tests') {
             steps {
                 echo "e2e tests in progress..."
-                script {
-                    sh '''
-                       export NVM_DIR="$HOME/.nvm"
-                       [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
-                       nvm use --lts
-                       yarn install
-                       yarn run prisma:generate
-                       yarn test:user:e2e
-                    '''
-                }
+                    script {
+                        sh '''
+                        export NVM_DIR="$HOME/.nvm"
+                        [ -s "$NVM_DIR/nvm.sh" ] && . "$NVM_DIR/nvm.sh"
+                        nvm use --lts
+                        yarn install
+                        yarn run prisma:generate
+                        yarn test:user:e2e
+                        '''
+                    }
+                echo "e2e tests are acomplished"
             }
         }
         stage('Build docker image') {
