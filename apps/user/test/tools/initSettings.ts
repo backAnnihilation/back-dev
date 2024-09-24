@@ -4,7 +4,7 @@ import { print } from '@app/utils';
 import { AppModule } from '../../src/app.module';
 import { applyAppSettings } from '../../src/core/config/app-settings';
 import { EnvironmentVariables } from '../../src/core/config/configuration';
-import { EmailManager } from '../../src/core/managers/email-manager';
+import { EmailManager } from '../../src/core/managers/email.manager';
 import { databaseService } from '../setupTests.e2e';
 import { UsersTestManager } from './managers/UsersTestManager';
 import { EmailManagerMock } from './mock/email-manager.mock';

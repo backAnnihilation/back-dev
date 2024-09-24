@@ -8,16 +8,17 @@ import {
 } from '@app/shared';
 import { Injectable } from '@nestjs/common';
 import { AxiosAdapter } from '@user/core/adapters/axios.adapter';
-import { RMQAdapter } from '@user/core/adapters/rmq.adapter';
 import { UploadFileDto } from '../../api/models/input/upload-file-type.model';
 import { ProfilesRepository } from '../../infrastructure/profiles.repository';
+import { TransportManager } from '@user/core/managers/transport.manager';
+import { Transport } from '@nestjs/microservices';
 
 @Injectable()
 export class UserProfileService {
   constructor(
     private resendAdapter: AxiosAdapter,
     private profilesRepo: ProfilesRepository,
-    private rmqAdapter: RMQAdapter,
+    private transportManager: TransportManager,
   ) {}
 
   // async uploadProfilePhoto(
@@ -60,7 +61,11 @@ export class UserProfileService {
     };
 
     const commandName = EVENT_COMMANDS.PROFILE_IMAGE_UPLOAD;
-    const result = await this.rmqAdapter.sendMessage(imagePayload, commandName);
+    const result = await this.transportManager.sendMessage(
+      Transport.TCP,
+      commandName,
+      imagePayload,
+    );
 
     if (!result) {
       notice.addError(

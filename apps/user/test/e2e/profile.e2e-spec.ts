@@ -17,7 +17,7 @@ import { EditProfileInputModel } from '../../src/features/profile/api/models/inp
 import { TestingModuleBuilder } from '@nestjs/testing';
 import { CaptureGuard } from '../../src/features/auth/infrastructure/guards/validate-capture.guard';
 import { mockedCaptureGuard } from '../tools/mock/capture-guard.mock';
-import { RMQAdapter } from '../../src/core/adapters';
+import { RmqAdapter } from '../../src/core/adapters';
 import { RmqAdapterMocked } from '../tools/mock/rmq-adapter.mock';
 import { ImageNames } from '../tools/models/image-names.enum';
 
@@ -35,7 +35,7 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
           moduleBuilder
             .overrideGuard(CaptureGuard)
             .useValue(mockedCaptureGuard),
-        // .overrideProvider(RMQAdapter)
+        // .overrideProvider(RmqAdapter)
         // .useValue(RmqAdapterMocked),
       );
       app = testSettings.app;

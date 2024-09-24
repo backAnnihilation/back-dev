@@ -1,16 +1,16 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import {
-  ImageType,
-  MediaType,
-  LayerNoticeInterceptor,
-  OutputId,
   EVENT_COMMANDS,
-  EVENT_NAME,
+  ImageType,
+  LayerNoticeInterceptor,
+  MediaType,
+  OutputId,
 } from '@app/shared';
-import { RMQAdapter } from '@user/core/adapters/rmq.adapter';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { TransportManager } from '@user/core/managers/transport.manager';
 import { ICreatePostCommand } from '../../api/models/input/create-post.model';
-import { CreatePostDTO } from '../dto/create-post.dto';
 import { PostsRepository } from '../../infrastructure/posts.repository';
+import { CreatePostDTO } from '../dto/create-post.dto';
+import { Transport } from '@nestjs/microservices';
 
 export class CreatePostCommand {
   constructor(public postDto: ICreatePostCommand) {}
@@ -21,45 +21,50 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
   private location = this.constructor.name;
   constructor(
     private postRepo: PostsRepository,
-    private rmqAdapter: RMQAdapter,
+    private transportManager: TransportManager,
   ) {}
 
   async execute(
     command: CreatePostCommand,
   ): Promise<LayerNoticeInterceptor<OutputId>> {
-    // ): Promise<any> {
-    const notice = new LayerNoticeInterceptor<null | OutputId>();
+    {
+      const notice = new LayerNoticeInterceptor<null | OutputId>();
 
-    const { userId, description, image } = command.postDto;
+      const { userId, description, image } = command.postDto;
 
-    const imagePayload = {
-      fileFormat: MediaType.IMAGE,
-      fileType: ImageType.MAIN,
-      image,
-      userId,
-    };
+      const imagePayload = {
+        fileFormat: MediaType.IMAGE,
+        fileType: ImageType.MAIN,
+        image,
+        userId,
+      };
 
-    const commandName = EVENT_COMMANDS.POST_CREATED;
-    const result = await this.rmqAdapter.sendMessage(imagePayload, commandName);
-
-    if (!result) {
-      notice.addError(
-        `Image wasn't uploaded`,
-        this.location,
-        notice.errorCodes.InternalServerError,
+      const commandName = EVENT_COMMANDS.POST_CREATED;
+      const result = await this.transportManager.sendMessage(
+        Transport.RMQ,
+        commandName,
+        imagePayload,
       );
+
+      if (!result) {
+        notice.addError(
+          `Image wasn't uploaded`,
+          this.location,
+          notice.errorCodes.InternalServerError,
+        );
+        return notice;
+      }
+
+      const postDto = new CreatePostDTO({
+        description,
+        userId,
+        imageUrl: result.url,
+        imageId: result.postId,
+      });
+
+      await this.postRepo.create(postDto);
+
       return notice;
     }
-
-    const postDto = new CreatePostDTO({
-      description,
-      userId,
-      imageUrl: result.url,
-      imageId: result.postId,
-    });
-
-    await this.postRepo.create(postDto);
-
-    return notice;
   }
 }

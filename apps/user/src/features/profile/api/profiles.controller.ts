@@ -38,7 +38,7 @@ import { ProfilesQueryRepo } from './query-repositories/profiles.query.repo';
 import { EditProfileEndpoint } from './swagger/edit-profile.description';
 import { FillOutProfileEndpoint } from './swagger/fill-out-profile.description';
 import { GetUserProfileEndpoint } from './swagger/get-profile.description';
-import { RMQAdapter, TcpAdapter } from '@user/core/adapters';
+import { RmqAdapter, TcpAdapter } from '@user/core/adapters';
 
 @ApiTags(ApiTagsEnum.Profiles)
 @Controller(RoutingEnum.profiles)
@@ -48,7 +48,7 @@ export class UserProfilesController {
     private profilesQueryRepo: ProfilesQueryRepo,
     private profileService: UserProfileService,
     private tcpAdapter: TcpAdapter,
-    private rmqAdapter: RMQAdapter
+    private rmqAdapter: RmqAdapter,
   ) {}
 
   @GetUserProfileEndpoint()
@@ -111,7 +111,7 @@ export class UserProfilesController {
 
   @Get('tcp')
   async test() {
-    this.tcpAdapter.sendMessage()
+    // this.tcpAdapter.sendMessage();
     // this.rmqAdapter.sendMessage({data: 'hello'}, 'tcp-data')
   }
 }

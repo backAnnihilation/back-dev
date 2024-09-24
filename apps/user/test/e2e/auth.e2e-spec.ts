@@ -4,7 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import { TestingModuleBuilder } from '@nestjs/testing';
 import { v4 as uuidv4 } from 'uuid';
 import { EnvironmentVariables } from '../../src/core/config/configuration';
-import { EmailManager } from '../../src/core/managers/email-manager';
+import { EmailManager } from '../../src/core/managers/email.manager';
 import { JwtTokens } from '../../src/features/auth/api/models/auth-input.models.ts/jwt.types';
 import { CaptureGuard } from '../../src/features/auth/infrastructure/guards/validate-capture.guard';
 import { databaseService, dbCleaner } from '../setupTests.e2e';
