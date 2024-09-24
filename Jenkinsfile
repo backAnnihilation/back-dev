@@ -47,7 +47,7 @@ pipeline {
                         nvm use --lts
                         yarn install
                         yarn run prisma:generate
-                        yarn test:user:e2e
+                        yarn test:user:e2e --ci
                         '''
                     }
                 echo "e2e tests are acomplished"
