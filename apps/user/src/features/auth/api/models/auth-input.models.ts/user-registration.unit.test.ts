@@ -79,7 +79,6 @@ describe('CreateUserDto', () => {
     createUserDto.password = 'A'.repeat(22);
 
     const errors = await validate(createUserDto);
-    console.log(errors);
 
     expect(errors.length).toBeGreaterThan(0);
     expect(errors[0].property).toBe('password');
