@@ -2,17 +2,19 @@ import { EVENT_COMMANDS, FILES_SERVICE, SERVICE_TOKEN } from '@app/shared';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
+import { TransportPayload } from '../managers/transport.manager';
 
 @Injectable()
 export class TcpAdapter {
   constructor(@Inject(SERVICE_TOKEN.FILES) private tcpClient: ClientProxy) {}
 
-  async sendMessage(payload?: any, command?: EVENT_COMMANDS): Promise<any> {
+  async sendMessage(
+    command: EVENT_COMMANDS,
+    payload: TransportPayload,
+  ): Promise<any> {
     try {
-      console.log(this.tcpClient);
-
       const response = await lastValueFrom(
-        this.tcpClient.send('tcp-data', { message: 'olleh hol' }),
+        this.tcpClient.send(command, payload),
       );
       console.log({ response });
       return response;

@@ -2,12 +2,16 @@ import { EVENT_COMMANDS, FILES_SERVICE } from '@app/shared';
 import { Inject, Injectable } from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
+import { TransportPayload } from '../managers/transport.manager';
 
 @Injectable()
-export class RMQAdapter {
+export class RmqAdapter {
   constructor(@Inject(FILES_SERVICE) private rmqClient: ClientProxy) {}
 
-  async sendMessage(payload: any, command: EVENT_COMMANDS | any): Promise<any> {
+  async sendMessage(
+    command: EVENT_COMMANDS,
+    payload: TransportPayload,
+  ): Promise<any> {
     try {
       const response = await lastValueFrom(
         this.rmqClient.send(command, payload),

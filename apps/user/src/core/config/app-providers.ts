@@ -39,7 +39,7 @@ import { CreateUserSessionUseCase } from '../../features/security/application/us
 import { DeleteActiveSessionUseCase } from '../../features/security/application/use-cases/delete-active-session.use-case';
 import { DeleteOtherUserSessionsUseCase } from '../../features/security/application/use-cases/delete-other-user-sessions.use-case';
 import { SecurityRepository } from '../../features/security/infrastructure/security.repository';
-import { EmailManager } from '../managers/email-manager';
+import { EmailManager } from '../managers/email.manager';
 import { PostCudApiService } from '../../features/post/application/services/post-cud-api.service';
 import { PostQueryRepository } from '../../features/post/api/query-repositories/post.query.repository';
 import { EditPostUseCase } from '../../features/post/application/use-cases/edit-post.use-case';
@@ -48,31 +48,34 @@ import { CreatePostUseCase } from '../../features/post/application/use-cases/cre
 import { PostsRepository } from '../../features/post/infrastructure/posts.repository';
 import { AuthService } from '../../features/auth/application/services/auth.service';
 import {
+  BcryptAdapter,
+  CaptureAdapter,
+  EmailAdapter,
   AxiosAdapter,
-  BcryptAdapter,
-  CaptureAdapter,
-  EmailAdapter,
-  RMQAdapter,
   TcpAdapter,
-} from '../adapters';
+  RmqAdapter,
+} from '@user/core/adapters';
+import { TransportManager } from '../managers/transport.manager';
 
-const adapters: Provider[] = [
+const adapters = [
   BcryptAdapter,
   CaptureAdapter,
   EmailAdapter,
-  RMQAdapter,
+  RmqAdapter,
   AxiosAdapter,
   TcpAdapter,
 ];
 
+const managers = [EmailManager, TransportManager];
+
 export const providers: Provider[] = [
   ...adapters,
+  ...managers,
   AuthService,
   UserService,
   AuthQueryRepository,
   CleanUpDatabaseRepository,
   SecurityQueryRepo,
-  EmailManager,
   UsersQueryRepo,
   SACudApiService,
   BasicSAAuthGuard,
