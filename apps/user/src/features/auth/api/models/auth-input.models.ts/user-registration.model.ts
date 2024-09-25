@@ -6,6 +6,7 @@ import {
   passwordMatch,
   frequentLength,
   emailMatches,
+  passwordFailedMatchMessage,
 } from '@app/shared';
 
 export class CreateUserDto {
@@ -18,7 +19,7 @@ export class CreateUserDto {
   /**
    * password of the registered user account.
    */
-  @iSValidField(passwordLength, passwordMatch)
+  @iSValidField(passwordLength, passwordMatch, passwordFailedMatchMessage)
   password: string;
 
   /**

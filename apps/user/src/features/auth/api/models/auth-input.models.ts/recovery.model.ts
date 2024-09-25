@@ -1,14 +1,16 @@
 import {
-  passwordLength,
   frequentLength,
-} from '../../../../../../../../libs/shared/src/validation/input-constants';
-import { iSValidField } from '../../../../../../../../libs/shared/src/validation/validate-input-fields';
+  iSValidField,
+  passwordFailedMatchMessage,
+  passwordLength,
+  passwordMatch,
+} from '@app/shared';
 
 export class RecoveryPassDto {
   /**
    * newPassword of the user account
    */
-  @iSValidField(passwordLength)
+  @iSValidField(passwordLength, passwordMatch, passwordFailedMatchMessage)
   newPassword: string;
 
   /**

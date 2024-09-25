@@ -22,3 +22,6 @@ export const urlMatching =
   /^https:\/\/([a-zA-Z0-9_-]+\.)+[a-zA-Z0-9_-]+(\/[a-zA-Z0-9_-]+)*\/?$/;
 export const passwordMatch =
   /^(?=.*[0-9])(?=.*[A-Z])(?=.*[a-z])(?=.*[!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~])[0-9A-Za-z!"#$%&'()*+,\-./:;<=>?@[\\\]^_`{|}~]+$/;
+
+export const passwordFailedMatchMessage =
+  'Password must contain at least one uppercase letter, one lowercase letter, one number, and one special character';
