@@ -167,12 +167,12 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
         expect.setState({ accessToken });
       });
 
-      it('mediator', async () => {
+      it.only('mediator', async () => {
         const { accessToken } = expect.getState();
         console.log({ accessToken });
       });
 
-      it.skip(`should upload profile photo`, async () => {
+      it(`should upload profile photo`, async () => {
         const { accessToken } = expect.getState();
         const imageDto = await usersTestManager.retrieveImageMeta(
           ImageNames.FRESCO,
