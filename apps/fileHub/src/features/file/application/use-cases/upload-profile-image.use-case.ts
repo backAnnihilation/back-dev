@@ -62,6 +62,8 @@ export class UploadProfileImageUseCase
     const profileImageDto = createdProfileImageNotice.data;
     const savedProfileImageId = await this.filesRepo.save(profileImageDto);
 
+    console.log({ savedProfileImageId });
+
     const result = { id: savedProfileImageId.id, url };
     return new LayerNoticeInterceptor(result);
   }

@@ -4,12 +4,13 @@ import { UserProfileViewModel } from '../../api/models/output/profile.view.model
 import { ProfilesQueryRepo } from '../../api/query-repositories/profiles.query.repo';
 import { EditProfileCommand } from '../use-cases/edit-profile.use-case';
 import { FillOutProfileCommand } from '../use-cases/fill-out-profile.use-case';
-import { BaseCUDApiService } from '@app/shared';
+import { BaseCUDApiService, IProfileImageViewModelType } from '@app/shared';
+import { UploadProfileImageCommand } from '../use-cases/upload-profile-image.use-case';
 
 @Injectable()
 export class UserProfilesApiService extends BaseCUDApiService<
-  FillOutProfileCommand | EditProfileCommand,
-  UserProfileViewModel
+  FillOutProfileCommand | EditProfileCommand | UploadProfileImageCommand,
+  UserProfileViewModel | IProfileImageViewModelType
 > {
   constructor(commandBus: CommandBus, queryRepo: ProfilesQueryRepo) {
     super(commandBus, queryRepo);

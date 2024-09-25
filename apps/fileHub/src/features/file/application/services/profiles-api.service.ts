@@ -1,20 +1,15 @@
+import { BaseCUDApiService, IProfileImageViewModelType } from '@app/shared';
+import { Injectable } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
-import { IProfileImageViewModelType, RmqService } from '@app/shared';
-import { BaseEventsApiService } from '@file/core/api/services/base-events-api.service';
 import { ProfilesQueryRepository } from '../../api/profile-image.query.repository';
 import { UploadProfileImageCommand } from '../use-cases/upload-profile-image.use-case';
-import { Injectable } from '@nestjs/common';
 
 @Injectable()
-export class ProfilesApiService extends BaseEventsApiService<
+export class ProfilesApiService extends BaseCUDApiService<
   UploadProfileImageCommand,
   IProfileImageViewModelType
 > {
-  constructor(
-    rmqService: RmqService,
-    commandBus: CommandBus,
-    queryRepo: ProfilesQueryRepository,
-  ) {
-    super(rmqService, commandBus, queryRepo);
+  constructor(commandBus: CommandBus, queryRepo: ProfilesQueryRepository) {
+    super(commandBus, queryRepo);
   }
 }

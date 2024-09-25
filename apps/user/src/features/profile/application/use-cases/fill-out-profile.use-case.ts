@@ -1,6 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { OutputId } from '@app/shared';
-import { LayerNoticeInterceptor } from '@app/shared';
+import { OutputId, LayerNoticeInterceptor } from '@app/shared';
 import { UsersRepository } from '../../../admin/infrastructure/users.repo';
 import { IFillOutProfileCommand } from '../../api/models/input/fill-out-profile.model';
 import { UserEntities } from '../../api/models/enum/user-entities.enum';
@@ -34,7 +33,7 @@ export class FillOutProfileUseCase
       notice.addError(
         'profile already exists',
         this.location,
-        notice.errorCodes.ResourceNotFound,
+        notice.errorCodes.AccessForbidden,
       );
       return notice;
     }

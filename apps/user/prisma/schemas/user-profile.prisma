@@ -3,7 +3,7 @@ model UserProfile {
   userName          String         @unique
   firstName         String        
   lastName          String
-  birthDate         DateTime
+  birthDate         DateTime?
   country           String?
   city              String?
   about             String?        @db.VarChar(255)

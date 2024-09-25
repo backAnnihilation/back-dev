@@ -22,8 +22,7 @@ export class BaseEventsApiService<
     command: TCommand,
     context: RmqContext,
   ): Promise<TViewModel> {
-    const shouldReturnValue = true;
-    const responseModel = await this.handleCommand(command, shouldReturnValue);
+    const responseModel = await this.create(command);
     this.rmqService.ack(context);
     return responseModel as Promise<TViewModel>;
   }

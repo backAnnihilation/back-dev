@@ -1,5 +1,9 @@
 import { EVENT_COMMANDS, FILES_SERVICE, SERVICE_TOKEN } from '@app/shared';
-import { Inject, Injectable } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import { ClientProxy } from '@nestjs/microservices';
 import { lastValueFrom } from 'rxjs';
 import { TransportPayload } from '../managers/transport.manager';
@@ -23,6 +27,7 @@ export class TcpAdapter {
         `Send message to file service via tcp corrupted with error:`,
         error,
       );
+      throw new ServiceUnavailableException(error);
     }
   }
 }

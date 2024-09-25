@@ -46,7 +46,7 @@ export class EmailManager {
   ): Promise<string> {
     const confirmationLink = `https://incta.team/confirm-email?code=${confirmationCode}`;
     const confirmationData = {
-      from: `Incta team👻`,
+      from: `Incta team👻 <incta.team@gmail.com>`,
       subject: 'Email Confirmation',
       message: `<h1>Thank for your registration</h1>
                 <p>To finish registration please follow the link below:

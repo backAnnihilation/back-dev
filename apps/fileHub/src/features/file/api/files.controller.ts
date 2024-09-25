@@ -13,14 +13,15 @@ import {
   Post,
   UploadedFile,
   UseGuards,
-  UseInterceptors
+  UseInterceptors,
 } from '@nestjs/common';
 import {
   Ctx,
   EventPattern,
   MessagePattern,
   Payload,
-  RmqContext
+  RmqContext,
+  TcpContext,
 } from '@nestjs/microservices';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
@@ -69,11 +70,12 @@ export class FilesController {
 
   @MessagePattern(PROFILE_IMAGE)
   async handleUploadProfileImage(
-    @Payload() data: InputProfileImageDto,
-    @Ctx() context: RmqContext,
+    @Payload(new ValidatePayloadPipe(InputProfileImageDto))
+    data: InputProfileImageDto,
+    @Ctx() context: TcpContext,
   ) {
     const command = new UploadProfileImageCommand(data);
-    return this.filesApiService.uploadImage(command, context, Service.PROFILE);
+    return this.filesApiService.uploadImage(Service.PROFILE, command);
   }
 
   @MessagePattern(POST_CREATED)
@@ -82,10 +84,8 @@ export class FilesController {
     data: InputPostImageDto,
     @Ctx() context: RmqContext,
   ) {
-    console.log({ data });
-
     const command = new UploadPostImageCommand(data);
-    return this.filesApiService.uploadImage(command, context, Service.POST);
+    return this.filesApiService.uploadImage(Service.POST, command, context);
   }
 
   @EventPattern('emit')
@@ -102,8 +102,4 @@ export class FilesController {
   async sendMessage(@Payload() data: number[], @Ctx() context: any) {
     console.log({ data, context });
   }
-  // @EventPattern('tcp-data')
-  // async getData(@Payload() data: number[], @Ctx() context: any) {
-  //   console.log({ data, context });
-  // }
 }

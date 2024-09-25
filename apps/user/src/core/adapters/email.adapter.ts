@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import { SentMessageInfo } from 'nodemailer';
-
 import { EnvironmentVariables } from '../config/configuration';
 
 type EmailData = {

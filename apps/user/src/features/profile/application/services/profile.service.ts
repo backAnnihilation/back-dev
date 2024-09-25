@@ -60,9 +60,11 @@ export class UserProfileService {
       profileId: profile.id,
     };
 
+    const transport = Transport.TCP;
     const commandName = EVENT_COMMANDS.PROFILE_IMAGE_UPLOAD;
+    
     const result = await this.transportManager.sendMessage(
-      Transport.TCP,
+      transport,
       commandName,
       imagePayload,
     );

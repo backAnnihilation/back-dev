@@ -7,15 +7,18 @@ import { RmqOptions, TcpOptions, Transport } from '@nestjs/microservices';
 
 (async () => {
   const app = await NestFactory.create(AppModule);
-  applyAppSettings(app);
+  // applyAppSettings(app);
   const PORT = app.get(ConfigService).getOrThrow('PORT');
   const rmqService = app.get(RmqService);
   const tcpService = app.get(TcpService);
 
-  app.connectMicroservice<RmqOptions>(rmqService.getOptions(QUEUE_NAME.FILES));
+  const inheritAppConfig = true;
+  app.connectMicroservice<RmqOptions>(rmqService.getOptions(QUEUE_NAME.FILES), {
+    inheritAppConfig,
+  });
 
   app.connectMicroservice<TcpOptions>(tcpService.connectTcpClient, {
-    inheritAppConfig: true,
+    inheritAppConfig,
   });
 
   await app.startAllMicroservices();

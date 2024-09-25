@@ -10,10 +10,10 @@ export class FilesApiService {
     private readonly postsApiService: PostsApiService,
   ) {}
 
-  uploadImage(command: any, context: RmqContext, service: Service) {
+  uploadImage(service: Service, command: any, context?: RmqContext) {
     switch (service) {
       case Service.PROFILE:
-        return this.profileApiService.handleEvent(command, context);
+        return this.profileApiService.create(command);
       case Service.POST:
         return this.postsApiService.handleEvent(command, context);
     }

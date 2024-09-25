@@ -1,1 +1,1 @@
-export * from './align';
+export * from './print-terminal';

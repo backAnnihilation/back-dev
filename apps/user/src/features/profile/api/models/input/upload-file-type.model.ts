@@ -10,3 +10,8 @@ export type ProfileImageToSendType = {
   image: FileMetadata;
   fileType: ImageType;
 };
+
+export type UploadProfileImageDto = {
+  userId: string;
+  image: FileMetadata;
+};

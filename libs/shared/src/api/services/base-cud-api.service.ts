@@ -15,7 +15,7 @@ export class BaseCUDApiService<TCommand, TViewModel> {
     private readonly queryRepo: BaseQueryRepository<TViewModel>,
   ) {}
 
-  async handleCommand(
+  private async handleCommand(
     command: TCommand,
     shouldReturnViewModel = false,
   ): Promise<TViewModel | void> {

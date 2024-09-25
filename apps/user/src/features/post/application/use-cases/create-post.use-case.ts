@@ -28,7 +28,7 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
     command: CreatePostCommand,
   ): Promise<LayerNoticeInterceptor<OutputId>> {
     {
-      const notice = new LayerNoticeInterceptor<null | OutputId>();
+      const notice = new LayerNoticeInterceptor<OutputId>();
 
       const { userId, description, image } = command.postDto;
 
@@ -40,8 +40,9 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
       };
 
       const commandName = EVENT_COMMANDS.POST_CREATED;
+      const transport = Transport.TCP;
       const result = await this.transportManager.sendMessage(
-        Transport.RMQ,
+        transport,
         commandName,
         imagePayload,
       );

@@ -3,13 +3,12 @@ import { Global, Module } from '@nestjs/common';
 import { validate } from './configuration';
 import { Environment, rmqConfig } from '@app/shared';
 
-
 @Global()
 @Module({
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
-      load: [rmqConfig,],
+      load: [rmqConfig],
       validate,
       cache: true,
       expandVariables: true,

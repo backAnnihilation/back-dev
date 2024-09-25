@@ -1,8 +1,8 @@
 import {
   ApiTagsEnum,
+  FileMetadata,
   IProfileImageViewModelType,
   RoutingEnum,
-  FileMetadata,
 } from '@app/shared';
 import {
   Body,
@@ -26,10 +26,10 @@ import { UserPayload } from '../../auth/infrastructure/decorators/user-payload.d
 import { AccessTokenGuard } from '../../auth/infrastructure/guards/accessToken.guard';
 import { UserIdExtractor } from '../../auth/infrastructure/guards/set-user-id.guard';
 import { UserSessionDto } from '../../security/api/models/security-input.models/security-session-info.model';
-import { UserProfileService } from '../application/services/profile.service';
 import { UserProfilesApiService } from '../application/services/user-api.service';
 import { EditProfileCommand } from '../application/use-cases/edit-profile.use-case';
 import { FillOutProfileCommand } from '../application/use-cases/fill-out-profile.use-case';
+import { UploadProfileImageCommand } from '../application/use-cases/upload-profile-image.use-case';
 import { ImageFilePipe } from '../infrastructure/validation/upload-photo-format';
 import { EditProfileInputModel } from './models/input/edit-profile.model';
 import { FillOutProfileInputModel } from './models/input/fill-out-profile.model';
@@ -38,7 +38,6 @@ import { ProfilesQueryRepo } from './query-repositories/profiles.query.repo';
 import { EditProfileEndpoint } from './swagger/edit-profile.description';
 import { FillOutProfileEndpoint } from './swagger/fill-out-profile.description';
 import { GetUserProfileEndpoint } from './swagger/get-profile.description';
-import { RmqAdapter, TcpAdapter } from '@user/core/adapters';
 
 @ApiTags(ApiTagsEnum.Profiles)
 @Controller(RoutingEnum.profiles)
@@ -46,9 +45,6 @@ export class UserProfilesController {
   constructor(
     private userProfilesApiService: UserProfilesApiService,
     private profilesQueryRepo: ProfilesQueryRepo,
-    private profileService: UserProfileService,
-    private tcpAdapter: TcpAdapter,
-    private rmqAdapter: RmqAdapter,
   ) {}
 
   @GetUserProfileEndpoint()
@@ -64,20 +60,19 @@ export class UserProfilesController {
   }
 
   @ApiExcludeEndpoint()
-  @HttpCode(HttpStatus.NO_CONTENT)
+  @HttpCode(HttpStatus.CREATED)
   @Post(UserNavigate.UploadPhoto)
   @UseInterceptors(FileInterceptor('image'))
   @UseGuards(AccessTokenGuard)
   async uploadProfilePhoto(
-    @UserPayload() userPayload: UserSessionDto,
+    @UserPayload() { userId }: UserSessionDto,
     @UploadedFile(ImageFilePipe)
     image: FileMetadata,
   ): Promise<IProfileImageViewModelType> {
-    const result = await this.profileService.uploadProfileImage({
-      image,
-      userId: userPayload.userId,
-    });
-    return result.data;
+    const command = new UploadProfileImageCommand({ image, userId });
+    return (await this.userProfilesApiService.create(
+      command,
+    )) as IProfileImageViewModelType;
   }
 
   @FillOutProfileEndpoint()
@@ -91,7 +86,9 @@ export class UserProfilesController {
       ...profileDto,
       userId: userPayload.userId,
     });
-    return this.userProfilesApiService.create(command);
+    return (await this.userProfilesApiService.create(
+      command,
+    )) as UserProfileViewModel;
   }
 
   @EditProfileEndpoint()
@@ -107,11 +104,5 @@ export class UserProfilesController {
       userId: userPayload.userId,
     });
     await this.userProfilesApiService.updateOrDelete(command);
-  }
-
-  @Get('tcp')
-  async test() {
-    // this.tcpAdapter.sendMessage();
-    // this.rmqAdapter.sendMessage({data: 'hello'}, 'tcp-data')
   }
 }

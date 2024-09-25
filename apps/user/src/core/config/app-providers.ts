@@ -56,6 +56,7 @@ import {
   RmqAdapter,
 } from '@user/core/adapters';
 import { TransportManager } from '../managers/transport.manager';
+import { UploadProfileImageUseCase } from '../../features/profile/application/use-cases/upload-profile-image.use-case';
 
 const adapters = [
   BcryptAdapter,
@@ -97,6 +98,7 @@ export const providers: Provider[] = [
   DeleteActiveSessionUseCase,
   ConfirmRegistrationUseCase,
   AuthenticationApiService,
+  UploadProfileImageUseCase,
   UserProfilesApiService,
   AccessTokenStrategy,
   RefreshTokenStrategy,

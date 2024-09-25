@@ -64,6 +64,9 @@ export class EnvironmentVariables {
   @IsOptional()
   TCP_HOST: string;
 
+  @IsOptional()
+  API_KEY: string;
+
   @IsEnum(Storage)
   STORAGE: Storage;
 
