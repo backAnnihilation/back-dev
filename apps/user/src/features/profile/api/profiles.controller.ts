@@ -22,6 +22,7 @@ import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { CurrentUserId } from '@user/core/decorators/current-user-id.decorator';
 import { UserNavigate } from '@user/core/routes/user-navigate';
+
 import { UserPayload } from '../../auth/infrastructure/decorators/user-payload.decorator';
 import { AccessTokenGuard } from '../../auth/infrastructure/guards/accessToken.guard';
 import { UserIdExtractor } from '../../auth/infrastructure/guards/set-user-id.guard';
@@ -31,6 +32,7 @@ import { EditProfileCommand } from '../application/use-cases/edit-profile.use-ca
 import { FillOutProfileCommand } from '../application/use-cases/fill-out-profile.use-case';
 import { UploadProfileImageCommand } from '../application/use-cases/upload-profile-image.use-case';
 import { ImageFilePipe } from '../infrastructure/validation/upload-photo-format';
+
 import { EditProfileInputModel } from './models/input/edit-profile.model';
 import { FillOutProfileInputModel } from './models/input/fill-out-profile.model';
 import { UserProfileViewModel } from './models/output/profile.view.model';
@@ -105,4 +107,6 @@ export class UserProfilesController {
     });
     await this.userProfilesApiService.updateOrDelete(command);
   }
+
+  async getHtmlProfile() {}
 }

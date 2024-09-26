@@ -8,6 +8,7 @@ module.exports = {
       '@app/utils': resolve(__dirname, './libs/shared/utils/.'),
       '@user/core': resolve(__dirname, './apps/user/src/core/'),
       '@file/core': resolve(__dirname, './apps/fileHub/src/core/'),
+      '@subs/core': resolve(__dirname, './apps/subs/src/core/'),
     },
     fallback: {
       express: require.resolve('express'),

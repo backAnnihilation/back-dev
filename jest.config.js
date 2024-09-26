@@ -9,5 +9,6 @@ module.exports = {
     '^@app/utils/(.*)$': '<rootDir>/libs/shared/utils/$1',
     '^@user/core/(.*)$': '<rootDir>/apps/user/src/core/$1',
     '^@file/core/(.*)$': '<rootDir>/apps/fileHub/src/core/$1',
+    '^@subs/core/(.*)$': '<rootDir>/apps/subs/src/core/$1',
   },
 };

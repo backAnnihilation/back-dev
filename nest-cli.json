@@ -28,6 +28,15 @@
         "tsConfigPath": "apps/fileHub/tsconfig.app.json"
       }
     },
+    "subs": {
+      "type": "application",
+      "root": "apps/subs",
+      "entryFile": "main",
+      "sourceRoot": "apps/subs/src",
+      "compilerOptions": {
+        "tsConfigPath": "apps/subs/tsconfig.app.json"
+      }
+    },
     "shared": {
       "type": "library",
       "root": "libs/shared",

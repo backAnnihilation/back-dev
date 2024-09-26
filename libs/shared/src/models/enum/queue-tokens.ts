@@ -22,6 +22,8 @@ export const enum EVENT_COMMANDS {
   FILE_UPLOAD = 'FILE_UPLOAD',
   PROFILE_IMAGE_UPLOAD = 'upload_profile_image',
   POST_CREATED = 'upload_post_image',
+  SUBSCRIPTION_CREATED = 'subscription_created',
+  SUBSCRIPTION_DELETED = 'subscription_DELETED',
 }
 
 export type CommandMap = {
@@ -38,3 +40,5 @@ export type CommandMap = {
 
 export const POST_CREATED = EVENT_COMMANDS.POST_CREATED;
 export const PROFILE_IMAGE = EVENT_COMMANDS.PROFILE_IMAGE_UPLOAD;
+export const SUBSCRIPTION_CREATED = EVENT_COMMANDS.SUBSCRIPTION_CREATED;
+export const SUBSCRIPTION_DELETED = EVENT_COMMANDS.SUBSCRIPTION_DELETED;
