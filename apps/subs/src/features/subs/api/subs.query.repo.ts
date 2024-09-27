@@ -9,7 +9,6 @@ export class SubsQueryRepo {
     @InjectModel(UserSubscription)
     private subscriptionModel: typeof UserSubscription,
   ) {}
-
   async getFollowing(userId: string) {
     try {
       const following = await this.subscriptionModel.findAll({
@@ -65,4 +64,6 @@ export class SubsQueryRepo {
       return 0;
     }
   }
+
+  async getById() {}
 }

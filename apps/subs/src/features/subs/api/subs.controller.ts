@@ -1,47 +1,82 @@
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import { Controller } from '@nestjs/common';
 import {
   Ctx,
   MessagePattern,
   Payload,
   RmqContext,
-  TcpContext,
+  Transport,
 } from '@nestjs/microservices';
-import { SUBSCRIPTION_CREATED, SUBSCRIPTION_DELETED } from '@app/shared';
+import {
+  SUBSCRIPTION_CREATED,
+  SUBSCRIPTION_DELETED,
+  SUBSCRIPTION_GET,
+  SUBSCRIPTION_GET_COUNT,
+} from '@app/shared';
+import { TransportManager } from '@user/core/managers/transport.manager';
 
 import { SubsApiService } from '../application/services/subs-api.service';
 import { SubscribeCommand } from '../application/use-cases/subscription.use-case';
 import { UnsubscribeCommand } from '../application/use-cases/unsubscription.use-case';
 import { ValidatePayloadPipe } from '../../../../../fileHub/src/features/file/infrastructure/pipes/input-data-validate.pipe';
-import { InputProfileImageDto } from '../../../../../fileHub/src/features/file/api/models/input-models/profile-image.model';
+import { GetSubsCountCommand } from '../application/use-cases/get-subs-count.use-case';
 
 import { SubsQueryRepo } from './subs.query.repo';
-import { InputSubscriptionDto } from './models/input-models/sub.model';
+import {
+  InputSubscriptionDto,
+  InputUserIdDto,
+} from './models/input-models/sub.model';
 
 @Controller('subs')
 export class SubsController {
   constructor(
     private subsApiService: SubsApiService,
     private subsQueryRepo: SubsQueryRepo,
+    private transportManager: TransportManager,
   ) {}
 
-  @Get(':userId')
-  async getUserFollowersAndFollowing(@Param('userId') userId: string) {
-    const followers = await this.subsQueryRepo.getFollowers(userId);
-    const following = await this.subsQueryRepo.getFollowing(userId);
-    return {
+  @MessagePattern(SUBSCRIPTION_GET)
+  async getUserFollowersAndFollowing(
+    @Payload(new ValidatePayloadPipe(InputUserIdDto))
+    data: InputUserIdDto,
+    @Ctx() context: RmqContext,
+  ) {
+    const followers = await this.subsQueryRepo.getFollowers(data.userId);
+    const following = await this.subsQueryRepo.getFollowing(data.userId);
+
+    const payload = {
       followers,
       following,
     };
+
+    return await this.transportManager.sendMessage(
+      Transport.RMQ,
+      SUBSCRIPTION_GET,
+      payload,
+    );
   }
 
-  @Get('count/:userId')
-  async getUserFollowersAndFollowingCount(@Param('userId') userId: string) {
-    const followers = await this.subsQueryRepo.getFollowersCount(userId);
-    const following = await this.subsQueryRepo.getFollowingCount(userId);
-    return {
-      followersCount: followers,
-      followingCount: following,
+  @MessagePattern(SUBSCRIPTION_GET_COUNT)
+  async getUserFollowersAndFollowingCount(
+    @Payload(new ValidatePayloadPipe(InputUserIdDto))
+    data: InputUserIdDto,
+    @Ctx() context: RmqContext,
+  ) {
+    const followersCount = await this.subsQueryRepo.getFollowersCount(
+      data.userId,
+    );
+    const followingCount = await this.subsQueryRepo.getFollowingCount(
+      data.userId,
+    );
+    const payload = {
+      followersCount,
+      followingCount,
     };
+
+    return await this.transportManager.sendMessage(
+      Transport.RMQ,
+      SUBSCRIPTION_GET_COUNT,
+      payload,
+    );
   }
 
   @MessagePattern(SUBSCRIPTION_CREATED)
@@ -52,8 +87,7 @@ export class SubsController {
   ) {
     const command = new SubscribeCommand(data);
 
-    // TODO make SubsApiService like FilesApiService
-    return this.subsApiService.create(command);
+    return this.subsApiService.handleEvent(command, context);
   }
 
   @MessagePattern(SUBSCRIPTION_DELETED)
@@ -63,6 +97,6 @@ export class SubsController {
     @Ctx() context: RmqContext,
   ) {
     const command = new UnsubscribeCommand(data);
-    return this.subsApiService.updateOrDelete(command);
+    return this.subsApiService.handleEvent(command, context);
   }
 }

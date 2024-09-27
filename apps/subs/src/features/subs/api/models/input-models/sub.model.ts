@@ -9,3 +9,9 @@ export class InputSubscriptionDto {
   @IsNotEmpty()
   followingId: string;
 }
+
+export class InputUserIdDto {
+  @IsString()
+  @IsNotEmpty()
+  userId: string;
+}

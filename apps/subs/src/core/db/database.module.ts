@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { SequelizeModule } from '@nestjs/sequelize';
-import { Subscription } from '../../features/subs/domain/entities/subs.table';
+import { Subscription, UserSubscription } from '../../features/subs/domain/entities/subs.table';
 
 @Module({
   imports: [
@@ -11,7 +11,7 @@ import { Subscription } from '../../features/subs/domain/entities/subs.table';
       username: 'userdb',
       password: 'qwerty123',
       database: 'postgresdb',
-      models: [Subscription],
+      models: [UserSubscription],
       autoLoadModels: true,
       synchronize: true,
     }),
