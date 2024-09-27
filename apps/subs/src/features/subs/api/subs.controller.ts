@@ -13,12 +13,10 @@ import {
   SUBSCRIPTION_GET_COUNT,
 } from '@app/shared';
 import { TransportManager } from '@user/core/managers/transport.manager';
-
 import { SubsApiService } from '../application/services/subs-api.service';
 import { SubscribeCommand } from '../application/use-cases/subscription.use-case';
 import { UnsubscribeCommand } from '../application/use-cases/unsubscription.use-case';
 import { ValidatePayloadPipe } from '../../../../../fileHub/src/features/file/infrastructure/pipes/input-data-validate.pipe';
-import { GetSubsCountCommand } from '../application/use-cases/get-subs-count.use-case';
 
 import { SubsQueryRepo } from './subs.query.repo';
 import {
