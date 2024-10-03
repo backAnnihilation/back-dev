@@ -34,7 +34,6 @@ pipeline {
                 //     '''
                 // }
                 echo "unit tests complited"
-
             }
         }
         stage('e2e tests') {
@@ -47,7 +46,7 @@ pipeline {
                     //     nvm use --lts
                     //     yarn install
                     //     yarn run prisma:generate
-                    //     yarn test:user:e2e --ci
+                    //     yarn test:user:e2e
                     //     '''
                     // }
                 echo "e2e tests complited"

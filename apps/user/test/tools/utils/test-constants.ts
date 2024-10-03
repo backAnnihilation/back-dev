@@ -25,7 +25,7 @@ export const constantsTesting = {
     USER_NAME2: 'Protagoras',
     USER_NAME3: 'Socrates',
     USER_NAME4: 'Aristotle',
-    PASSWORD: 'securePassword',
+    INVALID_PASSWORD: 'securePassword',
     VALID_PASSWORD: 'validPassword0!',
     city: 'Rome',
     country: 'Italy',

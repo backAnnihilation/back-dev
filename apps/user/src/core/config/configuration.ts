@@ -7,6 +7,7 @@ import {
   IsString,
   validateSync,
 } from 'class-validator';
+import { print } from '@app/utils';
 
 export class EnvironmentVariables {
   @IsNumber()
@@ -90,7 +91,7 @@ export const validate = (config: Record<string, unknown>) => {
   const validatedConfig = plainToInstance(EnvironmentVariables, config, {
     enableImplicitConversion: true,
   });
-  console.log({ ENV: validatedConfig.ENV });
+  print('ENV: ' + validatedConfig.ENV);
 
   const errors = validateSync(validatedConfig, {
     skipMissingProperties: false,

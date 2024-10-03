@@ -5,7 +5,8 @@ import {
 } from '@nestjs/common';
 import { RpcException } from '@nestjs/microservices';
 import { plainToClass } from 'class-transformer';
-import { validateOrReject } from 'class-validator';
+import { validateOrReject, ValidationError } from 'class-validator';
+import { validationErrorsMapper } from '@app/shared';
 
 export class ValidatePayloadPipe<T> implements PipeTransform {
   constructor(private readonly dto: new () => T) {}
@@ -16,8 +17,9 @@ export class ValidatePayloadPipe<T> implements PipeTransform {
       await validateOrReject(transformedValue);
       return transformedValue;
     } catch (e) {
-      // throw new RpcException(e);
-      throw new BadRequestException(e);
+      const errorResponse =
+        validationErrorsMapper.mapValidationErrorToValidationPipeErrorTArray(e);
+      throw new RpcException(errorResponse);
     }
   }
 }

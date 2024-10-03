@@ -3,13 +3,16 @@ import {
   LayerNoticeInterceptor,
   MediaType,
   OutputId,
-  PROFILE_IMAGE
+  PROFILE_IMAGE,
 } from '@app/shared';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Transport } from '@nestjs/microservices';
-import { TransportManager } from '@user/core/managers/transport.manager';
 import { UploadProfileImageDto } from '../../api/models/input/upload-file-type.model';
 import { ProfilesRepository } from '../../infrastructure/profiles.repository';
+import { UserEntities } from '../../api/models/enum/user-entities.enum';
+import { ImageStatus } from '@prisma/client';
+import { ResponseProfileImageType } from '../../api/models/output/image-notice-type.model';
+import { TransportManager } from '@user/core';
 
 export class UploadProfileImageCommand {
   constructor(public imageDto: UploadProfileImageDto) {}
@@ -27,8 +30,8 @@ export class UploadProfileImageUseCase
 
   async execute(
     command: UploadProfileImageCommand,
-  ): Promise<LayerNoticeInterceptor<OutputId>> {
-    const notice = new LayerNoticeInterceptor<OutputId>();
+  ): Promise<LayerNoticeInterceptor<ResponseProfileImageType>> {
+    const notice = new LayerNoticeInterceptor<ResponseProfileImageType>();
     const { userId, image } = command.imageDto;
 
     const profile = await this.profilesRepo.getByUserId(userId);
@@ -40,22 +43,23 @@ export class UploadProfileImageUseCase
       );
       return notice;
     }
-
+    const profileId = profile.id;
     const imagePayload = {
       imageFormat: MediaType.IMAGE,
       imageType: ImageType.MAIN,
       image,
-      profileId: profile.id,
+      profileId,
     };
     const transport = Transport.TCP;
     const commandName = PROFILE_IMAGE;
 
-    const processedImage = await this.transportManager.sendMessage(
-      transport,
-      commandName,
-      imagePayload,
-    );
+    this.transportManager.sendMessage(transport, commandName, imagePayload);
 
+    this.profilesRepo.saveEntity(UserEntities.ProfileImage, {
+      profileId,
+    });
+
+    notice.addData({ status: ImageStatus.pending, profileId });
     return notice;
   }
 }

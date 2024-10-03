@@ -18,3 +18,10 @@ export enum ImageCategory {
   POST = 'post',
   PRODUCT = 'product',
 }
+
+
+export enum ImageSize {
+  ORIGINAL = 'original',
+  LARGE = 'large',
+  SMALL = 'small',
+}

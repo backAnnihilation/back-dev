@@ -2,12 +2,11 @@ import { OutputId } from '@app/shared';
 import { Document, Model } from 'mongoose';
 
 export class BaseRepository<T extends Document> {
-  constructor(private readonly model: Model<T>) {}
+  constructor(protected readonly model: Model<T>) {}
 
-  async save(fileDto: T): Promise<OutputId> {
+  async save(fileDto: T): Promise<T> {
     try {
-      const result = await fileDto.save();
-      return { id: result._id.toString(), ...result };
+      return await fileDto.save();
     } catch (error) {
       console.error('Failed to save document');
       throw new Error(error);
@@ -34,4 +33,15 @@ export class BaseRepository<T extends Document> {
     }
   }
 
+  async update(id: string, update: Partial<T>): Promise<T | null> {
+    try {
+      const result = await this.model.findByIdAndUpdate(id, update, {
+        new: true,
+      });
+      return result || null;
+    } catch (error) {
+      console.error('Failed to update document', error);
+      return null;
+    }
+  }
 }

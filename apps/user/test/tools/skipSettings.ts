@@ -11,16 +11,16 @@ export const skipSettings = {
   profile: run,
 
   for(testName: e2eTestNamesEnum): boolean {
-    if (!this.run_all_tests) return false;
+    if (!this.run_all_tests) return run;
     return this[testName] ?? skip;
   },
 
   enableTest(testName: e2eTestNamesEnum): void {
-    this[testName] = true;
+    this[testName] = run;
   },
 
   disableTest(testName: e2eTestNamesEnum): void {
-    this[testName] = false;
+    this[testName] = skip;
   },
 
   toggleRunAllTests(): void {

@@ -10,8 +10,10 @@ export class RmqService {
     transport: Transport.RMQ,
     options: {
       urls: [this.configService.get<string>('RMQ_URL')],
-      queue: this.configService.get<string>(`RMQ_${queue.toUpperCase()}_QUEUE`),
-      queueOptions: { durable: true },
+      queue: this.configService.get<string>(queue),
+      queueOptions: {
+        durable: true,
+      },
       noAck,
       persistent: true,
     },

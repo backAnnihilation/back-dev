@@ -393,7 +393,7 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.AUTH))('AuthController', () => {
         expect.setState({ recoveryPasswordCode });
       });
       it(`shouldn't confirm password; invalid code, 400`, async () => {
-        const newPassword = constantsTesting.inputData.PASSWORD;
+        const newPassword = constantsTesting.inputData.VALID_PASSWORD;
         await usersTestManager.confirmPassword(
           { newPassword, recoveryCode: '' },
           HttpStatus.BAD_REQUEST,
@@ -418,7 +418,7 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.AUTH))('AuthController', () => {
           await usersTestManager.signIn(user);
         }
 
-        const newPassword = constantsTesting.inputData.PASSWORD;
+        const newPassword = constantsTesting.inputData.VALID_PASSWORD;
         await usersTestManager.confirmPassword({
           newPassword,
           recoveryCode: recoveryPasswordCode,

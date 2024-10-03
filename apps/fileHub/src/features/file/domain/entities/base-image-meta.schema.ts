@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { ImageCategory, LayerNoticeInterceptor } from '@app/shared';
+import { ImageCategory, ImageSize, LayerNoticeInterceptor } from '@app/shared';
 import { HydratedDocument, Model } from 'mongoose';
 
 export type BaseImageMetaDto = {
@@ -8,6 +8,7 @@ export type BaseImageMetaDto = {
   size: number;
   category: ImageCategory;
   storageId: string;
+  sizeType: ImageSize;
 };
 
 type TDocument<M extends BaseImageMeta> = HydratedDocument<M>;
@@ -31,6 +32,9 @@ export class BaseImageMeta {
 
   @Prop({ type: String, enum: ImageCategory, required: true })
   category: ImageCategory;
+
+  @Prop({ type: String, enum: ImageSize, required: true })
+  sizeType: ImageSize;
 
   createdAt: Date;
   updatedAt: Date;

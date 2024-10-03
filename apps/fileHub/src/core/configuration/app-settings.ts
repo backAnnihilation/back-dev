@@ -7,7 +7,6 @@ import { pipesSetup } from './pipes.setup';
 
 export const applyAppSettings = (app: INestApplication | INestMicroservice) => {
   const currentENV = app.get(ConfigService).getOrThrow('ENV');
-
   // let appPrefix = 'api/v1';
   // currentENV === Environment.TESTING && (appPrefix = '');
   // app.setGlobalPrefix(appPrefix);

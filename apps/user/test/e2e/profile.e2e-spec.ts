@@ -51,7 +51,7 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
       expect(1).toBe(1);
     });
 
-    describe('profile-testing', () => {
+    describe.skip('profile-testing', () => {
       afterAll(async () => {
         await dbCleaner();
       });
@@ -148,9 +148,9 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
       });
     });
 
-    describe.only('profile-photo-upload', () => {
+    describe('profile-photo-upload', () => {
       afterAll(async () => {
-        await dbCleaner();
+        // await dbCleaner();
       });
 
       beforeAll(async () => {
@@ -167,12 +167,12 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
         expect.setState({ accessToken });
       });
 
-      it.only('mediator', async () => {
+      it('mediator', async () => {
         const { accessToken } = expect.getState();
         console.log({ accessToken });
       });
 
-      it(`should upload profile photo`, async () => {
+      it.skip(`should upload profile photo`, async () => {
         const { accessToken } = expect.getState();
         const imageDto = await usersTestManager.retrieveImageMeta(
           ImageNames.FRESCO,

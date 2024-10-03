@@ -1,8 +1,12 @@
 import {
   ApiTagsEnum,
+  EventType,
   FileMetadata,
+  IMAGES_COMPLETED,
   IProfileImageViewModelType,
+  RmqService,
   RoutingEnum,
+  BaseEvent,
 } from '@app/shared';
 import {
   Body,
@@ -38,6 +42,10 @@ import { ProfilesQueryRepo } from './query-repositories/profiles.query.repo';
 import { EditProfileEndpoint } from './swagger/edit-profile.description';
 import { FillOutProfileEndpoint } from './swagger/fill-out-profile.description';
 import { GetUserProfileEndpoint } from './swagger/get-profile.description';
+import { CommandBus } from '@nestjs/cqrs';
+import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
+import { CompleteProfileImagesCommand } from '../application/use-cases/completed-profile-image.use-case';
+import { HandleFilesEventCommand } from '../application/use-cases/handle-files-event.use-case';
 
 @ApiTags(ApiTagsEnum.Profiles)
 @Controller(RoutingEnum.profiles)
@@ -45,6 +53,8 @@ export class UserProfilesController {
   constructor(
     private userProfilesApiService: UserProfilesApiService,
     private profilesQueryRepo: ProfilesQueryRepo,
+    private commandBus: CommandBus,
+    private rmqService: RmqService,
   ) {}
 
   @GetUserProfileEndpoint()
@@ -60,7 +70,6 @@ export class UserProfilesController {
   }
 
   @ApiExcludeEndpoint()
-  @HttpCode(HttpStatus.CREATED)
   @Post(UserNavigate.UploadPhoto)
   @UseInterceptors(FileInterceptor('image'))
   @UseGuards(AccessTokenGuard)
@@ -68,12 +77,51 @@ export class UserProfilesController {
     @UserPayload() { userId }: UserSessionDto,
     @UploadedFile(ImageFilePipe)
     image: FileMetadata,
-  ): Promise<IProfileImageViewModelType> {
+  ): Promise<any> {
     const command = new UploadProfileImageCommand({ image, userId });
-    return (await this.userProfilesApiService.create(
-      command,
-    )) as IProfileImageViewModelType;
+    const notice = await this.commandBus.execute(command);
+    if (notice.hasError) throw notice.generateErrorResponse;
+    return notice.data;
   }
+
+  @Get()
+  @UseGuards(AccessTokenGuard)
+  async getProfileImageInfo(@UserPayload() userPayload: UserSessionDto) {
+    const result = await this.profilesQueryRepo.getProfileImage(
+      userPayload.userId,
+    );
+    if (!result) throw new NotFoundException('Profile image not found');
+    return result;
+  }
+
+  @EventPattern(IMAGES_COMPLETED)
+  async handleEvent<T extends BaseEvent>(
+    @Payload() data: T,
+    @Ctx() context: RmqContext,
+  ) {
+    this.rmqService.ack(context);
+    const command = new HandleFilesEventCommand(data);
+    await this.commandBus.execute(command);
+  }
+
+  // @EventPattern(EventType.PROFILE_IMAGES)
+  // async handleRedeliveredProfileImages(
+  //   @Payload() data: any,
+  //   @Ctx() context: RmqContext,
+  // ) {
+  //   this.rmqService.ack(context);
+  //   console.log('Profile images have been redelivered:', data);
+  //   /**
+  //    * // const payload = { ...data.payload,  }
+  //    * const command = new HandleFilesEventCommand(data.payload);
+  //    * await this.commandBus.execute(command);
+  //    */
+  //   /**
+  //    * OR
+  //    * const command = new HandleRedeliveredProfileImagesCommand(data);
+  //    * await this.commandBus.execute(command);
+  //    */
+  // }
 
   @FillOutProfileEndpoint()
   @UseGuards(AccessTokenGuard)
@@ -93,7 +141,6 @@ export class UserProfilesController {
 
   @EditProfileEndpoint()
   @UseGuards(AccessTokenGuard)
-  @HttpCode(HttpStatus.NO_CONTENT)
   @Put(UserNavigate.EditProfile)
   async editProfile(
     @UserPayload() userPayload: UserSessionDto,

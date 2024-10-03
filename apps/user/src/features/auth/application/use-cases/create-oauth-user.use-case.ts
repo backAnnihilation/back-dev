@@ -5,7 +5,6 @@ import {
   ICommandHandler,
 } from '@nestjs/cqrs';
 import { Provider, UserAccount } from '@prisma/client';
-
 import { UserProviderDTO } from '../../../admin/application/dto/create-user.dto';
 import { UsersRepository } from '../../../admin/infrastructure/users.repo';
 import { CreateSessionCommand } from '../../../security/application/use-cases/commands/create-session.command';
@@ -15,8 +14,7 @@ import {
   IGoogleProvider,
 } from '../../api/models/auth-input.models.ts/provider-user-info';
 import { AuthRepository } from '../../infrastructure/auth.repository';
-import { LayerNoticeInterceptor } from '../../../../../../../libs/shared/src/interceptors/notification';
-
+import { LayerNoticeInterceptor } from '@app/shared';
 import { EmailNotificationOauthEvent } from './events/email-notification-oauth-event';
 
 export class CreateOAuthUserCommand {

@@ -1,0 +1,21 @@
+enum ImageStatus {
+  pending
+  failed
+  success
+}
+
+model ProfileImage {
+  id                String         @id @default(uuid())
+  
+  createdAt         DateTime       @default(now())
+  status            ImageStatus    @default(pending)
+  imageMetaId       String?        @unique
+  
+  urlOriginal       String?   
+  urlLarge          String?  
+  urlSmall          String?
+
+  profile           UserProfile    @relation(fields: [profileId], references: [id])
+  profileId         String         @unique
+}
+

@@ -24,6 +24,7 @@ export class MicroserviceExceptionFilter
     for (const error of errors) {
       console.log({ error });
     }
+    console.log({ exception: exception.getError() });
 
     const errorResponse = {
       message: exception.message || 'Internal RPC error',

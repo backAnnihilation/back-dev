@@ -29,7 +29,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
     const rpcCtx = rpcContext.getContext();
 
     const { message, key, statusCode } = exception.getResponse() as any;
-    console.log({ rpcContext, rpcCtx, rpcData });
+    console.log({ rpcContext, rpcCtx, rpcData, message, key, statusCode });
 
     const devErrorResponse = {
       statusCode,

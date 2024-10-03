@@ -10,8 +10,8 @@ import { Injectable } from '@nestjs/common';
 import { AxiosAdapter } from '@user/core/adapters/axios.adapter';
 import { UploadFileDto } from '../../api/models/input/upload-file-type.model';
 import { ProfilesRepository } from '../../infrastructure/profiles.repository';
-import { TransportManager } from '@user/core/managers/transport.manager';
 import { Transport } from '@nestjs/microservices';
+import { TransportManager } from '@user/core/managers/transport.manager';
 
 @Injectable()
 export class UserProfileService {
@@ -62,7 +62,7 @@ export class UserProfileService {
 
     const transport = Transport.TCP;
     const commandName = EVENT_COMMANDS.PROFILE_IMAGE_UPLOAD;
-    
+
     const result = await this.transportManager.sendMessage(
       transport,
       commandName,

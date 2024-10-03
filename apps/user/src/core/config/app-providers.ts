@@ -55,19 +55,24 @@ import {
   TcpAdapter,
   RmqAdapter,
 } from '@user/core/adapters';
-import { TransportManager } from '../managers/transport.manager';
 import { UploadProfileImageUseCase } from '../../features/profile/application/use-cases/upload-profile-image.use-case';
+import { TransportManager } from '../managers/transport.manager';
+import { CompleteProfileImagesUseCase } from '../../features/profile/application/use-cases/completed-profile-image.use-case';
+import { HandleFilesEventUseCase } from '../../features/profile/application/use-cases/handle-files-event.use-case';
+import { ProfileImageDeliveryApprovedEventHandler } from '../../features/profile/application/use-cases/events/profile-image-delivery-approved.event';
 
 const adapters = [
   BcryptAdapter,
   CaptureAdapter,
   EmailAdapter,
   RmqAdapter,
-  AxiosAdapter,
   TcpAdapter,
+  AxiosAdapter,
 ];
 
-const managers = [EmailManager, TransportManager];
+const managers = [EmailManager, 
+  TransportManager
+];
 
 export const providers: Provider[] = [
   ...adapters,
@@ -93,12 +98,15 @@ export const providers: Provider[] = [
   UpdateIssuedTokenUseCase,
   UpdatePasswordUseCase,
   SendRecoveryMessageEventHandler,
+  HandleFilesEventUseCase,
+  ProfileImageDeliveryApprovedEventHandler,
   UserCreatedNoticeEventHandler,
   UpdateConfirmationCodeUseCase,
   DeleteActiveSessionUseCase,
   ConfirmRegistrationUseCase,
   AuthenticationApiService,
   UploadProfileImageUseCase,
+  CompleteProfileImagesUseCase,
   UserProfilesApiService,
   AccessTokenStrategy,
   RefreshTokenStrategy,

@@ -4,7 +4,7 @@ import {
   ValidationError,
   ValidationPipe,
 } from '@nestjs/common';
-import { validationErrorsMapper } from '../validation/validation-utils';
+import { validationErrorsMapper } from '@app/shared';
 
 export const pipesSetup = (app: INestApplication) => {
   app.useGlobalPipes(

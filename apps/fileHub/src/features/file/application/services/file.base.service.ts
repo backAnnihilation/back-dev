@@ -13,7 +13,7 @@ export class FilesApiService {
   uploadImage(service: Service, command: any, context?: RmqContext) {
     switch (service) {
       case Service.PROFILE:
-        return this.profileApiService.create(command);
+        return this.profileApiService.updateOrDelete(command);
       case Service.POST:
         return this.postsApiService.handleEvent(command, context);
     }

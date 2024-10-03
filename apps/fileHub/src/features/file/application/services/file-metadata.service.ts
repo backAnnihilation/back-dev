@@ -1,19 +1,30 @@
-import { FileMetadata, ImageCategory } from '@app/shared';
+import { ImageCategory } from '@app/shared';
 import { FilesStorageAdapter } from '@file/core/adapters/local-files-storage.adapter';
 import { Injectable } from '@nestjs/common';
-import * as sharp from 'sharp';
 import { Bucket } from '../../api/models/enums/file-models.enum';
 import {
   ContentType,
   UploadFileOutputType,
 } from '../../api/models/output-models/file-output-types';
 
+type ImageMeta = {
+  buffer: Buffer;
+  mimetype: string;
+  originalname: string;
+};
 export type UploadImageType = {
-  image: FileMetadata;
-  imageCategory: ImageCategory;
+  image: ImageMeta;
+  category: ImageCategory;
   profileId?: string;
   postId?: string;
   bucket: Bucket;
+};
+type GenerateImageKeyType = {
+  fileName: string;
+  contentType: ContentType;
+  category: ImageCategory;
+  profileId?: string;
+  postId?: string;
 };
 
 @Injectable()
@@ -25,7 +36,7 @@ export class FilesService {
   ): Promise<UploadFileOutputType> {
     const {
       image: { buffer, mimetype, originalname },
-      imageCategory,
+      category,
       postId,
       profileId,
       bucket: Bucket,
@@ -34,18 +45,15 @@ export class FilesService {
     const { ContentType, Key } = this.generateImageKey({
       contentType: mimetype as ContentType,
       fileName: originalname,
-      imageCategory,
+      category,
       profileId,
       postId,
     });
 
-    const buf = Buffer.from((buffer as any).data);
-    const convertedBuffer = await this.convertPhotoToStorageFormat(buf);
-
     const bucketParams = {
       Bucket,
       Key,
-      Body: convertedBuffer,
+      Body: buffer,
       ContentType,
     };
 
@@ -53,18 +61,14 @@ export class FilesService {
   }
 
   generateImageKey = (keyInfo: GenerateImageKeyType) => {
-    const { profileId, imageCategory, contentType, fileName, postId } = keyInfo;
+    const { profileId, category, contentType, fileName, postId } = keyInfo;
 
     const [, fileExtension] = contentType.split('/');
     const timeStamp = new Date().getTime();
     const withExtension = fileName.endsWith(fileExtension);
     const fileSignature = withExtension ? fileName.split('.')[0] : fileName;
 
-    const basePath = this.getBasePathForCategory(
-      imageCategory,
-      postId,
-      profileId,
-    );
+    const basePath = this.getBasePathForCategory(category, postId, profileId);
 
     const generatedKey = `${basePath}/${fileSignature}${timeStamp}.${fileExtension}`;
 
@@ -80,15 +84,4 @@ export class FilesService {
       [ImageCategory.POST]: `images/posts/postId-${postId}`,
       [ImageCategory.PROFILE]: `images/profiles/profileId-${profileId}`,
     })[category];
-
-  convertPhotoToStorageFormat = async (buffer: any): Promise<Buffer> =>
-    await sharp(buffer).webp({ quality: 80 }).toBuffer();
 }
-
-type GenerateImageKeyType = {
-  fileName: string;
-  contentType: ContentType;
-  imageCategory: ImageCategory;
-  profileId?: string;
-  postId?: string;
-};

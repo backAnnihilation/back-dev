@@ -1,10 +1,12 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { RmqService } from './rmq.service';
-import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { SERVICE_TOKEN, QUEUE_NAME } from '@app/shared';
+import { RmqService } from './rmq.service';
 
 interface RmqModuleOptions {
-  name: string;
+  name: SERVICE_TOKEN;
+  queue: QUEUE_NAME;
 }
 
 @Module({
@@ -12,7 +14,7 @@ interface RmqModuleOptions {
   exports: [RmqService],
 })
 export class RmqModule {
-  static register({ name }: RmqModuleOptions): DynamicModule {
+  static register({ name, queue }: RmqModuleOptions): DynamicModule {
     return {
       module: RmqModule,
       imports: [
@@ -23,7 +25,7 @@ export class RmqModule {
               transport: Transport.RMQ,
               options: {
                 urls: [config.get<string>('RMQ_URL')],
-                queue: config.get<string>(`RMQ_${name.toUpperCase()}_QUEUE`),
+                queue: config.get<string>(queue),
               },
             }),
             inject: [ConfigService],

@@ -12,6 +12,7 @@ import { UserIdType } from '../../../../admin/api/models/outputSA.models.ts/user
 import { VerificationCredentialsCommand } from '../../../application/use-cases/commands/verification-credentials.command';
 import { UserCredentialsDto } from '../../../api/models/auth-input.models.ts/verify-credentials.model';
 import { LayerNoticeInterceptor } from '../../../../../../../../libs/shared/src/interceptors/notification';
+import { validationErrorsMapper } from '../../../../../../../../libs/shared/src';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -52,20 +53,10 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   private async handleValidationErrors(
     errors: ValidationError[],
   ): Promise<void> {
-    const errorResponse: any = {
-      message: [],
-    };
-
-    for (const error of errors) {
-      const constraints = Object.values(error.constraints || {});
-
-      for (const constraint of constraints) {
-        errorResponse.message.push({
-          field: error.property,
-          message: constraint.trim(),
-        });
-      }
-    }
+    const errorResponse =
+      validationErrorsMapper.mapValidationErrorToValidationPipeErrorTArray(
+        errors,
+      );
     throw new BadRequestException(errorResponse);
   }
 }

@@ -7,6 +7,10 @@ export * from './rmq/rmq.config';
 export * from './tcp/tcp.module';
 export * from './tcp/tcp.service';
 
+// transportManager
+// export * from '../../../apps/user/src/core/managers/transport.manager';
+// export * from './managers/transport.module';
+
 // api/services
 export * from './api/services/base-cud-api.service';
 
@@ -17,8 +21,10 @@ export * from './interceptors/notification';
 // models
 export * from './models/enum/image-meta.enum';
 export * from './models/enum/queue-tokens';
+export * from './models/enum/event.enum';
 export * from './models/output/output-id.dto';
 export * from './models/output/image-view.models';
+export * from './models/base/base-event';
 
 // routing
 export * from './routing/routing';
@@ -26,6 +32,7 @@ export * from './routing/routing';
 // validation
 export * from './validation/input-constants';
 export * from './validation/validate-input-fields';
+export * from './validation/validation-errors-mapper';
 
 // paging
 export * from './paging/get-pagination-view-model';
@@ -34,3 +41,6 @@ export * from './paging/sorting-base-filter';
 
 // config
 export * from './config/environment.enum';
+
+// services
+export * from './services/scheduler.service';

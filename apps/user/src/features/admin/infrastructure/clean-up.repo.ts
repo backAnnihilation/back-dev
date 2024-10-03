@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@prisma/client';
 import { Environment } from '@app/shared';
-import { EnvironmentVariables } from '@user/core/config/configuration';
-import { DatabaseService } from '@user/core/db/prisma/prisma.service';
+import { EnvironmentVariables, DatabaseService } from '@user/core';
 
 @Injectable()
 export class CleanUpDatabaseRepository {
@@ -24,6 +23,7 @@ export class CleanUpDatabaseRepository {
         await this.prisma.$queryRawUnsafe(
           `TRUNCATE TABLE "${tableName}" RESTART IDENTITY CASCADE`,
         );
+        console.log(`Truncated ${tableName} table`);
       }
     } catch (error) {
       throw new Error(`Error in clearDatabase: ${error}`);

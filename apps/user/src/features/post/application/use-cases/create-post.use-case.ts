@@ -6,11 +6,11 @@ import {
   OutputId,
 } from '@app/shared';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { TransportManager } from '@user/core/managers/transport.manager';
 import { ICreatePostCommand } from '../../api/models/input/create-post.model';
 import { PostsRepository } from '../../infrastructure/posts.repository';
 import { CreatePostDTO } from '../dto/create-post.dto';
 import { Transport } from '@nestjs/microservices';
+import { TransportManager } from '@user/core/managers/transport.manager';
 
 export class CreatePostCommand {
   constructor(public postDto: ICreatePostCommand) {}

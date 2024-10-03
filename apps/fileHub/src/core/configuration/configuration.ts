@@ -9,6 +9,7 @@ import {
   validateSync,
 } from 'class-validator';
 import { Environment } from '@app/shared';
+import { print } from '@app/utils';
 import { registerAs } from '@nestjs/config';
 
 export type AwsConfigType = { aws: ReturnType<typeof awsConfig> };
@@ -79,7 +80,7 @@ export const validate = (config: Record<string, unknown>) => {
   const validatedConfig = plainToInstance(EnvironmentVariables, config, {
     enableImplicitConversion: true,
   });
-  console.log({ ENV: validatedConfig.ENV });
+  print('ENV: ' + validatedConfig.ENV);
 
   const errors = validateSync(validatedConfig, {
     skipMissingProperties: false,

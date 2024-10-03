@@ -1,7 +1,7 @@
 import { DynamicModule, Module } from '@nestjs/common';
-import { TcpService } from './tcp.service';
-import { ClientsModule, Transport } from '@nestjs/microservices';
 import { ConfigService } from '@nestjs/config';
+import { ClientsModule, Transport } from '@nestjs/microservices';
+import { TcpService } from './tcp.service';
 
 interface TcpModuleOptions {
   name: string;

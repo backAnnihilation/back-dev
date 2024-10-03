@@ -312,7 +312,7 @@ export class UsersTestManager extends BaseTestManager {
   async uploadPhoto(
     accessToken: string,
     imageDto: ImageDtoType,
-    expectedStatus = HttpStatus.NO_CONTENT,
+    expectedStatus = HttpStatus.CREATED,
   ) {
     let { buffer, contentType, fileName } = imageDto;
     const filename = fileName || 'profile';

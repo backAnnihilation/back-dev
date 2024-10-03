@@ -21,6 +21,7 @@
     "start:user:testing": "$env:ENV='TESTING'; pnpm start:user",
     "start:fileHub": "nest start fileHub --watch",
     "start:fileHub:local": "$env:ENV='TESTING'; pnpm start:fileHub",
+    "test:file:unit": "jest --config apps/fileHub/jest-fileHub.unit.json --watchAll",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/apps/app/main",
     "ngrok:connect": "ngrok http --domain=poetic-arriving-mule.ngrok-free.app 9876",

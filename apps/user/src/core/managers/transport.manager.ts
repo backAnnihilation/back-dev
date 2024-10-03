@@ -1,7 +1,7 @@
+import { EVENT_COMMANDS } from '@app/shared';
 import { Injectable } from '@nestjs/common';
 import { Transport } from '@nestjs/microservices';
-import { TcpAdapter, RmqAdapter } from '@user/core/adapters';
-import { EVENT_COMMANDS } from '@app/shared';
+import { RmqAdapter, TcpAdapter } from '@user/core/adapters';
 
 export type BaseTransportResponse = {
   url: string;
@@ -11,7 +11,7 @@ export type TransportPayload = {
   [key: string]: any;
 };
 interface ITransportAdapter<RTransport extends BaseTransportResponse> {
-  sendMessage: (command: string, payload: any) => Promise<RTransport>;
+  sendMessage: (command: string, payload: any) => Promise<RTransport | void>;
 }
 
 @Injectable()
@@ -30,6 +30,7 @@ export class TransportManager<
     transport: Transport,
     command: EVENT_COMMANDS,
     payload: TransportPayload,
+    async = true,
   ): Promise<any> {
     return this.adapters[transport].sendMessage(command, payload);
   }

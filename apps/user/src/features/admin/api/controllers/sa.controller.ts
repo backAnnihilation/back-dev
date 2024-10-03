@@ -62,7 +62,7 @@ export class SAController {
   }
 
   @DropDatabaseSaEndpoint()
-  @Post('data-base/drop')
+  @Delete('testing/all-data')
   @HttpCode(HttpStatus.OK)
   async dropDataBase(): Promise<any> {
     return this.dbRepo.clearDatabase();

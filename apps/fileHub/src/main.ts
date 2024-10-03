@@ -1,4 +1,4 @@
-import { QUEUE_NAME, RmqService, TcpService } from '@app/shared';
+import { EVENTS_QUEUE, FILES_SERVICE, QUEUE_NAME, RmqService, TcpService, USERS_QUEUE } from '@app/shared';
 import { applyAppSettings } from '@file/core/configuration/app-settings';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
@@ -12,11 +12,13 @@ import { RmqOptions, TcpOptions, Transport } from '@nestjs/microservices';
   const rmqService = app.get(RmqService);
   const tcpService = app.get(TcpService);
 
-  const inheritAppConfig = true;
-  app.connectMicroservice<RmqOptions>(rmqService.getOptions(QUEUE_NAME.FILES), {
+  const inheritAppConfig = false;
+  app.connectMicroservice<RmqOptions>(rmqService.getOptions(USERS_QUEUE), {
     inheritAppConfig,
   });
-
+  app.connectMicroservice<RmqOptions>(rmqService.getOptions(EVENTS_QUEUE), {
+    inheritAppConfig,
+  });
   app.connectMicroservice<TcpOptions>(tcpService.connectTcpClient, {
     inheritAppConfig,
   });

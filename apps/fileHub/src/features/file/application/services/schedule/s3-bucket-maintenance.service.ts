@@ -13,7 +13,7 @@ import { CronJob } from 'cron';
 import { AwsConfigType } from '@file/core/configuration/configuration';
 
 @Injectable()
-export class FilesScheduleService {
+export class S3BucketMaintenanceService {
   private readonly maxBucketSize = 1 * 1024 * 1024 * 1024;
   s3Client: S3Client;
   private readonly bucketName: string;

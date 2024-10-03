@@ -1,4 +1,8 @@
 import {
+  OutboxEntity,
+  OutboxSchema,
+} from '../../features/file/domain/entities/outbox.schema';
+import {
   PostImageMeta,
   PostImageMetaSchema,
 } from '../../features/file/domain/entities/post-image-meta.schema';
@@ -15,5 +19,9 @@ export const schemas = [
   {
     name: ProfileImageMeta.name,
     schema: ProfileImageMetaSchema,
+  },
+  {
+    name: OutboxEntity.name,
+    schema: OutboxSchema,
   },
 ];

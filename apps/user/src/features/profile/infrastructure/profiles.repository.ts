@@ -1,15 +1,18 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, UserProfile } from '@prisma/client';
+import { ImageStatus, Prisma, ProfileImage, UserProfile } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
-import { DatabaseService } from '@user/core/db/prisma/prisma.service';
+import { DatabaseService, BaseRepository } from '@user/core';
+import { UpdateProfileImageType } from '../api/models/input/update-profile-image-type.model';
 
 @Injectable()
-export class ProfilesRepository {
+export class ProfilesRepository extends BaseRepository {
   private userProfiles: Prisma.UserProfileDelegate<DefaultArgs>;
-  constructor(private readonly prisma: DatabaseService) {
+  private profileImages: Prisma.ProfileImageDelegate<DefaultArgs>;
+  constructor(readonly prisma: DatabaseService) {
+    super(prisma);
     this.userProfiles = this.prisma.userProfile;
+    this.profileImages = this.prisma.profileImage;
   }
-
   async save(data: Prisma.UserProfileCreateInput): Promise<UserProfile> {
     try {
       return await this.userProfiles.create({ data });
@@ -59,6 +62,63 @@ export class ProfilesRepository {
     } catch (error) {
       console.error(`getById ${error}`);
       return null;
+    }
+  }
+
+  async getProfileImage(profileId: string): Promise<ProfileImage | null> {
+    try {
+      const result = await this.profileImages.findUnique({
+        where: { profileId },
+      });
+
+      if (!result) return null;
+
+      return result;
+    } catch (error) {
+      console.error(`getProfile ${error}`);
+      return null;
+    }
+  }
+
+  async updateProfileImageStatus(profileImageId: string) {
+    try {
+      return await this.profileImages.update({
+        where: { id: profileImageId },
+        data: { status: ImageStatus.success },
+      });
+    } catch (error) {
+      console.error(`updateProfileImageStatus ${error}`);
+      throw new Error(error);
+    }
+  }
+
+  async deleteProfileImage(profileImageId: string) {
+    try {
+      return await this.profileImages.delete({
+        where: { id: profileImageId },
+      });
+    } catch (error) {
+      console.error(`deleteProfileImage ${error}`);
+      throw new Error(error);
+    }
+  }
+
+  async updateProfileImage(
+    profileId: string,
+    updateImageDto: UpdateProfileImageType,
+  ): Promise<ProfileImage> {
+    try {
+      const { urls, status } = updateImageDto;
+      return await this.profileImages.update({
+        where: { profileId },
+        data: {
+          ...urls,
+          status,
+        },
+      });
+    } catch (error) {
+      console.error(`updateProfileImage ${error}`);
+      throw new Error(error);
     }
   }
 }

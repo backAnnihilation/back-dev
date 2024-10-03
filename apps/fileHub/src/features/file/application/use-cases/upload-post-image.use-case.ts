@@ -1,5 +1,6 @@
 import {
   ImageCategory,
+  ImageSize,
   LayerNoticeInterceptor,
   OutputIdAndUrl,
 } from '@app/shared';
@@ -43,7 +44,7 @@ export class UploadPostImageUseCase
     const { url, id: storageId } = await this.filesService.uploadFileInStorage({
       image,
       bucket: Bucket.Inst,
-      imageCategory: ImageCategory.POST,
+      category: ImageCategory.POST,
       postId,
     });
 
@@ -58,6 +59,7 @@ export class UploadPostImageUseCase
       size,
       url,
       postId,
+      sizeType: ImageSize.ORIGINAL
     });
 
     if (createdPostImageNotice.hasError)
