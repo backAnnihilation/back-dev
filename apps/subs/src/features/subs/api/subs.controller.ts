@@ -13,11 +13,13 @@ import {
   SUBSCRIPTION_GET_COUNT,
 } from '@app/shared';
 import { TransportManager } from '@user/core/managers/transport.manager';
+import { RmqAdapter } from '@user/core/adapters';
 
 import { SubsApiService } from '../application/services/subs-api.service';
 import { SubscribeCommand } from '../application/use-cases/subscription.use-case';
 import { UnsubscribeCommand } from '../application/use-cases/unsubscription.use-case';
-import { ValidatePayloadPipe } from '../../../../../fileHub/src/features/file/infrastructure/pipes/input-data-validate.pipe';
+import { ValidatePayloadPipe } from '../infrastructure/pipes/input-data-validate.pipe';
+import { SubscriptionService } from '../application/services/subs-service';
 
 import { SubsQueryRepo } from './subs.query.repo';
 import {
@@ -30,7 +32,8 @@ export class SubsController {
   constructor(
     private subsApiService: SubsApiService,
     private subsQueryRepo: SubsQueryRepo,
-    private transportManager: TransportManager,
+    private rmqAdapter: RmqAdapter,
+    private subsService: SubscriptionService,
   ) {}
 
   @MessagePattern(SUBSCRIPTION_GET)
@@ -47,11 +50,7 @@ export class SubsController {
       following,
     };
 
-    return await this.transportManager.sendMessage(
-      Transport.RMQ,
-      SUBSCRIPTION_GET,
-      payload,
-    );
+    return await this.rmqAdapter.sendMessage(SUBSCRIPTION_GET, payload);
   }
 
   @MessagePattern(SUBSCRIPTION_GET_COUNT)
@@ -60,22 +59,11 @@ export class SubsController {
     data: InputUserIdDto,
     @Ctx() context: RmqContext,
   ) {
-    const followersCount = await this.subsQueryRepo.getFollowersCount(
+    const payload = await this.subsService.getUserFollowersAndFollowingCount(
       data.userId,
     );
-    const followingCount = await this.subsQueryRepo.getFollowingCount(
-      data.userId,
-    );
-    const payload = {
-      followersCount,
-      followingCount,
-    };
 
-    return await this.transportManager.sendMessage(
-      Transport.RMQ,
-      SUBSCRIPTION_GET_COUNT,
-      payload,
-    );
+    return await this.rmqAdapter.sendMessage(SUBSCRIPTION_GET_COUNT, payload);
   }
 
   @MessagePattern(SUBSCRIPTION_CREATED)

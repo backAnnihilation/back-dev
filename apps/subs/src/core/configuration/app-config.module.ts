@@ -1,6 +1,6 @@
 import { ConfigModule } from '@nestjs/config';
 import { Global, Module } from '@nestjs/common';
-import { awsConfig, validate } from './configuration';
+import { validate } from './configuration';
 import { rmqConfig } from '@app/shared';
 
 @Global()
@@ -12,7 +12,7 @@ import { rmqConfig } from '@app/shared';
       validate,
       cache: true,
       expandVariables: true,
-      envFilePath: 'apps/src/.env',
+      envFilePath: 'apps/subs/.env',
       // process.env.ENV === Environment.TESTING ? 'apps/subs/.env' : '',
     }),
   ],

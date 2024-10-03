@@ -7,7 +7,7 @@ const run = false;
 export const skipSettings = {
   run_all_tests: skip,
 
-  auth: skip,
+  auth: run,
   profile: skip,
 
   for(testName: e2eTestNamesEnum): boolean {

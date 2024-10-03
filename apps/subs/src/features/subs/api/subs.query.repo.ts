@@ -3,6 +3,12 @@ import { InjectModel } from '@nestjs/sequelize';
 
 import { UserSubscription } from '../domain/entities/subs.table';
 
+import {
+  ViewFollowerModel,
+  ViewSubsCount,
+  ViewSubsModels,
+} from './models/output-models/view-sub.model';
+
 @Injectable()
 export class SubsQueryRepo {
   constructor(
@@ -65,5 +71,16 @@ export class SubsQueryRepo {
     }
   }
 
-  async getById() {}
+  async getById(userId: string): Promise<UserSubscription> {
+    try {
+      const following = await this.subscriptionModel.findOne({
+        where: {
+          followerId: userId,
+        },
+      });
+      return following;
+    } catch (e) {
+      return null;
+    }
+  }
 }
