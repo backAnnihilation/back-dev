@@ -1,7 +1,8 @@
 import { ConfigModule } from '@nestjs/config';
+import { shouldIgnoreEnvFiles, getEnvPaths, validate } from './configuration';
 import { Global, Module } from '@nestjs/common';
-import { validate } from './configuration';
 import { Environment, rmqConfig } from '@app/shared';
+const env = process.env.ENV as Environment;
 
 @Global()
 @Module({
@@ -10,10 +11,10 @@ import { Environment, rmqConfig } from '@app/shared';
       isGlobal: true,
       load: [rmqConfig],
       validate,
-      cache: true,
+      cache: false,
       expandVariables: true,
-      envFilePath:
-        process.env.ENV === Environment.TESTING ? 'apps/user/.env.testing' : '',
+      ignoreEnvFile: shouldIgnoreEnvFiles(env),
+      envFilePath: getEnvPaths(env),
     }),
   ],
   exports: [ConfigModule],

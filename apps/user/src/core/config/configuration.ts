@@ -9,6 +9,10 @@ import {
 } from 'class-validator';
 import { print } from '@app/utils';
 
+export type EnvironmentVariable = { [key: string]: string | undefined };
+/**
+ * Represents the environment variables for the application.
+ */
 export class EnvironmentVariables {
   @IsNumber()
   PORT: number;
@@ -47,9 +51,9 @@ export class EnvironmentVariables {
   @IsString()
   OAUTH_GITHUB_REDIRECT_URL: string;
 
-  @IsOptional()
+  @IsString()
   OAUTH_GOOGLE_CLIENT_ID: string;
-  @IsOptional()
+  @IsString()
   OAUTH_GOOGLE_CLIENT_SECRET: string;
   @IsString()
   OAUTH_GOOGLE_REDIRECT_URL: string;
@@ -85,20 +89,46 @@ export class EnvironmentVariables {
   @IsEnum(Environment)
   ENV: Environment;
 }
-export type EnvironmentVariable = { [key: string]: string | undefined };
 
+export const getEnvPaths = (env: Environment) => {
+  console.log('getEnvPaths', { env });
+
+  let defaultEnvFilePaths = ['.env.dev', '.env'];
+
+  if (env === Environment.TESTING) {
+    defaultEnvFilePaths.unshift('.env.test');
+  }
+
+  return defaultEnvFilePaths;
+};
+
+export let shouldIgnoreEnvFiles = (env: Environment) =>
+  env !== Environment.TESTING && env !== Environment.DEVELOPMENT;
+
+/**
+ * Validates the configuration object against the EnvironmentVariables class.
+ * @param config The configuration object to validate.
+ * @returns The validated configuration object.
+ */
 export const validate = (config: Record<string, unknown>) => {
   const validatedConfig = plainToInstance(EnvironmentVariables, config, {
     enableImplicitConversion: true,
   });
-  print('ENV: ' + validatedConfig.ENV);
 
-  const errors = validateSync(validatedConfig, {
-    skipMissingProperties: false,
-  });
+  const ENV = validatedConfig.ENV;
+  print('ENV: ' + ENV);
 
-  if (errors.length > 0) {
-    throw new Error(errors.toString());
+  const isProd = shouldIgnoreEnvFiles(ENV);
+
+  if (!isProd) {
+    const errors = validateSync(validatedConfig, {
+      skipMissingProperties: false,
+    });
+
+    if (errors.length > 0) {
+      throw new Error(errors.toString());
+    }
   }
+
   return validatedConfig;
 };

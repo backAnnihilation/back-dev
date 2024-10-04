@@ -14,7 +14,7 @@
     "format": "prettier --write \"apps/**/*.ts\" \"libs/**/*.ts\"",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "start": "nest start",
-    "start:dev": "nest start --watch",
+    "start:dev": "cross-env ENV=TESTING nest start --watch",
     "": "dotenv -e .env.dev -- nest start",
     "start:user:local": "cd ./apps/user/scripts && sh set-env-dev.sh && cd ../../../ && pnpm start:user",
     "start:user:testing": "$env:ENV='TESTING'; pnpm start:user",
@@ -29,13 +29,12 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e:local": "sh set-env-dev.sh sh -c 'pnpm test:e2e'",
-    "test:user:e2e": "jest --config apps/user/test/jest-e2e.json --runInBand --watchAll",
+    "test:user:e2e": "ENV=TESTING jest --config apps/user/test/jest-e2e.json --runInBand --watchAll",
     "test:user:unit": "jest --config apps/user/jest-user.unit.json --watchAll",
     "test:lib": "jest --config ./libs/jest-lib.json --watch",
     "build:user": "nest build user",
-    "start:user": "node dist/apps/payments/main",
+    "start:user": "cross-env ENV=TESTING node dist/apps/user/main",
     "start:dev:user": "nest start user --watch"
-
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
@@ -87,6 +86,7 @@
     "class-validator": "^0.14.1",
     "cookie-parser": "^1.4.6",
     "cron": "^3.1.7",
+    "cross-env": "^7.0.3",
     "date-fns": "^3.6.0",
     "dotenv-cli": "^7.4.2",
     "eslint": "^8.57.0",

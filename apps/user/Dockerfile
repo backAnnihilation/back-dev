@@ -36,4 +36,4 @@ RUN pnpm run build:${SERVICE}
 
 EXPOSE ${PORT}
 
-CMD ["pnpm", "start"]
+CMD pnpm 'start:user'
