@@ -23,15 +23,16 @@ RUN pnpm install
 # Bundle app source code
 COPY --chown=node . .
 
-RUN npx prisma generate --schema=./prisma/schemas/schema.prisma
+# Verify that prisma schema exists
+RUN ls -la ./prisma/schemas/
 
+# Generate prisma client
+RUN npx prisma generate --schema=./prisma/schemas/
+
+# Deploy migrations
 RUN npx prisma migrate deploy --schema=./prisma/schemas/
 
-# RUN pnpm run build
-
 RUN pnpm run build:${SERVICE}
-
-# Bind to all network interfaces so that it can be mapped to the host OS
 
 EXPOSE ${PORT}
 
