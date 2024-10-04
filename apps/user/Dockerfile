@@ -25,10 +25,10 @@ RUN pnpm install
 COPY --chown=node . .
 
 # Verify that prisma schema exists
-RUN ls -la ./apps
+RUN ls -la ./apps/user
 
 # Generate prisma client
-RUN npx prisma generate --schema=.apps/user/prisma/schemas/
+RUN npx prisma generate --schema=./apps/user/prisma/schemas/
 
 # Deploy migrations
 RUN npx prisma migrate deploy --schema=./prisma/schemas/
