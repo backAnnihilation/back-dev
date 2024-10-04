@@ -23,7 +23,7 @@ RUN pnpm install
 # Bundle app source code
 COPY --chown=node . .
 
-RUN npx prisma generate
+RUN npx prisma generate --schema=./prisma/schemas/schema.prisma
 
 RUN npx prisma migrate deploy --schema=./prisma/schemas/
 
