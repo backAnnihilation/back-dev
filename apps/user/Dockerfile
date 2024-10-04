@@ -21,7 +21,7 @@ COPY --chown=node pnpm-lock.yaml ./
 RUN pnpm install
 
 # Bundle app source code
-COPY --chown=node . .
+COPY --chown=node apps/${SERVICE} .
 
 # Verify that prisma schema exists
 RUN ls -la .
