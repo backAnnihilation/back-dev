@@ -11,7 +11,7 @@ const env = process.env.ENV as Environment;
       isGlobal: true,
       load: [rmqConfig],
       validate,
-      cache: false,
+      cache: true,
       expandVariables: true,
       ignoreEnvFile: shouldIgnoreEnvFiles(env),
       envFilePath: getEnvPaths(env),
