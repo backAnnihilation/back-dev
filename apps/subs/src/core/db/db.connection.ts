@@ -20,6 +20,7 @@ export const getConnection = async (
   }${COLORS.reset}`;
   print(message);
 
+
   const [host, port, username, password, database] = extractDbCredentials(URL);
 
   const connectionConfig: SequelizeModuleOptions = {
@@ -42,13 +43,13 @@ function extractDbCredentials(
   url: string,
 ): [string, string, string, string, string] {
   const regex =
-    /postgres:\/\/(?<username>[^:]+):(?<password>[^@]+)@(?<host>[^:]+):(?<port>\d+)\/(?<database>\w+)/;
+    /postgresql:\/\/(?<username>[^:]+):(?<password>[^@]+)@(?<host>[^:]+):(?<port>\d+)\/(?<database>[^\?]+)/;
   const match = url.match(regex);
 
   if (!match || !match.groups) {
     throw new Error('Invalid DATABASE_URL format');
   }
 
-  const { host, port, username, password, database } = match.groups;
+  const { username, password, host, port, database } = match.groups;
   return [host, port, username, password, database];
 }

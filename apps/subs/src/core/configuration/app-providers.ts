@@ -9,6 +9,8 @@ import { SubsRepository } from '../../features/subs/domain/subs-repository';
 import { SubscribeUseCase } from '../../features/subs/application/use-cases/subscription.use-case';
 import { SubscriptionService } from '../../features/subs/application/services/subs-service';
 import { ApiKeyGuard } from '../../../../fileHub/src/features/file/infrastructure/guards/api-key.guard';
+import { FILES_SERVICE } from '@app/shared';
+import { ClientProxyFactory, Transport } from '@nestjs/microservices';
 
 export const providers: Provider[] = [
   SubsApiService,
@@ -20,4 +22,19 @@ export const providers: Provider[] = [
   ApiKeyGuard,
   UnsubscribeUseCase,
   RmqAdapter,
+  {
+    provide: FILES_SERVICE,
+    useFactory: () => {
+      return ClientProxyFactory.create({
+        transport: Transport.RMQ,
+        options: {
+          urls: ['amqp://localhost:5672'],
+          queue: 'FILES',
+          queueOptions: {
+            durable: false,
+          },
+        },
+      });
+    },
+  },
 ];
