@@ -1,10 +1,15 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TcpOptions, Transport } from '@nestjs/microservices';
+import { Environment } from '../config/environment.enum';
+import { EnvironmentVariables } from '@user/core';
 
 @Injectable()
 export class TcpService {
-  constructor(private configService: ConfigService) {}
+  env: Environment;
+  constructor(private configService: ConfigService<EnvironmentVariables>) {
+    this.env = this.configService.getOrThrow('ENV');
+  }
 
   private getOptions(): TcpOptions {
     const transport = Transport.TCP;

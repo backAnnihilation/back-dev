@@ -16,7 +16,6 @@
     "start": "nest start",
     "start:dev": "nest start --watch",
     "": "dotenv -e .env.dev -- nest start",
-    "start:user": "nest start user --watch",
     "start:user:local": "cd ./apps/user/scripts && sh set-env-dev.sh && cd ../../../ && pnpm start:user",
     "start:user:testing": "$env:ENV='TESTING'; pnpm start:user",
     "start:fileHub": "nest start fileHub --watch",
@@ -32,7 +31,11 @@
     "test:e2e:local": "sh set-env-dev.sh sh -c 'pnpm test:e2e'",
     "test:user:e2e": "jest --config apps/user/test/jest-e2e.json --runInBand --watchAll",
     "test:user:unit": "jest --config apps/user/jest-user.unit.json --watchAll",
-    "test:lib": "jest --config ./libs/jest-lib.json --watch"
+    "test:lib": "jest --config ./libs/jest-lib.json --watch",
+    "build:user": "nest build user",
+    "start:user": "node dist/apps/payments/main",
+    "start:dev:user": "nest start user --watch"
+
   },
   "dependencies": {
     "@nestjs/common": "^10.0.0",
