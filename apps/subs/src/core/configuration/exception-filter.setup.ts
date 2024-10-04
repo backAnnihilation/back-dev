@@ -1,7 +1,9 @@
 import { INestApplication, INestMicroservice } from '@nestjs/common';
-import { HttpExceptionFilter } from './exception-filter';
+
 import { RmqService } from '@app/shared';
 import { MicroserviceExceptionFilter } from '@file/core/configuration/rpc-exception-filter';
+
+import { HttpExceptionFilter } from './exception-filter';
 
 export const exceptionFilterSetup = (
   app: INestApplication | INestMicroservice,

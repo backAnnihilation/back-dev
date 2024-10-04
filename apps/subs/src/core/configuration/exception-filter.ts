@@ -1,12 +1,10 @@
 import {
   ArgumentsHost,
-  BadRequestException,
   Catch,
   ExceptionFilter,
   HttpException,
   HttpStatus,
 } from '@nestjs/common';
-import { RpcException } from '@nestjs/microservices';
 import { Request, Response } from 'express';
 
 type ErrorResponse = {

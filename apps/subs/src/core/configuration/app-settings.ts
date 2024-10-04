@@ -1,7 +1,9 @@
 import { INestApplication, INestMicroservice } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { useContainer } from 'class-validator';
+
 import { AppModule } from '../../app.module';
+
 import { exceptionFilterSetup } from './exception-filter.setup';
 import { pipesSetup } from './pipes.setup';
 

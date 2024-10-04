@@ -1,8 +1,9 @@
 import { ConfigService } from '@nestjs/config';
-import { COLORS, Environment } from '@app/shared';
-import { print } from '@app/utils';
 import { MongooseModuleOptions } from '@nestjs/mongoose';
 import { SequelizeModuleOptions } from '@nestjs/sequelize';
+
+import { COLORS, Environment } from '@app/shared';
+import { print } from '@app/utils';
 
 import { EnvironmentVariables } from '../configuration/configuration';
 
@@ -19,7 +20,6 @@ export const getConnection = async (
     isTesting ? 'locally' : 'remote'
   }${COLORS.reset}`;
   print(message);
-
 
   const [host, port, username, password, database] = extractDbCredentials(URL);
 

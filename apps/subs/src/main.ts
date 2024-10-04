@@ -1,8 +1,8 @@
-import { QUEUE_NAME, RmqService, TcpService } from '@app/shared';
-import { applyAppSettings } from '@file/core/configuration/app-settings';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
-import { RmqOptions, TcpOptions, Transport } from '@nestjs/microservices';
+import { RmqOptions } from '@nestjs/microservices';
+
+import { QUEUE_NAME, RmqService } from '@app/shared';
 
 import { AppModule } from './app.module';
 

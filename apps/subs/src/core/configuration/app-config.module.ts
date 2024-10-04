@@ -1,7 +1,9 @@
 import { ConfigModule } from '@nestjs/config';
 import { Global, Module } from '@nestjs/common';
-import { validate } from './configuration';
+
 import { rmqConfig } from '@app/shared';
+
+import { validate } from './configuration';
 
 @Global()
 @Module({

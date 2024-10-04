@@ -8,6 +8,7 @@ import {
   Min,
   validateSync,
 } from 'class-validator';
+
 import { Environment } from '@app/shared';
 // TODO change enums
 export class EnvironmentVariables {
