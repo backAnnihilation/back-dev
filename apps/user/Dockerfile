@@ -24,7 +24,7 @@ RUN pnpm install
 COPY --chown=node . .
 
 # Verify that prisma schema exists
-RUN ls -la ./prisma/schemas/
+RUN ls -la .
 
 # Generate prisma client
 RUN npx prisma generate --schema=./prisma/schemas/
