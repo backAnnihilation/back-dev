@@ -21,13 +21,14 @@ COPY --chown=node pnpm-lock.yaml ./
 RUN pnpm install
 
 # Bundle app source code
-COPY --chown=node apps/${SERVICE} .
+# COPY --chown=node apps/${SERVICE} .
+COPY --chown=user . .
 
 # Verify that prisma schema exists
 RUN ls -la .
 
 # Generate prisma client
-RUN npx prisma generate --schema=./prisma/schemas/
+RUN npx prisma generate --schema=.apps/user/prisma/schemas/
 
 # Deploy migrations
 RUN npx prisma migrate deploy --schema=./prisma/schemas/
