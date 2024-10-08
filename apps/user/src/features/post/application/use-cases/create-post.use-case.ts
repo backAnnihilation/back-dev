@@ -13,7 +13,7 @@ import { CreatePostDTO } from '../dto/create-post.dto';
 import { Transport } from '@nestjs/microservices';
 
 export class CreatePostCommand {
-  constructor(public postDto: ICreatePostCommand) {}
+   constructor(public postDto: ICreatePostCommand) {}
 }
 
 @CommandHandler(CreatePostCommand)

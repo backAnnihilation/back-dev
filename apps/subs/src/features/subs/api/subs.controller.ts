@@ -4,15 +4,14 @@ import {
   MessagePattern,
   Payload,
   RmqContext,
-  Transport,
 } from '@nestjs/microservices';
+
 import {
   SUBSCRIPTION_CREATED,
   SUBSCRIPTION_DELETED,
   SUBSCRIPTION_GET,
   SUBSCRIPTION_GET_COUNT,
 } from '@app/shared';
-import { TransportManager } from '@user/core/managers/transport.manager';
 import { RmqAdapter } from '@user/core/adapters';
 
 import { SubsApiService } from '../application/services/subs-api.service';
