@@ -13,8 +13,8 @@ export class CleanUpDatabaseRepository {
 
   async clearDatabase(): Promise<any> {
     const env = this.config.get('ENV');
-    if (env !== Environment.TESTING) {
-      new Error('Not in testing environment');
+    if (env !== Environment.TESTING && env !== Environment.DEVELOPMENT) {
+      new Error('Not in testing or dev environment');
     }
 
     try {

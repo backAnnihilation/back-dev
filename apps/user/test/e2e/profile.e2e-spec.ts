@@ -158,18 +158,23 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
         await usersTestManager.registration(inputData);
         const { accessToken } = await usersTestManager.signIn(inputData);
 
-        await usersTestManager.fillOutProfile(accessToken, {
+        const profile = await usersTestManager.fillOutProfile(accessToken, {
           firstName: 'newFirstName',
           lastName: 'newLastName',
           dateOfBirth: '12.06.2011',
         });
 
-        expect.setState({ accessToken });
+        expect.setState({ accessToken, profile });
       });
 
       it('mediator', async () => {
-        const { accessToken } = expect.getState();
-        console.log({ accessToken });
+        const { accessToken, profile } = expect.getState();
+        console.log({ accessToken, profile });
+      });
+
+      it('get profile', async () => {
+        const { accessToken, profile } = expect.getState();
+        await usersTestManager.getProfile(profile.id);
       });
 
       it.skip(`should upload profile photo`, async () => {

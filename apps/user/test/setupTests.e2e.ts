@@ -11,24 +11,26 @@ let config: ConfigService<EnvironmentVariables>;
 let dbCleaner: () => Promise<void>;
 beforeAll(async () => {
   config = new ConfigService();
-  // config.set('ENV', Environment.TESTING);
+
   const dbUrl = config.get('DATABASE_URL_FOR_TESTS');
+  console.log({ dbUrl });
 
-  const workerDir = join(__dirname, '..');
-
+  /**
+   * @description if you need to apply migrations
+   *
+   */
+  // const workerDir = join(__dirname, '..');
   // execSync('npx prisma migrate dev', {
   //   env: { DATABASE_URL: dbUrl },
   //   cwd: workerDir,
   // });
 
-  // databaseService = new DatabaseService({
-  //   datasources: {
-  //     db: { url: dbUrl },
-  //   },
-  //   log: ['query'],
-  // });
-  console.log('connected to test db...');
-  databaseService = new DatabaseService(config);
+  databaseService = new DatabaseService({
+    datasources: {
+      db: { url: dbUrl },
+    },
+    log: ['query'],
+  });
 
   dbCleaner = databaseCleanUp.bind(null, databaseService);
   await dbCleaner();

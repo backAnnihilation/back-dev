@@ -292,6 +292,28 @@ export class UsersTestManager extends BaseTestManager {
       .expect(expectedStatus);
   }
 
+  async getProfile(
+    profileId: string,
+    expectedStatus = HttpStatus.OK,
+  ): Promise<UserProfileViewModel> {
+    let profile: UserProfileViewModel;
+    await request(this.application)
+      .get(this.profileRouting.getProfile(profileId))
+      .expect(expectedStatus)
+      .expect(({ body, status }: SuperTestBody<UserProfileViewModel>) => {
+        if (status === HttpStatus.OK) {
+          // expect(body).toEqual({
+          //   userId: expect.any(String),
+          //   userName: expect.any(String),
+          //   email: expect.any(String),
+          //   photo: expect.any(String),
+          // });
+          profile = body;
+        }
+      });
+    return profile;
+  }
+
   async fillOutProfile(
     accessToken: string,
     profileDto: FillOutProfileInputModel,
