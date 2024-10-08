@@ -76,6 +76,16 @@ export class EnvironmentVariables {
 }
 export type EnvironmentVariable = { [key: string]: string | undefined };
 
+export const getEnvPaths = (env: Environment) => {
+  const relativePrefix = './apps/fileHub/';
+  const envPaths = ['.env.dev', '.env'];
+  if (env === Environment.TESTING) envPaths.unshift('.env.test');
+  return envPaths.map((p) => relativePrefix + p);
+};
+
+export let shouldIgnoreEnvFiles = (env: Environment) =>
+  env !== Environment.TESTING && env !== Environment.DEVELOPMENT;
+
 export const validate = (config: Record<string, unknown>) => {
   const validatedConfig = plainToInstance(EnvironmentVariables, config, {
     enableImplicitConversion: true,

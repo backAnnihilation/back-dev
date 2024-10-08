@@ -1,7 +1,13 @@
 import { ConfigModule } from '@nestjs/config';
 import { Global, Module } from '@nestjs/common';
-import { awsConfig, validate } from './configuration';
-import { rmqConfig } from '@app/shared';
+import {
+  awsConfig,
+  getEnvPaths,
+  shouldIgnoreEnvFiles,
+  validate,
+} from './configuration';
+import { Environment, rmqConfig } from '@app/shared';
+const env = (process.env.ENV as Environment) || Environment.DEVELOPMENT;
 
 @Global()
 @Module({
@@ -12,8 +18,8 @@ import { rmqConfig } from '@app/shared';
       validate,
       cache: true,
       expandVariables: true,
-      envFilePath: 'apps/fileHub/.env',
-      // process.env.ENV === Environment.TESTING ? 'apps/fileHub/.env' : '',
+      ignoreEnvFile: shouldIgnoreEnvFiles(env),
+      envFilePath: getEnvPaths(env),
     }),
   ],
   exports: [ConfigModule],
