@@ -23,7 +23,7 @@ RUN pnpm install
 # Bundle app source code
 COPY --chown=node . .
 
-# Verify that prisma schema exists
+# Verify user structure after dir being copied
 RUN ls -la ./apps/user
 
 # Generate prisma client

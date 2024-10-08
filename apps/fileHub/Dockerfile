@@ -1,20 +1,32 @@
-FROM node:18
+FROM node:20.11-alpine
+ARG port
+ARG service
+ENV SERVICE=$service
+ENV PORT=$port
 
-USER node
-
-WORKDIR /usr/src/app
-
-COPY pnpm-lock.yaml ./
-COPY package.json ./
+USER root
 
 RUN npm install -g pnpm
 
-RUN pnpm i --frozen-lockfile
+USER node
 
-COPY . .
+RUN mkdir -p /home/node/dist/${SERVICE}
 
-RUN pnpm run build
+WORKDIR /home/node/dist/${SERVICE}
 
-CMD ["pnpm", "start"]
+COPY --chown=node package*.json ./
+COPY --chown=node pnpm-lock.yaml ./
 
-EXPOSE 8765
+RUN pnpm install
+
+# Bundle app source code
+COPY --chown=node . .
+
+# Verify user structure after dir being copied
+RUN ls -la ./apps/fileHub
+
+RUN pnpm run build:${SERVICE}
+
+EXPOSE ${PORT}
+
+CMD pnpm 'start:fileHub'

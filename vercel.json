@@ -1,0 +1,20 @@
+{
+    "version": 2,
+    "name": "internship-back",
+    "builds": [
+      { "src": "dist/apps/user/main.js", "use": "@vercel/node" },
+      { "src": "dist/apps/fileHub/main.js", "use": "@vercel/node" }
+    ],
+    "routes": [
+      {
+        "src": "/user/(.*)",
+        "dest": "dist/apps/user/main.js",
+        "methods": ["GET", "POST", "PUT", "DELETE", "PATCH"]
+      },
+      {
+        "src": "/fileHub/(.*)",
+        "dest": "dist/apps/fileHub/main.js",
+        "methods": ["GET", "POST", "PUT", "DELETE", "PATCH"]
+      }
+    ]
+  }
