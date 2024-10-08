@@ -18,7 +18,6 @@ import {
   ProfileImageMetaDto,
   ProfileImageModel,
 } from '../../domain/entities/user-profile-image-meta.schema';
-import { ProfilesRepository } from '../../infrastructure/profiles-image.repository';
 import { FilesService } from '../services/file-metadata.service';
 import {
   OutboxDocument,
@@ -29,6 +28,7 @@ import {
 import { OutboxRepository } from '../../infrastructure/events.outbox.repository';
 import { ProcessedProfileImagesEvent } from '../../api/models/dto/processed-profile-images-event';
 import { OutboxService } from '../services/schedule/outbox.service';
+import { ProfilesRepository } from '../../infrastructure/profiles-image.repository';
 
 export class UploadProfileImageCommand {
   constructor(public imageDto: InputProfileImageDto) {}
@@ -40,7 +40,7 @@ export class UploadProfileImageUseCase
 {
   constructor(
     private filesService: FilesService,
-    private filesRepo: ProfilesRepository<ProfileImageDocument>,
+    private filesRepo: ProfilesRepository,
     @InjectModel(ProfileImageMeta.name)
     private ProfileImageModel: ProfileImageModel,
     @InjectModel(OutboxEntity.name)

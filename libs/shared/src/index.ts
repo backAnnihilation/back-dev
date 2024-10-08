@@ -14,6 +14,9 @@ export * from './tcp/tcp.service';
 // api/services
 export * from './api/services/base-cud-api.service';
 
+// services
+export * from './services';
+
 // notice
 export * from './interceptors/logger';
 export * from './interceptors/notification';

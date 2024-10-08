@@ -12,5 +12,5 @@ model UserProfile {
   userAccount       UserAccount    @relation(fields: [userId], references: [id])
   userId            String         @unique
 
-  image             ProfileImage?
+  images             ProfileImage[]
 }

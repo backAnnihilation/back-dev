@@ -4,12 +4,13 @@ import {
   SortDirection,
 } from './sorting-base-filter';
 
+type SortDirectionType = keyof typeof SortDirection;
 export type PaginationType = {
   pageNumber: number;
   pageSize: number;
   skip: number;
   sortBy: string;
-  sortDirection: keyof typeof SortDirections;
+  sortDirection: SortDirectionType;
   sort?: string[];
 };
 
@@ -35,9 +36,11 @@ export class PaginationViewModel<P> {
   }
 
   static parseQuery = <T extends BaseFilter>(query: T): PaginationType => {
-    const baseSortedField = 'created_at';
+    const baseSortedField = 'createdAt';
 
-    const sortDirection = extractSortDirection(query.sortDirection);
+    const sortDirection = extractSortDirection(
+      query.sortDirection,
+    ).toLocaleLowerCase() as SortDirectionType;
 
     const sortBy = query?.sortBy || baseSortedField;
 

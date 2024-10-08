@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
 import { PaginationViewModel } from '@app/shared';
-import { DatabaseService } from '@user/core/db/prisma/prisma.service';
+import { DatabaseService } from '@user/core';
 import { PostsQueryFilter } from '../models/input/post-query-filter';
 import { getPostViewModel } from '../models/output/post.output.model';
 import { PostViewModel } from '../models/output/post.view.model';
@@ -17,7 +17,8 @@ export class PostQueryRepository {
   async getAllPosts(userId: string, queryOptions: PostsQueryFilter) {
     const { pageNumber, pageSize, skip, sortBy, sortDirection } =
       PaginationViewModel.parseQuery(queryOptions);
-    const [description] = [`%${queryOptions.searchDescriptionTerm}%`];
+
+    const [description] = [`%${queryOptions.searchDescriptionTerm || ''}%`];
 
     try {
       const posts = await this.posts.findMany({

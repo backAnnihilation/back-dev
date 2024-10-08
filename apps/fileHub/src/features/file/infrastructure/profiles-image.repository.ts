@@ -1,12 +1,18 @@
 import { BaseRepository } from '@file/core/db/base.files.repository';
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Document, Model } from 'mongoose';
-import { ProfileImageMeta } from '../domain/entities/user-profile-image-meta.schema';
+import { Document } from 'mongoose';
+import {
+  ProfileImageDocument,
+  ProfileImageMeta,
+  ProfileImageModel,
+} from '../domain/entities/user-profile-image-meta.schema';
 
 @Injectable()
-export class ProfilesRepository<T extends Document> extends BaseRepository<T> {
-  constructor(@InjectModel(ProfileImageMeta.name) profileImageModel: Model<T>) {
+export class ProfilesRepository extends BaseRepository<ProfileImageDocument> {
+  constructor(
+    @InjectModel(ProfileImageMeta.name) profileImageModel: ProfileImageModel,
+  ) {
     super(profileImageModel);
   }
 }

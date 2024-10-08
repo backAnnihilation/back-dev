@@ -33,10 +33,15 @@ export class OutboxService extends SchedulerService {
     return this.rmqAdapter.sendMessage(event.eventType, event);
   }
 
+  private async sendFailedEventAlertToManager() {}
+
   private async processNonApprovedEvents(events: OutboxDocument[]) {
     for (const event of events) {
       event.retryCount++;
       event.retryCount === 4 && event.setStatus(EventStatus.FAILED);
+      if (event.status === EventStatus.FAILED) {
+        this.sendFailedEventAlertToManager();
+      }
 
       await this.retrySendingEvent(event);
       await this.outboxRepo.save(event);

@@ -52,6 +52,7 @@ export class FilesController {
     @Payload() data: { eventId: string },
     @Ctx() context: RmqContext,
   ) {
+    console.log('approvedDeliveredImage', { data });
     this.rmqService.ack(context);
     const command = new ProfileImageDeliveryApprovedCommand(data.eventId);
     this.commandBus.execute(command);

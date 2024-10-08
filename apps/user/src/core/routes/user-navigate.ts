@@ -1,6 +1,7 @@
 export enum UserNavigate {
   FillOutProfile = 'create',
   EditProfile = 'edit',
-  GetProfile = 'get',
+  GetProfile = ':id',
   UploadPhoto = 'photo',
+  GetProfileWithImage = 'profile',
 }

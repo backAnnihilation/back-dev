@@ -20,6 +20,19 @@ export class SchedulerService {
       job.start();
     }
   }
+  protected addTimeout(name: string, time: number, cb: () => void) {
+    const timeoutId = setTimeout(cb, time);
+    this.scheduleRegistry.addTimeout(name, timeoutId);
+  }
+
+  protected deleteTimeout(name: string) {
+    const timeout = this.scheduleRegistry.getTimeout(name);
+    if (timeout) {
+      clearTimeout(timeout);
+      this.scheduleRegistry.deleteTimeout(name);
+    }
+  }
+
 
   protected deleteJob(jobName: string) {
     const { job } = this.getJob(jobName);

@@ -1,19 +1,15 @@
 import {
   ApiTagsEnum,
-  EventType,
+  BaseEvent,
   FileMetadata,
   IMAGES_COMPLETED,
-  IProfileImageViewModelType,
   RmqService,
   RoutingEnum,
-  BaseEvent,
 } from '@app/shared';
 import {
   Body,
   Controller,
   Get,
-  HttpCode,
-  HttpStatus,
   NotFoundException,
   Param,
   Post,
@@ -22,6 +18,8 @@ import {
   UseGuards,
   UseInterceptors,
 } from '@nestjs/common';
+import { CommandBus } from '@nestjs/cqrs';
+import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { CurrentUserId } from '@user/core/decorators/current-user-id.decorator';
@@ -33,19 +31,17 @@ import { UserSessionDto } from '../../security/api/models/security-input.models/
 import { UserProfilesApiService } from '../application/services/user-api.service';
 import { EditProfileCommand } from '../application/use-cases/edit-profile.use-case';
 import { FillOutProfileCommand } from '../application/use-cases/fill-out-profile.use-case';
+import { HandleFilesEventCommand } from '../application/use-cases/handle-files-event.use-case';
 import { UploadProfileImageCommand } from '../application/use-cases/upload-profile-image.use-case';
 import { ImageFilePipe } from '../infrastructure/validation/upload-photo-format';
 import { EditProfileInputModel } from './models/input/edit-profile.model';
 import { FillOutProfileInputModel } from './models/input/fill-out-profile.model';
+import { ProfileImageProcessType } from './models/output/profile-image-upload-type.model';
 import { UserProfileViewModel } from './models/output/profile.view.model';
 import { ProfilesQueryRepo } from './query-repositories/profiles.query.repo';
 import { EditProfileEndpoint } from './swagger/edit-profile.description';
 import { FillOutProfileEndpoint } from './swagger/fill-out-profile.description';
 import { GetUserProfileEndpoint } from './swagger/get-profile.description';
-import { CommandBus } from '@nestjs/cqrs';
-import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
-import { CompleteProfileImagesCommand } from '../application/use-cases/completed-profile-image.use-case';
-import { HandleFilesEventCommand } from '../application/use-cases/handle-files-event.use-case';
 
 @ApiTags(ApiTagsEnum.Profiles)
 @Controller(RoutingEnum.profiles)
@@ -77,14 +73,14 @@ export class UserProfilesController {
     @UserPayload() { userId }: UserSessionDto,
     @UploadedFile(ImageFilePipe)
     image: FileMetadata,
-  ): Promise<any> {
+  ): Promise<ProfileImageProcessType> {
     const command = new UploadProfileImageCommand({ image, userId });
     const notice = await this.commandBus.execute(command);
     if (notice.hasError) throw notice.generateErrorResponse;
     return notice.data;
   }
 
-  @Get()
+  @Get(UserNavigate.GetProfileWithImage)
   @UseGuards(AccessTokenGuard)
   async getProfileImageInfo(@UserPayload() userPayload: UserSessionDto) {
     const result = await this.profilesQueryRepo.getProfileImage(
@@ -100,28 +96,10 @@ export class UserProfilesController {
     @Ctx() context: RmqContext,
   ) {
     this.rmqService.ack(context);
+    console.log('RECEIVE IMAGE URLS', { data });
     const command = new HandleFilesEventCommand(data);
     await this.commandBus.execute(command);
   }
-
-  // @EventPattern(EventType.PROFILE_IMAGES)
-  // async handleRedeliveredProfileImages(
-  //   @Payload() data: any,
-  //   @Ctx() context: RmqContext,
-  // ) {
-  //   this.rmqService.ack(context);
-  //   console.log('Profile images have been redelivered:', data);
-  //   /**
-  //    * // const payload = { ...data.payload,  }
-  //    * const command = new HandleFilesEventCommand(data.payload);
-  //    * await this.commandBus.execute(command);
-  //    */
-  //   /**
-  //    * OR
-  //    * const command = new HandleRedeliveredProfileImagesCommand(data);
-  //    * await this.commandBus.execute(command);
-  //    */
-  // }
 
   @FillOutProfileEndpoint()
   @UseGuards(AccessTokenGuard)

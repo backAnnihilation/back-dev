@@ -15,7 +15,7 @@ model ProfileImage {
   urlLarge          String?  
   urlSmall          String?
 
-  profile           UserProfile    @relation(fields: [profileId], references: [id])
-  profileId         String         @unique
+  profile           UserProfile @relation(fields: [profileId], references: [id])
+  profileId         String 
 }
 

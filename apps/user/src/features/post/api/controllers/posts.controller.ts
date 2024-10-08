@@ -22,7 +22,7 @@ import {
   PaginationViewModel,
   FileMetadata,
 } from '@app/shared';
-import { CurrentUserId } from '@user/core/decorators/current-user-id.decorator';
+import { CurrentUserId } from '@user/core';
 import { UserPayload } from '../../../auth/infrastructure/decorators/user-payload.decorator';
 import { AccessTokenGuard } from '../../../auth/infrastructure/guards/accessToken.guard';
 import { UserIdExtractor } from '../../../auth/infrastructure/guards/set-user-id.guard';

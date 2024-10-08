@@ -6,8 +6,9 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "prisma:deploy": "npx prisma migrate deploy --schema=./apps/user/prisma/schemas",
-    "prisma:migrate": "node ./apps/user/prisma/tools/add-migration.js",
+    "deploy:dev": "dotenv -e .env.dev -- npx prisma migrate deploy --schema=./apps/user/prisma/schemas",
+    "migrate:dev": "cross-env ENV=DEVELOPMENT node ./apps/user/prisma/tools/add-migration.js",
+    "migrate:prod": "cross-env ENV=PRODUCTION node ./apps/user/prisma/tools/add-migration.js",
     "prisma:generate": "npx prisma generate --schema=./apps/user/prisma/schemas",
     "prisma:studio": "npx prisma studio --schema=./apps/user/prisma/schemas",
      "build": "nest build user && nest build fileHub",

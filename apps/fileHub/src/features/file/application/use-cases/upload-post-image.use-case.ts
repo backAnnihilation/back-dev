@@ -27,7 +27,7 @@ export class UploadPostImageUseCase
 {
   constructor(
     private filesService: FilesService,
-    private filesRepo: PostsRepository<PostImageMetaDocument>,
+    private filesRepo: PostsRepository,
     @InjectModel(PostImageMeta.name) private PostImageModel: PostImageMetaModel,
   ) {
 

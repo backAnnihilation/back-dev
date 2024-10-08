@@ -28,7 +28,7 @@ import { LocalStrategy } from '../../features/auth/infrastructure/guards/strateg
 import { RefreshTokenStrategy } from '../../features/auth/infrastructure/guards/strategies/refresh-token.strategy';
 import { CaptureGuard } from '../../features/auth/infrastructure/guards/validate-capture.guard';
 import { ProfilesQueryRepo } from '../../features/profile/api/query-repositories/profiles.query.repo';
-import { UserProfileService } from '../../features/profile/application/services/profile.service';
+import { UserProfileService } from '../../features/profile/application/services/_deprecate_profile.service';
 import { UserProfilesApiService } from '../../features/profile/application/services/user-api.service';
 import { EditProfileUseCase } from '../../features/profile/application/use-cases/edit-profile.use-case';
 import { FillOutProfileUseCase } from '../../features/profile/application/use-cases/fill-out-profile.use-case';
@@ -60,6 +60,7 @@ import { TransportManager } from '../managers/transport.manager';
 import { CompleteProfileImagesUseCase } from '../../features/profile/application/use-cases/completed-profile-image.use-case';
 import { HandleFilesEventUseCase } from '../../features/profile/application/use-cases/handle-files-event.use-case';
 import { ProfileImageDeliveryApprovedEventHandler } from '../../features/profile/application/use-cases/events/profile-image-delivery-approved.event';
+import { ProfileImageService } from '../../features/profile/application/services/profile-image.service';
 
 const adapters = [
   BcryptAdapter,
@@ -81,6 +82,7 @@ export const providers: Provider[] = [
   UserService,
   AuthQueryRepository,
   CleanUpDatabaseRepository,
+  ProfileImageService,
   SecurityQueryRepo,
   UsersQueryRepo,
   SACudApiService,

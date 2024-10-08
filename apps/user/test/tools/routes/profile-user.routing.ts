@@ -8,6 +8,6 @@ export class ProfileRouting extends BaseRouting {
   }
   fillOutProfile = () => `${this.baseUrl}/${UserNavigate.FillOutProfile}`;
   editProfile = () => `${this.baseUrl}/${UserNavigate.EditProfile}`;
-  getProfile = () => `${this.baseUrl}/${UserNavigate.GetProfile}`;
+  getProfile = (id: string) => `${this.baseUrl}/${id}`;
   uploadPhoto = () => `${this.baseUrl}/${UserNavigate.UploadPhoto}`;
 }

@@ -12,7 +12,7 @@ export const applyAppSettings = (app: INestApplication) => {
   const currentENV = app.get(ConfigService).get('ENV');
 
   let appPrefix = 'api/v1';
-  currentENV === Environment.TESTING && (appPrefix = '');
+  currentENV === Environment.DEVELOPMENT && (appPrefix = '');
   app.setGlobalPrefix(appPrefix);
 
   const corsSetup = {

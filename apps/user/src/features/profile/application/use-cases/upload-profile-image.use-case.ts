@@ -35,6 +35,7 @@ export class UploadProfileImageUseCase
     const { userId, image } = command.imageDto;
 
     const profile = await this.profilesRepo.getByUserId(userId);
+    const profileImage = await this.profilesRepo.getProfileImage(profile.id);
     if (!profile) {
       notice.addError(
         'profile does not exist',

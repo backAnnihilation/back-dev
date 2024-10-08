@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, ProfileImage } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
-import { DatabaseService } from '@user/core/db/prisma/prisma.service';
+import { DatabaseService } from '@user/core';
 import {
   getUserProfileViewModel,
   UserProfileViewModel,
@@ -29,10 +29,10 @@ export class ProfilesQueryRepo {
     }
   }
 
-  async getProfileImage(id: string) {
+  async getProfileImage(profileId: string) {
     try {
       const result = await this.profileImages.findUnique({
-        where: { profileId: id },
+        where: { profileId },
       });
       if (!result) return null;
       return this.mapProfileImageToView(result);
@@ -46,6 +46,7 @@ export class ProfilesQueryRepo {
   private mapProfileImageToView(image: ProfileImage) {
     return {
       id: image.id,
+      profileId: image.profileId,
       createdAt: image.createdAt,
       urlLarge: image.urlLarge,
       urlSmall: image.urlSmall,

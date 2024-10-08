@@ -9,7 +9,7 @@ export abstract class BaseRouting {
   constructor(baseUrl: string) {
     const env = process.env.ENV;
     let basePrefix = this._basePrefix;
-    env === Environment.TESTING && (basePrefix = '');
+    env === Environment.DEVELOPMENT && (basePrefix = '');
     this.baseUrl = `${basePrefix}${baseUrl}`;
   }
 }

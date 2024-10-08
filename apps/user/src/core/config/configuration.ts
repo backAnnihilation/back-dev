@@ -6,6 +6,7 @@ import {
   IsOptional,
   IsString,
   validateSync,
+  validateOrReject,
 } from 'class-validator';
 import { print } from '@app/utils';
 
@@ -92,14 +93,10 @@ export class EnvironmentVariables {
 
 export const getEnvPaths = (env: Environment) => {
   console.log('getEnvPaths', { env });
-
-  let defaultEnvFilePaths = ['.env.dev', '.env'];
-
-  if (env === Environment.TESTING) {
-    defaultEnvFilePaths.unshift('.env.test');
-  }
-
-  return defaultEnvFilePaths;
+  const relativePrefix = './apps/user/';
+  const envPaths = ['.env.dev', '.env'];
+  if (env === Environment.TESTING) envPaths.unshift('.env.test');
+  return envPaths.map((p) => relativePrefix + p);
 };
 
 export let shouldIgnoreEnvFiles = (env: Environment) =>
@@ -110,7 +107,7 @@ export let shouldIgnoreEnvFiles = (env: Environment) =>
  * @param config The configuration object to validate.
  * @returns The validated configuration object.
  */
-export const validate = (config: Record<string, unknown>) => {
+export const validate = async (config: Record<string, unknown>) => {
   const validatedConfig = plainToInstance(EnvironmentVariables, config, {
     enableImplicitConversion: true,
   });
@@ -118,17 +115,21 @@ export const validate = (config: Record<string, unknown>) => {
   const ENV = validatedConfig.ENV;
   print('ENV: ' + ENV);
 
-  const isProd = shouldIgnoreEnvFiles(ENV);
-
-  if (!isProd) {
-    const errors = validateSync(validatedConfig, {
+  try {
+    await validateOrReject(validatedConfig, {
       skipMissingProperties: false,
     });
-
-    if (errors.length > 0) {
-      throw new Error(errors.toString());
-    }
+  } catch (error) {
+    throw new Error(error);
   }
+
+  // const errors = validateSync(validatedConfig, {
+  //   skipMissingProperties: false,
+  // });
+
+  // if (errors.length > 0) {
+  //   throw new Error(errors.toString());
+  // }
 
   return validatedConfig;
 };
