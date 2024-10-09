@@ -18,6 +18,7 @@ import { SAController } from './features/admin/api/controllers/sa.controller';
 import { providers } from './core/config/app-providers';
 import { UserProfilesController } from './features/profile/api/profiles.controller';
 import { PostsController } from './features/post/api/controllers/posts.controller';
+import { SubsController } from './features/subs/api/subs.controller';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { PostsController } from './features/post/api/controllers/posts.controlle
     SAController,
     UserProfilesController,
     PostsController,
+    SubsController,
   ],
   providers,
 })

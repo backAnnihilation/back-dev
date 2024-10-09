@@ -1,0 +1,6 @@
+model Subs {
+  id                String         @id @default(uuid())
+  followerId     String
+  followingId          String
+  createdAt         DateTime       @default(now())
+}

@@ -57,6 +57,12 @@ import {
 } from '@user/core/adapters';
 import { TransportManager } from '../managers/transport.manager';
 import { UploadProfileImageUseCase } from '../../features/profile/application/use-cases/upload-profile-image.use-case';
+import { SubsRepository } from '../../features/subs/domain/subs-repository';
+import { SubsQueryRepo } from '../../features/subs/api/subs.query.repo';
+import { SubscriptionService } from '../../features/subs/application/services/subs-service';
+import { SubscribeUseCase } from '../../features/subs/application/use-cases/subscription.use-case';
+import { UnsubscribeUseCase } from '../../features/subs/application/use-cases/unsubscription.use-case';
+import { SubsCudApiService } from '../../features/subs/application/services/subs-api.service';
 
 const adapters = [
   BcryptAdapter,
@@ -120,4 +126,10 @@ export const providers: Provider[] = [
   CreatePostUseCase,
   PostQueryRepository,
   PostsRepository,
+  SubsRepository,
+  SubsQueryRepo,
+  SubscriptionService,
+  SubscribeUseCase,
+  UnsubscribeUseCase,
+  SubsCudApiService,
 ];

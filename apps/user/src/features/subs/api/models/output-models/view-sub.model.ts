@@ -12,3 +12,8 @@ export type ViewSubsCount = {
   followersCount: number;
   followingCount: number;
 };
+
+export type ViewSubs = {
+  followers: string[];
+  following: string[];
+};

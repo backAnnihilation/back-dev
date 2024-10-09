@@ -1,27 +1,26 @@
 import { Injectable } from '@nestjs/common';
-import { InjectModel } from '@nestjs/sequelize';
+import { Prisma } from '@prisma/client';
+import { DefaultArgs } from '@prisma/client/runtime/library';
 
-import { UserSubscription } from '../domain/entities/subs.table';
-
-import {
-  ViewFollowerModel,
-  ViewSubsCount,
-  ViewSubsModels,
-} from './models/output-models/view-sub.model';
+import { DatabaseService } from '@user/core/db/prisma/prisma.service';
+import { BaseRepository } from '@user/core/db/base.repository';
 
 @Injectable()
-export class SubsQueryRepo {
-  constructor(
-    @InjectModel(UserSubscription)
-    private subscriptionModel: typeof UserSubscription,
-  ) {}
+export class SubsQueryRepo extends BaseRepository {
+  private readonly subs: Prisma.SubsDelegate<DefaultArgs>;
+  constructor(protected prisma: DatabaseService) {
+    super(prisma);
+    this.subs = this.prisma.subs;
+  }
   async getFollowing(userId: string) {
     try {
-      const following = await this.subscriptionModel.findAll({
+      const following = await this.subs.findMany({
         where: {
           followerId: userId,
         },
-        attributes: ['followingId'],
+        select: {
+          followingId: true,
+        },
       });
 
       return following.map((sub) => sub.followingId);
@@ -32,11 +31,13 @@ export class SubsQueryRepo {
 
   async getFollowers(userId: string) {
     try {
-      const followers = await this.subscriptionModel.findAll({
+      const followers = await this.subs.findMany({
         where: {
           followingId: userId,
         },
-        attributes: ['followerId'],
+        select: {
+          followerId: true,
+        },
       });
 
       return followers.map((sub) => sub.followerId);
@@ -47,7 +48,7 @@ export class SubsQueryRepo {
 
   async getFollowingCount(userId: string) {
     try {
-      return await this.subscriptionModel.count({
+      return await this.subs.count({
         where: {
           followerId: userId,
         },
@@ -60,7 +61,7 @@ export class SubsQueryRepo {
 
   async getFollowersCount(userId: string) {
     try {
-      return await this.subscriptionModel.count({
+      return await this.subs.count({
         where: {
           followingId: userId,
         },
@@ -71,9 +72,9 @@ export class SubsQueryRepo {
     }
   }
 
-  async getById(userId: string): Promise<UserSubscription> {
+  async getById(userId: string) {
     try {
-      const following = await this.subscriptionModel.findOne({
+      const following = await this.subs.findFirst({
         where: {
           followerId: userId,
         },

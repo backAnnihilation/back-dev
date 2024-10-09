@@ -72,8 +72,8 @@ export class PostsController {
   @GetPostEndpoint()
   @UseGuards(AccessTokenGuard)
   @Get(':id')
-  async getPost(@Param('id') userId: string): Promise<PostViewModel> {
-    const post = await this.postQueryRepo.getById(userId);
+  async getPost(@Param('id') postId: string): Promise<PostViewModel> {
+    const post = await this.postQueryRepo.getById(postId);
     if (!post) throw new NotFoundException();
     return post;
   }
