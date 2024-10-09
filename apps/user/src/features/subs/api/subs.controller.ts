@@ -6,6 +6,7 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
+
 import { CurrentUserId } from '@user/core/decorators/current-user-id.decorator';
 
 import { SubsCudApiService } from '../application/services/subs-api.service';
@@ -21,8 +22,11 @@ import {
   InputUserIdDto,
 } from './models/input-models/sub.model';
 import { ViewSubs, ViewSubsCount } from './models/output-models/view-sub.model';
+import { ApiTagsEnum, RoutingEnum } from '@app/shared';
+import { ApiTags } from '@nestjs/swagger';
 
-@Controller('subs')
+@ApiTags(ApiTagsEnum.Subs)
+@Controller(RoutingEnum.subs)
 export class SubsController {
   constructor(
     private subsApiService: SubsCudApiService,
@@ -30,7 +34,7 @@ export class SubsController {
     private subsService: SubscriptionService,
   ) {}
 
-  @Get("getFollowersAndFollowingCount/:userId'")
+  @Get(':userId')
   async getUserFollowersAndFollowing(
     @Param('userId') userId: string,
   ): Promise<ViewSubs> {
@@ -45,7 +49,7 @@ export class SubsController {
     return payload;
   }
 
-  @Get('getFollowersAndFollowingCount/:userId')
+  @Get('count/:userId')
   async getUserFollowersAndFollowingCount(
     @Param('userId') userId: string,
   ): Promise<ViewSubsCount> {
@@ -54,7 +58,7 @@ export class SubsController {
     return payload;
   }
 
-  @Post('subscribe/:followingId')
+  @Post(':followingId')
   @UseGuards(AccessTokenGuard)
   async subscribe(
     @CurrentUserId() userId: string,
@@ -65,10 +69,10 @@ export class SubsController {
       followerId: userId,
     });
 
-    return this.subsApiService.create(command);
+    return this.subsApiService.updateOrDelete(command);
   }
 
-  @Delete('unsubscribe/:following')
+  @Delete(':following')
   @UseGuards(AccessTokenGuard)
   async unsubscribe(
     @CurrentUserId() userId: string,

@@ -3,6 +3,7 @@ export enum RoutingEnum {
   files = '/files',
   profiles = '/users/profiles',
   users = '/users',
+  subs = '/subs',
   comments = '/comments',
   blogs = '/blogs',
   posts = '/posts',
@@ -14,6 +15,7 @@ export enum RoutingEnum {
 
 export enum ApiTagsEnum {
   Posts = 'posts',
+  Subs = 'subs',
   Users = 'users',
   Profiles = 'users/profiles',
   Auth = 'auth',

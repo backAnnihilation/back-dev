@@ -17,3 +17,10 @@ export type ViewSubs = {
   followers: string[];
   following: string[];
 };
+
+export type SubViewModel = {
+  id: string;
+  followingId: string;
+  followerId: string;
+  createdAt: Date;
+};

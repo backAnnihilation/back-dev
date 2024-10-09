@@ -31,30 +31,3 @@ export type LocationViewModel = {
   country: string | null;
   city: string | null;
 };
-
-export type FollowersViewModel = {
-  followers: number;
-  following: number;
-};
-
-export const getUserProfileWithSubsViewModel = (
-  profile: UserProfileViewModel,
-  subs: FollowersViewModel,
-): UserProfileWithSubsViewModel => ({
-  ...profile,
-  followers: subs.followers,
-  following: subs.following,
-});
-
-export type UserProfileWithSubsViewModel = {
-  id: string;
-  userName: string;
-  firstName: string;
-  lastName: string;
-  birthDate: string;
-  createdAt: string;
-  location: LocationViewModel;
-  about?: string | null;
-  followers: number;
-  following: number;
-};

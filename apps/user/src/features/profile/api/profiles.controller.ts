@@ -1,12 +1,4 @@
 import {
-  ApiTagsEnum,
-  FileMetadata,
-  IProfileImageViewModelType,
-  PROFILE_IMAGE,
-  RoutingEnum,
-  SUBSCRIPTION_GET_COUNT,
-} from '@app/shared';
-import {
   Body,
   Controller,
   Get,
@@ -22,9 +14,15 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
+
 import { CurrentUserId } from '@user/core/decorators/current-user-id.decorator';
 import { UserNavigate } from '@user/core/routes/user-navigate';
-import { Transport } from '@nestjs/microservices';
+import {
+  ApiTagsEnum,
+  FileMetadata,
+  IProfileImageViewModelType,
+  RoutingEnum,
+} from '@app/shared';
 import { TransportManager } from '@user/core/managers/transport.manager';
 
 import { UserPayload } from '../../auth/infrastructure/decorators/user-payload.decorator';
@@ -40,8 +38,7 @@ import { ImageFilePipe } from '../infrastructure/validation/upload-photo-format'
 import { EditProfileInputModel } from './models/input/edit-profile.model';
 import { FillOutProfileInputModel } from './models/input/fill-out-profile.model';
 import {
-  getUserProfileWithSubsViewModel,
-  UserProfileViewModel, UserProfileWithSubsViewModel,
+  UserProfileViewModel,
 } from './models/output/profile.view.model';
 import { ProfilesQueryRepo } from './query-repositories/profiles.query.repo';
 import { EditProfileEndpoint } from './swagger/edit-profile.description';
@@ -63,20 +60,10 @@ export class UserProfilesController {
   async getUserProfile(
     @CurrentUserId() userId: string,
     @Param('id') profileId: string,
-  ): Promise<UserProfileWithSubsViewModel> {
+  ): Promise<UserProfileViewModel> {
     const profile = await this.profilesQueryRepo.getById(profileId);
     if (!profile) throw new NotFoundException('Profile not found');
-
-    const transport = Transport.RMQ;
-    const commandName = SUBSCRIPTION_GET_COUNT;
-
-    const subs = await this.transportManager.sendMessage(
-      transport,
-      commandName,
-      { userId: profileId },
-    );
-
-    return getUserProfileWithSubsViewModel(profile, subs);
+    return profile;
   }
 
   @ApiExcludeEndpoint()
