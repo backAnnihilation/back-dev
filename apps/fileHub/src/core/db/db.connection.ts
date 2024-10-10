@@ -8,13 +8,10 @@ export const getConnection = async (
   configService: ConfigService<EnvironmentVariables>,
 ): Promise<MongooseModuleOptions> => {
   const ENV = configService.get('ENV');
-  const isDev = ENV === Environment.TESTING;
-  const URL = isDev
-    ? configService.get('DATABASE_LOCAL_URL')
-    : configService.get('DATABASE_URL');
+  const URL = configService.get('DATABASE_URL');
 
   const message = `${COLORS.warning}Connecting to MongoDB ${
-    isDev ? 'locally' : 'remote'
+    ENV === Environment.DEVELOPMENT ? 'locally' : 'remote'
   }${COLORS.reset}`;
   print(message);
 
