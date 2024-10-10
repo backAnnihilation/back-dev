@@ -2,7 +2,7 @@ import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { LayerNoticeInterceptor } from '@app/shared';
 import { BcryptAdapter } from '@user/core/adapters/bcrypt.adapter';
 import { ResponseIdType } from '../../api/models/outputSA.models.ts/user-models';
-import { UsersRepository } from '../../infrastructure/users.repo';
+import { UsersRepository } from '../../infrastructure/users.repository';
 import { CreateSACommand } from '../commands/create-sa.command';
 import { UserModelDTO } from '../dto/create-user.dto';
 

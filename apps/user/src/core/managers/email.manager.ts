@@ -24,7 +24,7 @@ export class EmailManager {
     email: string,
     recoveryCode: string,
   ): Promise<string> {
-    const recoveryLink = `https://Incta.team/reset-password?recoveryCode=${recoveryCode}`;
+    const recoveryLink = `https://incta.team/reset-password?recoveryCode=${recoveryCode}`;
 
     const passwordRecoveryData = {
       from: `Incta team👻 <incta.team@gmail.com>`,

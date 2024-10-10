@@ -3,7 +3,7 @@ import { UsersQueryRepo } from '../../features/admin/api/query-repositories/user
 import { SACudApiService } from '../../features/admin/application/sa-cud-api.service';
 import { CreateSAUseCase } from '../../features/admin/application/use-cases/create-sa.use.case';
 import { CleanUpDatabaseRepository } from '../../features/admin/infrastructure/clean-up.repo';
-import { UsersRepository } from '../../features/admin/infrastructure/users.repo';
+import { UsersRepository } from '../../features/admin/infrastructure/users.repository';
 import { AuthQueryRepository } from '../../features/auth/api/query-repositories/auth.query.repo';
 import { AuthenticationApiService } from '../../features/auth/application/services/auth-token-response.service';
 import { ConfirmRegistrationUseCase } from '../../features/auth/application/use-cases/confirm-registration.use-case';
@@ -71,9 +71,7 @@ const adapters = [
   AxiosAdapter,
 ];
 
-const managers = [EmailManager, 
-  TransportManager
-];
+const managers = [EmailManager, TransportManager];
 
 export const providers: Provider[] = [
   ...adapters,

@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { OutputId, LayerNoticeInterceptor } from '@app/shared';
-import { UsersRepository } from '../../../admin/infrastructure/users.repo';
+import { UsersRepository } from '../../../admin/infrastructure/users.repository';
 import { IFillOutProfileCommand } from '../../api/models/input/fill-out-profile.model';
 import { UserEntities } from '../../api/models/enum/user-entities.enum';
 import { ProfilesRepository } from '../../infrastructure/profiles.repository';

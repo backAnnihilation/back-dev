@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { LayerNoticeInterceptor } from '@app/shared';
-import { UsersRepository } from '../../infrastructure/users.repo';
+import { UsersRepository } from '../../infrastructure/users.repository';
 import { DeleteSACommand } from '../commands/delete-sa.command';
 
 @CommandHandler(DeleteSACommand)

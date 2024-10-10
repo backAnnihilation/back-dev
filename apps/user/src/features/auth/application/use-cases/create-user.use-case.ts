@@ -1,6 +1,6 @@
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { UserIdType } from '../../../admin/api/models/outputSA.models.ts/user-models';
-import { UsersRepository } from '../../../admin/infrastructure/users.repo';
+import { UsersRepository } from '../../../admin/infrastructure/users.repository';
 import { UserModelDTO } from '../../../admin/application/dto/create-user.dto';
 import { AuthRepository } from '../../infrastructure/auth.repository';
 import { LayerNoticeInterceptor } from '@app/shared';

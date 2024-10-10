@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { LayerNoticeInterceptor, OutputId } from '@app/shared';
 import { IDeletePostCommand } from '../../api/models/input/delete-profile.model';
-import { UsersRepository } from '../../../admin/infrastructure/users.repo';
+import { UsersRepository } from '../../../admin/infrastructure/users.repository';
 import { PostsRepository } from '../../infrastructure/posts.repository';
 
 export class DeletePostCommand {

@@ -12,7 +12,6 @@ module.exports = {
     fallback: {
       express: require.resolve('express'),
       sharp: require.resolve('sharp'),
-      // 'sharp/package.json': require.resolve('sharp/package.json'),
     },
   },
 };

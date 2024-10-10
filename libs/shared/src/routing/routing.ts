@@ -1,4 +1,5 @@
 export enum RoutingEnum {
+  subs = '/subs',
   photos = '/photos',
   files = '/files',
   profiles = '/users/profiles',
@@ -13,6 +14,7 @@ export enum RoutingEnum {
 }
 
 export enum ApiTagsEnum {
+  Subs = 'subs',
   Posts = 'posts',
   Users = 'users',
   Profiles = 'users/profiles',

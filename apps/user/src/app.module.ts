@@ -20,6 +20,7 @@ import { AuthController } from './features/auth/api/controllers/auth.controller'
 import { PostsController } from './features/post/api/controllers/posts.controller';
 import { UserProfilesController } from './features/profile/api/profiles.controller';
 import { SecurityController } from './features/security/api/security.controller';
+import { SubsController } from './features/subs/api/subs.controller';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { SecurityController } from './features/security/api/security.controller'
     PrismaModule,
   ],
   controllers: [
+    SubsController,
     SecurityController,
     AuthController,
     SAController,

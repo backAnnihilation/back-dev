@@ -6,7 +6,7 @@ import {
 } from '@nestjs/cqrs';
 import { Provider, UserAccount } from '@prisma/client';
 import { UserProviderDTO } from '../../../admin/application/dto/create-user.dto';
-import { UsersRepository } from '../../../admin/infrastructure/users.repo';
+import { UsersRepository } from '../../../admin/infrastructure/users.repository';
 import { CreateSessionCommand } from '../../../security/application/use-cases/commands/create-session.command';
 import { JwtTokens } from '../../api/models/auth-input.models.ts/jwt.types';
 import {
