@@ -22,23 +22,25 @@ export class CompleteProfileImagesUseCase
 
   async execute(
     command: CompleteProfileImagesCommand,
-  ): Promise<LayerNoticeInterceptor<ResponseProfileImageType>> {
-    const notice = new LayerNoticeInterceptor<ResponseProfileImageType>();
+  ): Promise<LayerNoticeInterceptor> {
+    const notice = new LayerNoticeInterceptor();
     const {
-      payload: { profileId, ...urls },
+      payload: { profileId, imageId, ...profileImageDto },
       eventId,
     } = command.profileImagesDto;
 
-    const imageDto = {
-      urls,
-      status: ImageStatus.success,
+    const updatedProfileImageDto = {
+      ...profileImageDto,
+      status: ImageStatus.completed,
     };
-    await this.profilesRepo.updateProfileImage(profileId, imageDto);
 
-    const event = new ProfileImageDeliveryApprovedEvent(eventId);
-    await this.eventBus.publish(event);
+    await this.profilesRepo.updateProfileImage(imageId, updatedProfileImageDto);
 
-    notice.addData({ status: ImageStatus.pending, profileId });
+    const imageProcessingCompletedEvent = new ProfileImageDeliveryApprovedEvent(
+      eventId,
+    );
+    await this.eventBus.publish(imageProcessingCompletedEvent);
+
     return notice;
   }
 }

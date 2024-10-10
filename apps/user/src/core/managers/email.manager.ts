@@ -24,10 +24,10 @@ export class EmailManager {
     email: string,
     recoveryCode: string,
   ): Promise<string> {
-    const recoveryLink = `https://Incta.team/password-recovery?recoveryCode=${recoveryCode}`;
+    const recoveryLink = `https://Incta.team/reset-password?recoveryCode=${recoveryCode}`;
 
     const passwordRecoveryData = {
-      from: `Cringe Hub👻`,
+      from: `Incta team👻 <incta.team@gmail.com>`,
       subject: 'Password recovery',
       message: `
                 <p>To finish password recovery please follow the link below:

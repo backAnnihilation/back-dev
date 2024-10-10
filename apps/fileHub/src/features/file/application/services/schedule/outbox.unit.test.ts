@@ -2,7 +2,9 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import { RmqAdapter } from '../../../../../core/adapters/rmq.adapter';
 import { OutboxRepository } from '../../../infrastructure/events.outbox.repository';
 import { OutboxService } from './outbox.service';
-import { wait } from '../../../../../../../user/test/tools/utils/delayUtils';
+
+const wait = (sec: number) =>
+  new Promise((resolve) => setTimeout(resolve, sec * 1000));
 
 jest.useFakeTimers();
 
@@ -37,6 +39,7 @@ describe('SchedulerService', () => {
         name: jobName,
         start: 1000,
         end: 5000,
+        entityId: '123',
       });
 
       const job = schedulerRegistry.getInterval(jobName);
@@ -52,6 +55,7 @@ describe('SchedulerService', () => {
       outboxService.initJob({
         name: jobName,
         time: cronTime,
+        entityId: '123',
       });
 
       const job = schedulerRegistry.getCronJob(jobName);
@@ -70,6 +74,7 @@ describe('SchedulerService', () => {
         start,
         end,
         cb,
+        entityId: '123',
       });
 
       //   jest.advanceTimersByTime(1000);
@@ -83,7 +88,7 @@ describe('SchedulerService', () => {
       //   expect(cb).toHaveBeenCalledTimes(5);
 
       //   jest.advanceTimersByTime(1000);
-        expect(cb).toHaveBeenCalledTimes(5);
+      expect(cb).toHaveBeenCalledTimes(5);
 
       // check job interval is deleted after end
       expect(schedulerRegistry.getInterval(jobName)).toBeUndefined();

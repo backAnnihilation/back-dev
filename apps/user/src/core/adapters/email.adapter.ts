@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import * as nodemailer from 'nodemailer';
 import { SentMessageInfo } from 'nodemailer';
+import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import { EnvironmentVariables } from '../config/configuration';
 
 type EmailData = {
@@ -13,20 +14,25 @@ type EmailData = {
 
 @Injectable()
 export class EmailAdapter {
+  private readonly transport: SMTPTransport.Options;
   constructor(
     private readonly configService: ConfigService<EnvironmentVariables>,
-  ) {}
+  ) {
+    this.transport = {
+      service: this.configService.get('EMAIL_SERVICE'),
+      auth: {
+        user: this.configService.get('EMAIL_USER'),
+        pass: this.configService.get('EMAIL_PASSWORD'),
+      },
+    };
+  }
 
   async sendEmail(sendEmailData: EmailData): Promise<SentMessageInfo | null> {
-    const transporter = this.createTransport();
+    const transport = this.createTransport();
 
     try {
-      const info: SentMessageInfo = await this.sendMail(
-        transporter,
-        sendEmailData,
-      );
-
-      return info.messageId;
+      const sentMessageInfo = await this.sendMail(transport, sendEmailData);
+      return sentMessageInfo.messageId;
     } catch (error) {
       console.error(
         `Failed with ${sendEmailData.subject.toLowerCase()} message sending `,
@@ -49,12 +55,6 @@ export class EmailAdapter {
   }
 
   private createTransport() {
-    return nodemailer.createTransport({
-      service: this.configService.get('EMAIL_SERVICE'),
-      auth: {
-        user: this.configService.get('EMAIL_USER'),
-        pass: this.configService.get('EMAIL_PASSWORD'),
-      },
-    });
+    return nodemailer.createTransport(this.transport);
   }
 }

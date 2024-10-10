@@ -1,12 +1,10 @@
 import {
-  EventType,
-  LayerNoticeInterceptor,
   BaseEvent,
+  EventType,
   IMAGES_COMPLETED,
+  IMAGES_PROCESSED,
 } from '@app/shared';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { ResponseProfileImageType } from '../../api/models/output/image-notice-type.model';
-import { ProfilesRepository } from '../../infrastructure/profiles.repository';
 import { CompleteProfileImagesCommand } from './completed-profile-image.use-case';
 
 export class HandleFilesEventCommand {
@@ -22,6 +20,7 @@ export class HandleFilesEventUseCase
   private readonly commandMap: Record<string, new (dto: any) => any> = {
     [EventType.PROFILE_IMAGES]: CompleteProfileImagesCommand,
     [IMAGES_COMPLETED]: CompleteProfileImagesCommand,
+    [IMAGES_PROCESSED]: CompleteProfileImagesCommand,
   };
 
   constructor(private commandBus: CommandBus) {}

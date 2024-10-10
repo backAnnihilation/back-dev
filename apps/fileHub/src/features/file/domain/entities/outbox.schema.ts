@@ -27,6 +27,9 @@ export class OutboxEntity {
   @Prop({ default: 0 })
   retryCount: number;
 
+  createdAt: Date;
+  updatedAt: Date;
+
   static makeInstance(outboxDto: Partial<OutboxEntity>) {
     const outbox = new this() as OutboxDocument;
     outbox.status = EventStatus.PENDING;

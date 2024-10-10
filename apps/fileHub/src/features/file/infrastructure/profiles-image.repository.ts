@@ -11,8 +11,19 @@ import {
 @Injectable()
 export class ProfilesRepository extends BaseRepository<ProfileImageDocument> {
   constructor(
-    @InjectModel(ProfileImageMeta.name) profileImageModel: ProfileImageModel,
+    @InjectModel(ProfileImageMeta.name)
+    profileImageModel: ProfileImageModel,
   ) {
     super(profileImageModel);
+  }
+
+  async getProfileImagesByImageId(
+    imageId: string,
+  ): Promise<ProfileImageDocument> {
+    try {
+      return await this.model.findById({ imageId });
+    } catch (error) {
+      return null;
+    }
   }
 }

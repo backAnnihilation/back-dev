@@ -4,12 +4,13 @@ import {
   BaseImageMeta,
   BaseImageMetaDto,
   BaseImageMetaSchema,
-  ImageMetaStatics,
 } from './base-image-meta.schema';
+import { LayerNoticeInterceptor } from '@app/shared';
 
 export type PostImageMetaDocument = HydratedDocument<PostImageMeta>;
 export type PostImageMetaModel = Model<PostImageMetaDocument> &
-  ImageMetaStatics;
+  PostImageStatics;
+
 export type PostImageMetaDto = BaseImageMetaDto & {
   userId: string;
   postId: string;
@@ -22,9 +23,30 @@ export class PostImageMeta extends BaseImageMeta {
 
   @Prop({ required: true })
   postId: string;
+
+  @Prop({ type: [BaseImageMetaSchema] })
+  imagesMeta: BaseImageMeta[];
+
+  createdAt: Date;
+  updatedAt: Date;
+
+  static async makeInstance(
+    imageDto: Partial<PostImageMetaDocument> & Partial<BaseImageMeta>,
+  ) {
+    const notice = new LayerNoticeInterceptor<PostImageMetaDocument>();
+    const imageMeta = new this() as PostImageMetaDocument;
+
+    Object.assign(imageMeta, imageDto);
+    await notice.validateFields(imageMeta);
+    notice.addData(imageMeta);
+    return notice;
+  }
 }
 
 export const PostImageMetaSchema = SchemaFactory.createForClass(PostImageMeta);
 
-PostImageMetaSchema.statics.makeInstance =
-  BaseImageMetaSchema.statics.makeInstance;
+const statics = {
+  makeInstance: PostImageMeta.makeInstance,
+};
+type PostImageStatics = typeof statics;
+PostImageMetaSchema.statics = statics;

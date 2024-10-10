@@ -3,6 +3,7 @@ import {
   BaseEvent,
   FileMetadata,
   IMAGES_COMPLETED,
+  IMAGES_PROCESSED,
   RmqService,
   RoutingEnum,
 } from '@app/shared';
@@ -90,13 +91,23 @@ export class UserProfilesController {
     return result;
   }
 
-  @EventPattern(IMAGES_COMPLETED)
+  @Get(UserNavigate.GetProfileWithImage)
+  @UseGuards(AccessTokenGuard)
+  async getProfileImages(@UserPayload() userPayload: UserSessionDto) {
+    const result = await this.profilesQueryRepo.getProfileImage(
+      userPayload.userId,
+    );
+    if (!result) throw new NotFoundException('Profile image not found');
+    return result;
+  }
+
+  @EventPattern(IMAGES_PROCESSED)
   async handleEvent<T extends BaseEvent>(
     @Payload() data: T,
     @Ctx() context: RmqContext,
   ) {
     this.rmqService.ack(context);
-    console.log('RECEIVE IMAGE URLS', { data });
+    console.log('RECEIVE IMAGE URLS FROM FILE-HUB', { data });
     const command = new HandleFilesEventCommand(data);
     await this.commandBus.execute(command);
   }

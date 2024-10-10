@@ -24,6 +24,27 @@ export class OutboxRepository extends BaseRepository<OutboxDocument> {
     }
   }
 
+  async getNonApprovedEventById(id: string) {
+    try {
+      return await this.model.findOne({
+        _id: id,
+        status: EventStatus.AWAITING_DELIVERY,
+      });
+    } catch (error) {
+      return null;
+    }
+  }
+
+  async getEventByImageId(imageId: string) {
+    try {
+      return await this.model.findOne({
+        payload: { imageId },
+      });
+    } catch (error) {
+      return null;
+    }
+  }
+
   async getFailedEvents(): Promise<OutboxDocument[]> {
     try {
       return await this.model.find({

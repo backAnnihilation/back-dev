@@ -1,6 +1,15 @@
 import { CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import { CronJob } from 'cron';
 
+type SetIntervalOptions = {
+  start: number;
+  end?: number | null;
+  cb: () => Promise<void>;
+  name: string;
+  deleteOnEnd?: boolean;
+  delay?: number | null;
+};
+
 export class SchedulerService {
   constructor(protected scheduleRegistry: SchedulerRegistry) {}
 
@@ -21,6 +30,8 @@ export class SchedulerService {
     }
   }
   protected addTimeout(name: string, time: number, cb: () => void) {
+    const { job } = this.getJob(name);
+    if (job) return;
     const timeoutId = setTimeout(cb, time);
     this.scheduleRegistry.addTimeout(name, timeoutId);
   }
@@ -33,7 +44,6 @@ export class SchedulerService {
     }
   }
 
-
   protected deleteJob(jobName: string) {
     const { job } = this.getJob(jobName);
     if (job) {
@@ -42,16 +52,15 @@ export class SchedulerService {
     }
   }
 
-  private deleteIntervalJob(jobName: string) {
+  protected deleteIntervalJob(jobName: string) {
     this.scheduleRegistry.deleteInterval(jobName);
   }
 
-  protected setInterval(
-    name: string,
-    start: number,
-    end: number | null = null,
-    cb: () => Promise<void>,
-  ) {
+  protected setInterval(options: SetIntervalOptions) {
+    const { start, end, cb, name, delay, deleteOnEnd } = options;
+    const { job } = this.getJob(name);
+    if (job) return;
+
     const intervalId = setInterval(async () => {
       await cb();
     }, start);

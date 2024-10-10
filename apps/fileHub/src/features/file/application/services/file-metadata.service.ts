@@ -16,6 +16,7 @@ export type UploadImageType = {
   image: ImageMeta;
   category: ImageCategory;
   profileId?: string;
+  imageId?: string;
   postId?: string;
   bucket: Bucket;
 };
@@ -24,6 +25,7 @@ type GenerateImageKeyType = {
   contentType: ContentType;
   category: ImageCategory;
   profileId?: string;
+  imageId?: string;
   postId?: string;
 };
 
@@ -39,6 +41,7 @@ export class FilesService {
       category,
       postId,
       profileId,
+      imageId,
       bucket: Bucket,
     } = uploadFileDto;
 
@@ -48,6 +51,7 @@ export class FilesService {
       category,
       profileId,
       postId,
+      imageId,
     });
 
     const bucketParams = {
@@ -61,14 +65,20 @@ export class FilesService {
   }
 
   generateImageKey = (keyInfo: GenerateImageKeyType) => {
-    const { profileId, category, contentType, fileName, postId } = keyInfo;
+    const { profileId, category, contentType, fileName, postId, imageId } =
+      keyInfo;
 
     const [, fileExtension] = contentType.split('/');
     const timeStamp = new Date().getTime();
     const withExtension = fileName.endsWith(fileExtension);
     const fileSignature = withExtension ? fileName.split('.')[0] : fileName;
 
-    const basePath = this.getBasePathForCategory(category, postId, profileId);
+    const basePath = this.getBasePathForCategory(
+      category,
+      postId,
+      profileId,
+      imageId,
+    );
 
     const generatedKey = `${basePath}/${fileSignature}${timeStamp}.${fileExtension}`;
 
@@ -79,9 +89,10 @@ export class FilesService {
     category: ImageCategory,
     postId?: string,
     profileId?: string,
+    imageId?: string,
   ): string =>
     ({
       [ImageCategory.POST]: `images/posts/postId-${postId}`,
-      [ImageCategory.PROFILE]: `images/profiles/profileId-${profileId}`,
+      [ImageCategory.PROFILE]: `images/profiles/profileId-${profileId}/imageId-${imageId}`,
     })[category];
 }

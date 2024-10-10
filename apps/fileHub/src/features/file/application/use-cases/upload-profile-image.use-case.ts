@@ -5,6 +5,7 @@ import {
   ImageSize,
   LayerNoticeInterceptor,
   EventType,
+  IMAGES_PROCESSED,
 } from '@app/shared';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectModel } from '@nestjs/mongoose';
@@ -29,6 +30,7 @@ import { OutboxRepository } from '../../infrastructure/events.outbox.repository'
 import { ProcessedProfileImagesEvent } from '../../api/models/dto/processed-profile-images-event';
 import { OutboxService } from '../services/schedule/outbox.service';
 import { ProfilesRepository } from '../../infrastructure/profiles-image.repository';
+import { BaseImageMeta } from '../../domain/entities/base-image-meta.schema';
 
 export class UploadProfileImageCommand {
   constructor(public imageDto: InputProfileImageDto) {}
@@ -38,6 +40,7 @@ export class UploadProfileImageCommand {
 export class UploadProfileImageUseCase
   implements ICommandHandler<UploadProfileImageCommand>
 {
+  private readonly eventType: EVENT_COMMANDS;
   constructor(
     private filesService: FilesService,
     private filesRepo: ProfilesRepository,
@@ -49,18 +52,24 @@ export class UploadProfileImageUseCase
     private rmqAdapter: RmqAdapter,
     private outboxRepo: OutboxRepository,
     private outboxService: OutboxService,
-  ) {}
+  ) {
+    this.eventType = IMAGES_PROCESSED;
+  }
 
   async execute(
     command: UploadProfileImageCommand,
   ): Promise<LayerNoticeInterceptor> {
-    const { profileId, image } = command.imageDto;
+    const { profileId, imageId, image } = command.imageDto;
     const { originalname, size, mimetype } = image;
 
-    const eventType = IMAGES_COMPLETED;
+    const outboxEvent = await this.outboxRepo.getEventByImageId(imageId);
+    if (outboxEvent) {
+      this.rmqAdapter.sendMessage(this.eventType, outboxEvent);
+      return;
+    }
 
     const initOutboxInstance = this.OutboxModel.makeInstance({
-      eventType,
+      eventType: this.eventType,
     });
     const outbox = await this.outboxRepo.save(initOutboxInstance);
 
@@ -73,9 +82,8 @@ export class UploadProfileImageUseCase
     const category = ImageCategory.PROFILE;
     const bucket = Bucket.Inst;
 
-    const imageUrls = {};
-
-    let originalImageMetaId: string;
+    const imageMeta = {};
+    const imagesMeta = [];
     for (const [type, buffer] of processedImages.entries()) {
       const { url, id: storageId } =
         await this.filesService.uploadFileInStorage({
@@ -84,51 +92,54 @@ export class UploadProfileImageUseCase
           category,
           profileId,
         });
-      imageUrls[type] = url;
-      const createdImageNotice = await this.ProfileImageModel.makeInstance<
-        ProfileImageMetaDto,
-        ProfileImageMeta
-      >({
-        storageId,
-        category,
-        name: originalname,
-        size,
+      imageMeta[type] = {
         url,
-        profileId,
+        storageId,
+        name: originalname,
+        category,
+        size,
         sizeType: type,
-      });
-      if (createdImageNotice.hasError)
-        return createdImageNotice as LayerNoticeInterceptor;
-
-      const profileImageDto = createdImageNotice.data;
-      const result = await this.filesRepo.save(profileImageDto);
-      type === ImageSize.ORIGINAL && (originalImageMetaId = result.id);
+      };
+      imagesMeta.push(imageMeta[type]);
     }
 
-    const payload = {
-      urlOriginal: imageUrls[ImageSize.ORIGINAL],
-      urlSmall: imageUrls[ImageSize.SMALL],
-      urlLarge: imageUrls[ImageSize.LARGE],
+    const createdImageNotice = await this.ProfileImageModel.makeInstance({
       profileId,
+      imageId,
+      imagesMeta,
+    });
+
+    if (createdImageNotice.hasError)
+      return createdImageNotice as LayerNoticeInterceptor;
+
+    const savedImage = await this.filesRepo.save(createdImageNotice.data);
+
+    const payload = {
+      urlOriginal: imageMeta[ImageSize.ORIGINAL].url,
+      urlSmall: imageMeta[ImageSize.SMALL].url,
+      urlLarge: imageMeta[ImageSize.LARGE].url,
+      profileId,
+      imageId,
+      imageMetaId: savedImage.id,
     };
 
     outbox.update(EventStatus.AWAITING_DELIVERY, payload);
-    await this.outboxRepo.save(outbox);
+    const savedEvent = await this.outboxRepo.save(outbox);
 
     const event = new ProcessedProfileImagesEvent(outbox);
+    await this.rmqAdapter.sendMessage(this.eventType, event);
 
-    await this.rmqAdapter.sendMessage(eventType, event);
-
-    this.addScheduleJob();
+    this.checkEventDeliveredJob(imageId, savedEvent.id);
 
     return new LayerNoticeInterceptor();
   }
 
-  private async addScheduleJob() {
+  private async checkEventDeliveredJob(imageId: string, eventId: string) {
     this.outboxService.initJob({
-      name: 'outbox-events',
-      start: 5000,
-      end: 26000,
+      name: `profile-image-event-${imageId}`,
+      start: 4000,
+      end: 15000,
+      entityId: eventId,
     });
   }
 }

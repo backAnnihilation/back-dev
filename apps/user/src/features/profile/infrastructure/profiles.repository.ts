@@ -65,26 +65,24 @@ export class ProfilesRepository extends BaseRepository {
     }
   }
 
-  async getProfileImage(profileId: string): Promise<ProfileImage | null> {
+  async getProfileImage(id: string): Promise<ProfileImage | null> {
     try {
-      const result = await this.profileImages.findUnique({
-        where: { profileId },
-      });
+      const result = await this.profileImages.findUnique({ where: { id } });
 
       if (!result) return null;
 
       return result;
     } catch (error) {
-      console.error(`getProfile ${error}`);
+      console.error(`getProfile image${error}`);
       return null;
     }
   }
 
-  async updateProfileImageStatus(profileImageId: string) {
+  async updateProfileImageStatus(id: string, status: ImageStatus) {
     try {
       return await this.profileImages.update({
-        where: { id: profileImageId },
-        data: { status: ImageStatus.success },
+        where: { id },
+        data: { status },
       });
     } catch (error) {
       console.error(`updateProfileImageStatus ${error}`);
@@ -104,17 +102,13 @@ export class ProfilesRepository extends BaseRepository {
   }
 
   async updateProfileImage(
-    profileId: string,
-    updateImageDto: UpdateProfileImageType,
+    id: string,
+    imageDto: UpdateProfileImageType,
   ): Promise<ProfileImage> {
     try {
-      const { urls, status } = updateImageDto;
       return await this.profileImages.update({
-        where: { profileId },
-        data: {
-          ...urls,
-          status,
-        },
+        where: { id },
+        data: { ...imageDto },
       });
     } catch (error) {
       console.error(`updateProfileImage ${error}`);

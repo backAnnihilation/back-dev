@@ -14,7 +14,7 @@ export class ProfileImageDeliveryApprovedEventHandler
   async handle(event: ProfileImageDeliveryApprovedEvent): Promise<void> {
     const transport = Transport.RMQ;
     const command = IMAGES_DELIVERED;
-    console.log({ command, event });
+    console.log('ProfileImageDeliveryApprovedEventHandler', { command, event });
 
     await this.transportManager.sendMessage(transport, command, event);
   }

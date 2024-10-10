@@ -52,10 +52,14 @@ export class FilesController {
     @Payload() data: { eventId: string },
     @Ctx() context: RmqContext,
   ) {
-    console.log('approvedDeliveredImage', { data });
+    console.log('GET Image to approved delivery', { data });
     this.rmqService.ack(context);
     const command = new ProfileImageDeliveryApprovedCommand(data.eventId);
-    this.commandBus.execute(command);
+    const microserviceNotice = await this.commandBus.execute(command);
+    // if (microserviceNotice.hasError) {
+    //   const failedEvent = new NoticeFailedEventApprove()
+
+    // }
   }
 
   @MessagePattern(POST_CREATED)

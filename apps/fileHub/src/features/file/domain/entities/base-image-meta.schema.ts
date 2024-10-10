@@ -13,10 +13,9 @@ export type BaseImageMetaDto = {
 
 type TDocument<M extends BaseImageMeta> = HydratedDocument<M>;
 export type BaseImageMetaDocument = TDocument<BaseImageMeta>;
-export type BaseImageMetaModel = Model<BaseImageMetaDocument> &
-  ImageMetaStatics;
+export type BaseImageMetaModel = Model<BaseImageMetaDocument>;
 
-@Schema({ timestamps: true })
+@Schema({ _id: false })
 export class BaseImageMeta {
   @Prop({ required: true })
   name: string;
@@ -35,29 +34,6 @@ export class BaseImageMeta {
 
   @Prop({ type: String, enum: ImageSize, required: true })
   sizeType: ImageSize;
-
-  createdAt: Date;
-  updatedAt: Date;
-
-  static async makeInstance<
-    T extends BaseImageMetaDto,
-    M extends BaseImageMeta,
-  >(imageDto: T): Promise<LayerNoticeInterceptor<TDocument<M>>> {
-    const notice = new LayerNoticeInterceptor<TDocument<M>>();
-    const imageMeta = new this() as TDocument<M>;
-    Object.assign(imageMeta, imageDto);
-
-    await notice.validateFields(imageMeta);
-    notice.addData(imageMeta);
-    return notice;
-  }
 }
 
 export const BaseImageMetaSchema = SchemaFactory.createForClass(BaseImageMeta);
-
-const ImageMetaStatics = {
-  makeInstance: BaseImageMeta.makeInstance,
-};
-
-export type ImageMetaStatics = typeof ImageMetaStatics;
-BaseImageMetaSchema.statics = ImageMetaStatics;

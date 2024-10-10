@@ -5,7 +5,8 @@ export class BaseEvent {
   constructor(
     public eventId: string,
     public eventType: EventType | EVENT_COMMANDS,
+    createdAt?: Date,
   ) {
-    this.timestamp = new Date();
+    this.timestamp = createdAt || new Date();
   }
 }

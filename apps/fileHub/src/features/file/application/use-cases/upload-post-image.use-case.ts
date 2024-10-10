@@ -29,15 +29,13 @@ export class UploadPostImageUseCase
     private filesService: FilesService,
     private filesRepo: PostsRepository,
     @InjectModel(PostImageMeta.name) private PostImageModel: PostImageMetaModel,
-  ) {
-
-  }
+  ) {}
 
   async execute(
     command: UploadPostImageCommand,
   ): Promise<LayerNoticeInterceptor<OutputIdAndUrl>> {
-    const notice = new LayerNoticeInterceptor()
-    notice.validateFields
+    const notice = new LayerNoticeInterceptor();
+    notice.validateFields;
     const { userId, image, postId } = command.imageDto;
     const { originalname, size } = image;
 
@@ -48,18 +46,17 @@ export class UploadPostImageUseCase
       postId,
     });
 
-    const createdPostImageNotice = await this.PostImageModel.makeInstance<
-      PostImageMetaDto,
-      PostImageMeta
-    >({
+    const createdPostImageNotice = await this.PostImageModel.makeInstance({
       userId,
       storageId,
-      category: ImageCategory.POST,
-      name: originalname,
-      size,
-      url,
-      postId,
-      sizeType: ImageSize.ORIGINAL
+      // imagesMeta:{
+      //   category: ImageCategory.POST,
+      // name: originalname,
+      // size,
+      // url,
+      // postId,
+      // sizeType: ImageSize.ORIGINAL,
+      // }
     });
 
     if (createdPostImageNotice.hasError)

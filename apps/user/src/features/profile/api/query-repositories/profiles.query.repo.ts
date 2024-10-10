@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, ProfileImage } from '@prisma/client';
+import { ImageStatus, Prisma, ProfileImage } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
 import { DatabaseService } from '@user/core';
 import {
@@ -29,17 +29,30 @@ export class ProfilesQueryRepo {
     }
   }
 
-  async getProfileImage(profileId: string) {
+  async getProfileImage(id: string) {
     try {
       const result = await this.profileImages.findUnique({
-        where: { profileId },
+        where: { id },
       });
       if (!result) return null;
       return this.mapProfileImageToView(result);
     } catch (error) {
-      console.error('Database fails operate with find user profile', error);
+      console.error(
+        'Database fails operate with find user profile image',
+        error,
+      );
       return null;
     }
+  }
+
+  async getProfileImages(profileId: string) {
+    try {
+      const profileImages = await this.profileImages.findMany({
+        where: { profileId, status: ImageStatus.completed },
+        orderBy: { createdAt: 'desc' },
+      });
+      return profileImages.map(this.mapProfileImageToView);
+    } catch (error) {}
   }
 
   private mapProfileToView() {}

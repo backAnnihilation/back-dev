@@ -1,13 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import { CronJob } from 'cron';
-import { OUTBOX_FILE, SchedulerService } from '@app/shared';
+import { EVENT_COMMANDS, OUTBOX_FILE, SchedulerService } from '@app/shared';
 import { OutboxRepository } from '../../../infrastructure/events.outbox.repository';
 import { RmqAdapter } from '@file/core/adapters/rmq.adapter';
 import {
   EventStatus,
   OutboxDocument,
 } from '../../../domain/entities/outbox.schema';
+import { ProcessedProfileImagesEvent } from '../../../api/models/dto/processed-profile-images-event';
 
 @Injectable()
 export class OutboxService extends SchedulerService {
@@ -20,33 +21,40 @@ export class OutboxService extends SchedulerService {
     super(scheduleRegistry);
   }
 
-  async checkNonApprovedEvents() {
-    const nonApprovedEvents = await this.outboxRepo.getNonApprovedEvents();
-    console.log({ nonApprovedEvents });
+  async checkNonApprovedEvents(entityId: string, jobName: string) {
+    // const nonApprovedEvents = await this.outboxRepo.getNonApprovedEvents();
+    const nonApprovedEvent =
+      await this.outboxRepo.getNonApprovedEventById(entityId);
+    console.log({ nonApprovedEvent });
 
-    if (nonApprovedEvents.length) {
-      await this.processNonApprovedEvents(nonApprovedEvents);
+    if (nonApprovedEvent) {
+      await this.processNonApprovedEvents(nonApprovedEvent);
+    } else {
+      this.deleteIntervalJob(jobName);
     }
   }
 
-  private async retrySendingEvent(event: any) {
-    return this.rmqAdapter.sendMessage(event.eventType, event);
+  private async retrySendingEvent(eventRaw: OutboxDocument) {
+    const event = new ProcessedProfileImagesEvent(eventRaw);
+    return this.rmqAdapter.sendMessage(
+      eventRaw.eventType as EVENT_COMMANDS,
+      event,
+    );
   }
 
   private async sendFailedEventAlertToManager() {}
 
-  private async processNonApprovedEvents(events: OutboxDocument[]) {
+  private async processNonApprovedEvents(...events: OutboxDocument[]) {
     for (const event of events) {
       event.retryCount++;
-      event.retryCount === 4 && event.setStatus(EventStatus.FAILED);
+      event.retryCount === 3 && event.setStatus(EventStatus.FAILED);
       if (event.status === EventStatus.FAILED) {
         this.sendFailedEventAlertToManager();
       }
-
       await this.retrySendingEvent(event);
       await this.outboxRepo.save(event);
     }
-    await this.deleteFailedEvents();
+    // await this.deleteFailedEvents();
   }
 
   private async deleteFailedEvents() {
@@ -54,18 +62,19 @@ export class OutboxService extends SchedulerService {
   }
 
   initJob(jobInfo: JobInfo) {
-    const { name, time, end, start, cb } = jobInfo;
-    const callback = cb || this.checkNonApprovedEvents.bind(this);
+    const { name, time, end, start } = jobInfo;
+    const cb = this.checkNonApprovedEvents.bind(this, jobInfo.entityId, name);
     if (start) {
-      this.setInterval(name, start, end, callback);
+      this.setInterval({ name, start, end, cb });
       return;
     }
-    this.addJob(name, time, callback);
+    this.addJob(name, time, cb);
   }
 }
 
 type JobInfo = {
   name: string;
+  entityId: string;
   time?: CronExpression | string;
   start?: number;
   end?: number;

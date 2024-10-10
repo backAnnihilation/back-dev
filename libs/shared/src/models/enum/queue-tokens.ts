@@ -32,12 +32,13 @@ export enum EVENT_NAME {
   POST_CREATED = 'upload_post_image',
 }
 export const enum EVENT_COMMANDS {
-  PROFILE_IMAGE_COMPLETED = 'profile_images_completed',
+  PROFILE_IMAGES_COMPLETED = 'profile_images_completed',
   FILE_UPLOAD = 'FILE_UPLOAD',
   PROFILE_IMAGE_UPLOAD = 'upload_profile_image',
   POST_CREATED = 'upload_post_image',
   IMAGES_DELIVERED = 'images_delivered',
   OUTBOX_FILE = 'outbox_file',
+  PROFILE_IMAGES_PROCESSED = 'profile_images_processed'
 }
 
 export type CommandMap = {
@@ -54,6 +55,7 @@ export type CommandMap = {
 
 export const POST_CREATED = EVENT_COMMANDS.POST_CREATED;
 export const PROFILE_IMAGE = EVENT_COMMANDS.PROFILE_IMAGE_UPLOAD;
-export const IMAGES_COMPLETED = EVENT_COMMANDS.PROFILE_IMAGE_COMPLETED;
-export const IMAGES_DELIVERED = EVENT_COMMANDS.PROFILE_IMAGE_COMPLETED;
+export const IMAGES_COMPLETED = EVENT_COMMANDS.PROFILE_IMAGES_COMPLETED;
+export const IMAGES_DELIVERED = EVENT_COMMANDS.PROFILE_IMAGES_COMPLETED;
+export const IMAGES_PROCESSED = EVENT_COMMANDS.PROFILE_IMAGES_PROCESSED
 export const OUTBOX_FILE = EVENT_COMMANDS.OUTBOX_FILE;
