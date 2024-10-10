@@ -35,7 +35,7 @@ import { SubsController } from './features/subs/api/subs.controller';
     PrismaModule,
   ],
   controllers: [
-    SubsController,
+    // SubsController,
     SecurityController,
     AuthController,
     SAController,
