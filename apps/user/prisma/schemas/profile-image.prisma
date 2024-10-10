@@ -1,7 +1,7 @@
 enum ImageStatus {
   pending
   failed
-  success
+  completed
 }
 
 model ProfileImage {
@@ -11,7 +11,7 @@ model ProfileImage {
   status            ImageStatus    @default(pending)
   imageMetaId       String?        @unique
   
-  urlOriginal       String?   
+  urlOriginal       String?          
   urlLarge          String?  
   urlSmall          String?
 
