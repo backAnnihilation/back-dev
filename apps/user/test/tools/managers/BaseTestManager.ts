@@ -1,16 +1,13 @@
 import { HttpServer, INestApplication } from '@nestjs/common';
-import { SortDirection } from '../../../core/utils/sorting-base-filter';
-import {
-  AuthConstantsType,
-  constantsForDataTesting,
-} from '../utils/test-constants';
+import { SortDirection } from '@app/shared';
+import { AuthConstantsType, constantsTesting } from '../utils/test-constants';
 
 export class BaseTestManager {
   protected readonly constants: AuthConstantsType;
   protected readonly application: INestApplication<HttpServer>;
 
   constructor(protected readonly app: INestApplication) {
-    this.constants = constantsForDataTesting.auth;
+    this.constants = constantsTesting.auth;
     this.application = this.app.getHttpServer();
   }
   assertMatch(responseData: any, expectedResult: any) {

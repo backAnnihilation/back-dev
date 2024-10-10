@@ -1,29 +1,49 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Prisma, PrismaClient } from '@prisma/client';
+import { Prisma } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
 import * as request from 'supertest';
-import { RoutingEnum } from '../../../core/routes/routing';
+import { DatabaseService } from '../../../src/core/db/prisma/prisma.service';
+import { SAViewType } from '../../../src/features/admin/api/models/user.view.models/userAdmin.view-type';
 import { JwtTokens } from '../../../src/features/auth/api/models/auth-input.models.ts/jwt.types';
+import { RecoveryPassDto } from '../../../src/features/auth/api/models/auth-input.models.ts/recovery.model';
 import { UserProfileType } from '../../../src/features/auth/api/models/auth.output.models/auth.output.models';
 import { AuthUserType } from '../../../src/features/auth/api/models/auth.output.models/auth.user.types';
+import { SecurityViewDeviceModel } from '../../../src/features/security/api/models/security.view.models/security.view.types';
+import { FillOutProfileInputModel } from '../../../src/features/profile/api/models/input/fill-out-profile.model';
 import { SuperTestBody } from '../models/body.response.model';
 import { AuthUsersRouting } from '../routes/auth-users.routing';
-import { BaseTestManager } from './BaseTestManager';
+import { ProfileRouting } from '../routes/profile-user.routing';
 import { SAUsersRouting } from '../routes/sa-users.routing';
-import { RecoveryPassDto } from '../../../src/features/auth/api/models/auth-input.models.ts/recovery.model';
-import { SAViewType } from '../../../src/features/admin/api/models/user.view.models/userAdmin.view-type';
+import { SecurityRouting } from '../routes/security.routing';
+import { UserProfileViewModel } from '../../../src/features/profile/api/models/output/profile.view.model';
+import { EditProfileInputModel } from '../../../src/features/profile/api/models/input/edit-profile.model';
+import { BaseTestManager } from './BaseTestManager';
+import { readFile } from 'fs/promises';
+import { resolve } from 'node:path';
+import { ImageNames } from '../models/image-names.enum';
+import { basename } from 'path';
+
+type ImageDtoType = {
+  fileName: string;
+  contentType: string;
+  buffer: Buffer;
+};
 
 export class UsersTestManager extends BaseTestManager {
   protected readonly routing: AuthUsersRouting;
   protected readonly saRouting: SAUsersRouting;
+  protected readonly securityRouting: SecurityRouting;
+  protected readonly profileRouting: ProfileRouting;
   protected usersRepo: Prisma.UserAccountDelegate<DefaultArgs>;
   constructor(
     protected readonly app: INestApplication,
-    private prisma: PrismaClient
+    private prisma: DatabaseService,
   ) {
     super(app);
     this.routing = new AuthUsersRouting();
     this.saRouting = new SAUsersRouting();
+    this.securityRouting = new SecurityRouting();
+    this.profileRouting = new ProfileRouting();
     this.usersRepo = this.prisma.userAccount;
   }
 
@@ -37,7 +57,7 @@ export class UsersTestManager extends BaseTestManager {
     } else {
       return {
         userName: (field as AuthUserType).userName || 'userName',
-        password: (field as AuthUserType).password || 'password',
+        password: (field as AuthUserType).password || 'validPassword0!',
         email: (field as AuthUserType).email || 'test@gmail.com',
       };
     }
@@ -50,7 +70,7 @@ export class UsersTestManager extends BaseTestManager {
 
   async createSA(
     inputData: AuthUserType,
-    expectedStatus = HttpStatus.CREATED
+    expectedStatus = HttpStatus.CREATED,
   ): Promise<AuthUserType> {
     let admin: AuthUserType;
     await request(this.application)
@@ -58,7 +78,7 @@ export class UsersTestManager extends BaseTestManager {
       .auth(
         this.constants.basicUser,
         this.constants.basicPass,
-        this.constants.authBasic
+        this.constants.authBasic,
       )
       .send(inputData)
       .expect(({ body }: SuperTestBody<SAViewType>) => {
@@ -71,7 +91,7 @@ export class UsersTestManager extends BaseTestManager {
   }
 
   async createUsers(
-    numberOfUsers = 3
+    numberOfUsers = 3,
   ): Promise<{ users: AuthUserType[]; accessTokens: string[] }> {
     const users: AuthUserType[] = [];
     const accessTokens: string[] = [];
@@ -95,7 +115,7 @@ export class UsersTestManager extends BaseTestManager {
 
   async registration(
     inputData: AuthUserType,
-    expectedStatus = HttpStatus.NO_CONTENT
+    expectedStatus = HttpStatus.NO_CONTENT,
   ) {
     const response = await request(this.application)
       .post(this.routing.registration())
@@ -107,7 +127,7 @@ export class UsersTestManager extends BaseTestManager {
 
   async registrationEmailResending(
     email: string,
-    expectedStatus = HttpStatus.NO_CONTENT
+    expectedStatus = HttpStatus.NO_CONTENT,
   ) {
     const response = await request(this.application)
       .post(this.routing.registrationEmailResending())
@@ -119,7 +139,7 @@ export class UsersTestManager extends BaseTestManager {
 
   async registrationConfirmation(
     code: string | null,
-    expectedStatus = HttpStatus.NO_CONTENT
+    expectedStatus = HttpStatus.NO_CONTENT,
   ) {
     await request(this.application)
       .post(this.routing.registrationConfirmation())
@@ -129,7 +149,7 @@ export class UsersTestManager extends BaseTestManager {
 
   async passwordRecovery(
     email: string,
-    expectedStatus = HttpStatus.NO_CONTENT
+    expectedStatus = HttpStatus.NO_CONTENT,
   ) {
     await request(this.application)
       .post(this.routing.passwordRecovery())
@@ -138,7 +158,7 @@ export class UsersTestManager extends BaseTestManager {
   }
   async confirmPassword(
     data: Partial<RecoveryPassDto>,
-    expectedStatus = HttpStatus.NO_CONTENT
+    expectedStatus = HttpStatus.NO_CONTENT,
   ) {
     await request(this.application)
       .post(this.routing.confirmPassword())
@@ -148,7 +168,7 @@ export class UsersTestManager extends BaseTestManager {
 
   async signIn(
     user: Partial<AuthUserType>,
-    expectedStatus = HttpStatus.OK
+    expectedStatus = HttpStatus.OK,
   ): Promise<JwtTokens | any> {
     const res = await request(this.application)
       .post(this.routing.login())
@@ -169,7 +189,7 @@ export class UsersTestManager extends BaseTestManager {
 
   async refreshToken(
     refreshToken: string,
-    expectedStatus = HttpStatus.OK
+    expectedStatus = HttpStatus.OK,
   ): Promise<JwtTokens | any> {
     const response = await request(this.application)
       .post(this.routing.refreshToken())
@@ -189,14 +209,14 @@ export class UsersTestManager extends BaseTestManager {
     return response.body;
   }
 
-  checkUserData(responseModel: any, expectedResult: any) {
-    expect(responseModel).toEqual(expectedResult);
+  private extractRefreshToken(response: any) {
+    return response.headers['set-cookie'][0].split(';')[0];
   }
 
   async me(
     accessToken: string,
     user: AuthUserType = null,
-    expectedStatus = HttpStatus.OK
+    expectedStatus = HttpStatus.OK,
   ) {
     let userProfile: UserProfileType;
     await request(this.application)
@@ -220,11 +240,146 @@ export class UsersTestManager extends BaseTestManager {
   async logout(refreshToken: string, expectedStatus = HttpStatus.NO_CONTENT) {
     await request(this.application)
       .post(this.routing.logout())
-      .set('Cookie', `${refreshToken}`)
+      .set('Cookie', refreshToken)
       .expect(expectedStatus);
   }
 
-  private extractRefreshToken(response: any) {
-    return response.headers['set-cookie'][0].split(';')[0];
+  async loginThroughSetDeviceId(
+    deviceId: number,
+    auth: AuthUserType,
+    expectedStatus = HttpStatus.OK,
+  ) {
+    await request(this.application)
+      .post(this.routing.login())
+      .set('user-agent', `device-${deviceId + 1}`)
+      .send({ email: auth.email, password: auth.password })
+      .expect(expectedStatus);
+  }
+
+  async getUserActiveSessions(
+    refreshToken: string,
+    expectedStatus = HttpStatus.OK,
+  ): Promise<SecurityViewDeviceModel[]> {
+    let userSessions: SecurityViewDeviceModel[];
+    await request(this.application)
+      .get(this.securityRouting.getUserSessions())
+      .set('Cookie', refreshToken)
+      .expect(expectedStatus)
+      .expect(({ body }: SuperTestBody<SecurityViewDeviceModel[]>) => {
+        userSessions = body;
+      });
+    return userSessions;
+  }
+
+  async deleteSpecificSession(
+    refreshToken: string,
+    deviceId: string,
+    expectedStatus = HttpStatus.NO_CONTENT,
+  ) {
+    await request(this.application)
+      .delete(this.securityRouting.removeSession(deviceId))
+      .set('Cookie', refreshToken)
+      .expect(expectedStatus);
+  }
+
+  async deleteSessionsExceptCurrent(
+    refreshToken: string,
+    expectedStatus = HttpStatus.NO_CONTENT,
+  ) {
+    await request(this.application)
+      .delete(this.securityRouting.removeOtherSessions())
+      .set('Cookie', refreshToken)
+      .expect(expectedStatus);
+  }
+
+  async getProfile(
+    profileId: string,
+    expectedStatus = HttpStatus.OK,
+  ): Promise<UserProfileViewModel> {
+    let profile: UserProfileViewModel;
+    await request(this.application)
+      .get(this.profileRouting.getProfile(profileId))
+      .expect(expectedStatus)
+      .expect(({ body, status }: SuperTestBody<UserProfileViewModel>) => {
+        if (status === HttpStatus.OK) {
+          // expect(body).toEqual({
+          //   userId: expect.any(String),
+          //   userName: expect.any(String),
+          //   email: expect.any(String),
+          //   photo: expect.any(String),
+          // });
+          profile = body;
+        }
+      });
+    return profile;
+  }
+
+  async fillOutProfile(
+    accessToken: string,
+    profileDto: FillOutProfileInputModel,
+    expectedStatus = HttpStatus.CREATED,
+  ) {
+    let profile: UserProfileViewModel;
+    await request(this.application)
+      .post(this.profileRouting.fillOutProfile())
+      .auth(accessToken, this.constants.authBearer)
+      .send(profileDto)
+      .expect(expectedStatus)
+      .expect(({ body }: SuperTestBody<UserProfileViewModel>) => {
+        profile = body;
+      });
+    return profile;
+  }
+
+  async uploadPhoto(
+    accessToken: string,
+    imageDto: ImageDtoType,
+    expectedStatus = HttpStatus.CREATED,
+  ) {
+    let { buffer, contentType, fileName } = imageDto;
+    const filename = fileName || 'profile';
+    contentType = contentType || 'image/png';
+
+    await request(this.application)
+      .post(this.profileRouting.uploadPhoto())
+      .auth(accessToken, this.constants.authBearer)
+      .attach('image', buffer, { filename, contentType })
+      .expect(expectedStatus);
+  }
+
+  async retrieveImageMeta(imageName: ImageNames): Promise<ImageDtoType> {
+    const profileImages = {
+      fresco: '../images/fresco.jpg',
+      jpeg: '../images/jpeg.jpg',
+      insta: '../images/insta.png',
+    };
+    const imagePath = resolve(__dirname, profileImages[imageName]);
+    const baseName = basename(imagePath);
+    const contentType =
+      baseName === 'fresco.jpg'
+        ? 'image/jpeg'
+        : `image/${baseName.split('.')[1]}`;
+    const buffer = await this.retrieveFileBuffer(imagePath);
+    const fileName = this.parseFileName(baseName);
+
+    return {
+      fileName,
+      contentType,
+      buffer,
+    };
+  }
+  private retrieveFileBuffer = async (filePath: string) => readFile(filePath);
+  private parseFileName = (fileName: string) => fileName.split('.')[0];
+
+  async editProfile(
+    accessToken: string,
+    profileDto: EditProfileInputModel,
+    expectedStatus = HttpStatus.NO_CONTENT,
+  ) {
+    await request(this.application)
+      .put(this.profileRouting.editProfile())
+      .auth(accessToken, this.constants.authBearer)
+      .send(profileDto)
+      .expect(expectedStatus);
   }
 }

@@ -5,9 +5,10 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
+import { StrategyType } from '@user/core/infrastructure/guards/models/strategy.enum';
 
 @Injectable()
-export class AccessTokenGuard extends AuthGuard('access-token') {
+export class AccessTokenGuard extends AuthGuard(StrategyType.AccessToken) {
   private readonly logger = new Logger(AccessTokenGuard.name);
 
   // handleRequest(err, user, info) {

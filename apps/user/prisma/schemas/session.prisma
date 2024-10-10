@@ -1,0 +1,14 @@
+model UserSession {
+  id                String         @id @default(uuid())
+  ip                String
+  userAgentInfo     String         
+  deviceId          String         @unique
+  refreshToken      String         
+  rtIssuedAt        DateTime       
+  rtExpirationDate  DateTime  
+  createdAt         DateTime       @default(now())
+     
+
+  userAccount       UserAccount    @relation("UserSessions", fields: [userId], references: [id])
+  userId            String
+}

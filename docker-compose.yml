@@ -1,0 +1,38 @@
+version: '3.8'
+
+services:
+  user-service:
+    build:
+      context: ./user-service
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://user:password@postgres:5433/userdb
+      - JWT_SECRET=your_jwt_secret
+    depends_on:
+      - postgres
+
+  file-service:
+    build:
+      context: ./file-service
+    ports:
+      - "4000:4000"
+    environment:
+      - STORAGE_URL=https://storage.example.com
+      - STORAGE_API_KEY=your_storage_api_key
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:latest
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=userdb
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+volumes:
+  postgres-data:

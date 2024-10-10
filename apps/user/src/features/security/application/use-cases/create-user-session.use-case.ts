@@ -1,15 +1,11 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { OutputId } from '../../../../../core/api/dto/output-id.dto';
-import {
-  LayerNoticeInterceptor,
-  GetErrors,
-} from '../../../../../core/utils/notification';
 import { UserSessionDTO } from '../../../auth/api/models/dtos/user-session.dto';
 import { SecurityRepository } from '../../infrastructure/security.repository';
-import { CreateSessionCommand } from './commands/create-session.command';
-import { AuthService } from '../../../auth/application/auth.service';
-import { extractDeviceInfo } from '../../../auth/infrastructure/utils/device-info-extractor';
+import { extractDeviceInfo } from '../../infrastructure/utils/device-info-extractor';
 import { JwtTokens } from '../../../auth/api/models/auth-input.models.ts/jwt.types';
+import { LayerNoticeInterceptor } from '@app/shared';
+import { CreateSessionCommand } from './commands/create-session.command';
+import { AuthService } from '../../../auth/application/services/auth.service';
 
 @CommandHandler(CreateSessionCommand)
 export class CreateUserSessionUseCase
@@ -18,11 +14,11 @@ export class CreateUserSessionUseCase
   private location = this.constructor.name;
   constructor(
     private securityRepo: SecurityRepository,
-    private authService: AuthService
+    private authService: AuthService,
   ) {}
 
   async execute(
-    command: CreateSessionCommand
+    command: CreateSessionCommand,
   ): Promise<LayerNoticeInterceptor<JwtTokens>> {
     const notice = new LayerNoticeInterceptor<JwtTokens>();
 
@@ -37,18 +33,24 @@ export class CreateUserSessionUseCase
       notice.addError(
         `can't retrieve user payload from token`,
         this.location,
-        GetErrors.DeniedAccess
+        notice.errorCodes.UnauthorizedAccess,
       );
       return notice;
     }
 
-    const { browser, deviceType } = extractDeviceInfo(clientInfo.userAgentInfo);
+    let browser = 'unknown',
+      deviceType = 'unknown';
+    if (clientInfo) {
+      const deviceInfo = extractDeviceInfo(clientInfo.userAgentInfo);
+      browser = deviceInfo.browser;
+      deviceType = deviceInfo.deviceType;
+    }
 
     const sessionDto = new UserSessionDTO(
-      clientInfo.ip,
+      clientInfo?.ip,
       `Device type: ${deviceType}, Application: ${browser}`,
       userPayload,
-      refreshToken
+      refreshToken,
     );
 
     await this.securityRepo.createSession(sessionDto);

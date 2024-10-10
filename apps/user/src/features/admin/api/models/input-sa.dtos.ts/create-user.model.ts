@@ -1,11 +1,11 @@
 import {
   loginLength,
+  stringMatch,
   passwordLength,
   frequentLength,
   emailMatches,
-  stringMatch,
-} from '../../../../../../core/validation/length-constants';
-import { iSValidField } from '../../../../../../core/validation/validate-input-fields';
+} from '../../../../../../../../libs/shared/src/validation/input-constants';
+import { iSValidField } from '../../../../../../../../libs/shared/src/validation/validate-input-fields';
 
 export class CreateUserDto {
   /**

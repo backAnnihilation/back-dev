@@ -5,6 +5,7 @@ import {
   ApiProperty,
   ApiResponse,
 } from '@nestjs/swagger';
+
 import { TooManyRequestsApiResponse } from './shared/too-many-requests-api-response';
 import { ErrorMessageDto } from './shared/error-message-response';
 
@@ -18,8 +19,7 @@ export const RegistrationConfirmationEndpoint = () =>
     ApiBody({ type: RegistrationConfirmationCodeDto, required: true }),
     ApiResponse({
       status: HttpStatus.NO_CONTENT,
-      description:
-        'Email was verified. Account was activated',
+      description: 'Email was verified. Account was activated',
     }),
     ApiResponse({
       status: HttpStatus.BAD_REQUEST,
