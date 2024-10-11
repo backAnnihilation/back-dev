@@ -30,7 +30,7 @@
     "test:user:unit": "jest --config apps/user/jest-user.unit.json --watchAll",
     "test:lib": "jest --config ./libs/jest-lib.json --watch",
     "build:fileHub": "nest build fileHub",
-    "start:fileHub": "cross-env ENV=TESTING node dist/apps/user/main",
+    "start:fileHub": "node dist/apps/user/main",
     "build:user": "nest build user",
     "start:user": "cross-env ENV=TESTING node dist/apps/user/main",
     "start:dev:user": "cross-env ENV=DEVELOPMENT nest start user --watch"

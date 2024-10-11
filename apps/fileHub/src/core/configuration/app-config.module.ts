@@ -7,7 +7,7 @@ import {
   validate,
 } from './configuration';
 import { Environment, rmqConfig } from '@app/shared';
-const env = (process.env.ENV as Environment) || Environment.DEVELOPMENT;
+const env = process.env.ENV as Environment;
 
 @Global()
 @Module({
