@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, UserAccount } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
-import { BaseRepository } from '@user/core/db/base.repository';
-import { DatabaseService } from '@user/core/db/prisma/prisma.service';
+import { BaseRepository, DatabaseService } from '@user/core';
 
 @Injectable()
 export class UsersRepository extends BaseRepository {
@@ -54,9 +53,9 @@ export class UsersRepository extends BaseRepository {
     }
   }
 
-  async deleteUser(userId: string): Promise<UserAccount> {
+  async deleteUser(id: string): Promise<UserAccount> {
     try {
-      return await this.userAccounts.delete({ where: { id: userId } });
+      return await this.userAccounts.delete({ where: { id } });
     } catch (error) {
       throw new Error(`error in deleteUser: ${error}`);
     }

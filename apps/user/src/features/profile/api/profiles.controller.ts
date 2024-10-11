@@ -78,6 +78,7 @@ export class UserProfilesController {
     const command = new UploadProfileImageCommand({ image, userId });
     const notice = await this.commandBus.execute(command);
     if (notice.hasError) throw notice.generateErrorResponse;
+    console.log({response: notice.data});
     return notice.data;
   }
 

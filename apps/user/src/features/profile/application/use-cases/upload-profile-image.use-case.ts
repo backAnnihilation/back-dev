@@ -14,7 +14,7 @@ import { ImageStatus } from '@prisma/client';
 import { ResponseProfileImageType } from '../../api/models/output/image-notice-type.model';
 import { TransportManager } from '@user/core';
 import { ProfileImageService } from '../services/profile-image.service';
-import { Timeout } from '@nestjs/schedule';
+import { Interval, Timeout } from '@nestjs/schedule';
 
 export class UploadProfileImageCommand {
   constructor(public imageDto: UploadProfileImageDto) {}

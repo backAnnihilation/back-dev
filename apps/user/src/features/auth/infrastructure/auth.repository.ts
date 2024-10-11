@@ -105,14 +105,14 @@ export class AuthRepository {
   }
 
   async addProviderInfoToUser(
-    userId: string,
+    id: string,
     provider: Provider,
     providerId: string,
   ) {
     try {
       await this.userAccounts.update({
-        where: { id: userId },
-        data: { provider, providerId },
+        where: { id },
+        data: { provider, providerId, isConfirmed: true },
       });
     } catch (error) {
       console.error(`addProviderInfoToUser: ${error}`);
