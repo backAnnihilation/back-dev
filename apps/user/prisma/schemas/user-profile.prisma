@@ -9,7 +9,7 @@ model UserProfile {
   about             String?        @db.VarChar(255)
   createdAt         DateTime       @default(now())
 
-  userAccount       UserAccount    @relation(fields: [userId], references: [id])
+  userAccount       UserAccount    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId            String         @unique
 
   images             ProfileImage[]
