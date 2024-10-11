@@ -21,3 +21,114 @@ spec:
            ports:
              - containerPort: PORT_CONTAINER
 
+           env:
+             - name: OAUTH_GOOGLE_CLIENT_ID
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: OAUTH_GOOGLE_CLIENT_ID
+             - name: GOOGLE_CAPTURE_SECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: GOOGLE_CAPTURE_SECRET
+             - name: CAPTURE_SITE_KEY
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: CAPTURE_SITE_KEY
+             - name: DATABASE_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: DATABASE_URL
+             - name: ACCESS_TOKEN_SECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: ACCESS_TOKEN_SECRET
+             - name: REFRESH_TOKEN_SECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: REFRESH_TOKEN_SECRET
+             - name: EMAIL_PASSWORD
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: EMAIL_PASSWORD
+             - name: EMAIL_USER
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: EMAIL_USER
+             - name: EMAIL_SERVICE
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: EMAIL_SERVICE
+             - name: BASIC_AUTH_USERNAME
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: BASIC_AUTH_USERNAME
+             - name: BASIC_AUTH_PASSWORD
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: BASIC_AUTH_PASSWORD
+             - name: OAUTH_GITHUB_CLIENT_SECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: OAUTH_GITHUB_CLIENT_SECRET
+             - name: OAUTH_GITHUB_REDIRECT_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: OAUTH_GITHUB_REDIRECT_URL
+             - name: OAUTH_GOOGLE_REDIRECT_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: OAUTH_GOOGLE_REDIRECT_URL
+             - name: OAUTH_GITHUB_CLIENT_ID
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: OAUTH_GITHUB_CLIENT_ID
+             - name: RMQ_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: RMQ_URL
+             - name: RMQ_EVENTS_QUEUE
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: RMQ_EVENTS_QUEUE
+             - name: RMQ_USERS_QUEUE
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: RMQ_USERS_QUEUE
+             - name: RMQ_FILES_QUEUE
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: RMQ_FILES_QUEUE
+             - name: TCP_PORT
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: TCP_PORT
+             - name: TCP_HOST
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: TCP_HOST
+             - name: OAUTH_GOOGLE_CLIENT_SECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: OAUTH_GOOGLE_CLIENT_SECRET

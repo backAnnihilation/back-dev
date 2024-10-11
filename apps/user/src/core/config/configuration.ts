@@ -123,13 +123,5 @@ export const validate = async (config: Record<string, unknown>) => {
     throw new Error(error);
   }
 
-  // const errors = validateSync(validatedConfig, {
-  //   skipMissingProperties: false,
-  // });
-
-  // if (errors.length > 0) {
-  //   throw new Error(errors.toString());
-  // }
-
   return validatedConfig;
 };

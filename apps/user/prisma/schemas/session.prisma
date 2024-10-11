@@ -9,6 +9,6 @@ model UserSession {
   createdAt         DateTime       @default(now())
      
 
-  userAccount       UserAccount    @relation("UserSessions", fields: [userId], references: [id])
+  userAccount       UserAccount    @relation("UserSessions", fields: [userId], references: [id], onDelete: Cascade)
   userId            String
 }
