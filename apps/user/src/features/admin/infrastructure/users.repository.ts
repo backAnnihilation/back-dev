@@ -20,20 +20,6 @@ export class UsersRepository extends BaseRepository {
     }
   }
 
-  async getUnconfirmedUserByEmailOrName(
-    email: string,
-    userName: string,
-  ): Promise<UserAccount | null> {
-    try {
-      return await this.userAccounts.findFirst({
-        where: { OR: [{ email }, { userName }], isConfirmed: false },
-      });
-    } catch (error) {
-      console.log(`error in getUserByEmail: ${error}`);
-      return null;
-    }
-  }
-
   async getUserById(id: string): Promise<UserAccount | null> {
     try {
       return await this.userAccounts.findUnique({ where: { id } });

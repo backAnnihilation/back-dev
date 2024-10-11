@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, Provider, UserAccount } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
-import { DatabaseService } from '@user/core/db/prisma/prisma.service';
-
+import { DatabaseService } from '@user/core';
 import { UpdatePasswordDto } from '../api/models/auth-input.models.ts/password-recovery.types';
 import {
   UpdateConfirmationCodeDto,
@@ -34,29 +33,26 @@ export class AuthRepository {
       return null;
     }
   }
-  async findConfirmedUserByEmailOrName({
-    userName,
-    email,
-  }): Promise<UserAccount | null> {
+
+  async updateUserAccount(id: string, userAccount: Partial<UserAccount>) {
     try {
-      return await this.userAccounts.findFirst({
-        where: { OR: [{ email }, { userName }], AND: { isConfirmed: true } },
+      await this.userAccounts.update({
+        where: { id },
+        data: userAccount,
       });
-    } catch (error) {
-      console.log(`findByEmailOrName: ${error}`);
-      return null;
-    }
+    } catch (error) {}
   }
-  async findExistedUserByEmailOrName({
-    userName,
+
+  async findUserByEmailOrName({
     email,
+    userName,
   }): Promise<UserAccount | null> {
     try {
       return await this.userAccounts.findFirst({
         where: { OR: [{ email }, { userName }] },
       });
     } catch (error) {
-      console.log(`findByEmailOrName: ${error}`);
+      console.log(`findUserByEmailOrName: ${error}`);
       return null;
     }
   }
