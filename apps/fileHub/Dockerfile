@@ -22,9 +22,6 @@ RUN pnpm install
 # Bundle app source code
 COPY --chown=node . .
 
-# Verify user structure after dir being copied
-RUN ls -la ./apps/fileHub
-
 RUN pnpm run build:${SERVICE}
 
 EXPOSE ${PORT}

@@ -29,7 +29,7 @@
     "test:user:e2e": "cross-env ENV=DEVELOPMENT jest --config apps/user/test/jest-e2e.json --runInBand --watchAll",
     "test:user:unit": "jest --config apps/user/jest-user.unit.json --watchAll",
     "test:lib": "jest --config ./libs/jest-lib.json --watch",
-    "build:fileHub": "nest build user",
+    "build:fileHub": "nest build fileHub",
     "start:fileHub": "cross-env ENV=TESTING node dist/apps/user/main",
     "build:user": "nest build user",
     "start:user": "cross-env ENV=TESTING node dist/apps/user/main",
