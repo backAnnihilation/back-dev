@@ -163,7 +163,6 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
           lastName: 'newLastName',
           dateOfBirth: '12.06.2011',
         });
-
         expect.setState({ accessToken, profile });
       });
 

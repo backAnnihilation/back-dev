@@ -302,12 +302,6 @@ export class UsersTestManager extends BaseTestManager {
       .expect(expectedStatus)
       .expect(({ body, status }: SuperTestBody<UserProfileViewModel>) => {
         if (status === HttpStatus.OK) {
-          // expect(body).toEqual({
-          //   userId: expect.any(String),
-          //   userName: expect.any(String),
-          //   email: expect.any(String),
-          //   photo: expect.any(String),
-          // });
           profile = body;
         }
       });
