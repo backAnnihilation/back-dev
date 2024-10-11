@@ -22,6 +22,7 @@ pipeline {
         }
         stage('Unit tests') {
             steps {
+                echo "unit tests in progress..."
                 // script {
                 //     sh '''
                 //        export NVM_DIR="$HOME/.nvm"
@@ -35,6 +36,7 @@ pipeline {
         }
         stage('e2e tests') {
             steps {
+                echo "e2e tests in progress..."
                 // script {
                 //     sh '''
                 //        export NVM_DIR="$HOME/.nvm"
