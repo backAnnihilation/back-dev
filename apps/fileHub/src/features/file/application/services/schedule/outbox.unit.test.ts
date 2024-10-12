@@ -30,12 +30,12 @@ describe('SchedulerService', () => {
     );
   });
 
-  describe('initJob', () => {
+  describe('initIntervalJob', () => {
     it('should add a new job', async () => {
       const jobName = 'testJob';
       const cb = jest.fn();
 
-      outboxService.initJob({
+      outboxService.initIntervalJob({
         name: jobName,
         start: 1000,
         end: 5000,
@@ -52,7 +52,7 @@ describe('SchedulerService', () => {
       const cronTime = '* * * * *';
       const cb = jest.fn();
 
-      outboxService.initJob({
+      outboxService.initIntervalJob({
         name: jobName,
         time: cronTime,
         entityId: '123',
@@ -69,7 +69,7 @@ describe('SchedulerService', () => {
       const start = 1000;
       const end = 5000;
 
-      outboxService.initJob({
+      outboxService.initIntervalJob({
         name: jobName,
         start,
         end,
@@ -116,12 +116,12 @@ describe('SchedulerService', () => {
   //     });
   // });
 
-  // describe('initJob', () => {
+  // describe('initIntervalJob', () => {
   //     it('should initialize a job with interval', async () => {
   //         const jobInfo = { name: 'testIntervalJob', start: 1000, end: 5000 };
   //         jest.spyOn(outboxService, 'setInterval'); // Шпион на метод setInterval
 
-  //         outboxService.initJob(jobInfo);
+  //         outboxService.initIntervalJob(jobInfo);
 
   //         expect(outboxService.setInterval).toHaveBeenCalledWith(jobInfo.name, jobInfo.start, jobInfo.end, outboxService.checkNonApprovedEvents);
   //     });
@@ -130,7 +130,7 @@ describe('SchedulerService', () => {
   //         const jobInfo = { name: 'testCronJob', time: '* * * * *' };
   //         jest.spyOn(outboxService, 'addJob'); // Шпион на метод addJob
 
-  //         outboxService.initJob(jobInfo);
+  //         outboxService.initIntervalJob(jobInfo);
 
   //         expect(outboxService.addJob).toHaveBeenCalledWith(jobInfo.name, jobInfo.time, outboxService.checkNonApprovedEvents);
   //     });

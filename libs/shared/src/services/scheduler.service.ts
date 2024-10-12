@@ -29,15 +29,23 @@ export class SchedulerService {
       job.start();
     }
   }
+
+  private getTimeout(name: string) {
+    try {
+      return this.scheduleRegistry.getTimeout(name);
+    } catch (error) {
+      return null;
+    }
+  }
   protected addTimeout(name: string, time: number, cb: () => void) {
-    const { job } = this.getJob(name);
-    if (job) return;
+    const timeOutJob = this.getTimeout(name);
+    if (timeOutJob) return;
     const timeoutId = setTimeout(cb, time);
     this.scheduleRegistry.addTimeout(name, timeoutId);
   }
 
   protected deleteTimeout(name: string) {
-    const timeout = this.scheduleRegistry.getTimeout(name);
+    const timeout = this.getTimeout(name);
     if (timeout) {
       clearTimeout(timeout);
       this.scheduleRegistry.deleteTimeout(name);
@@ -53,13 +61,25 @@ export class SchedulerService {
   }
 
   protected deleteIntervalJob(jobName: string) {
-    this.scheduleRegistry.deleteInterval(jobName);
+    try {
+      this.scheduleRegistry.deleteInterval(jobName);
+    } catch (error) {
+      console.log('deleteIntervalJob', { error });
+    }
   }
 
+  private getInterval(name: string) {
+    try {
+      return this.scheduleRegistry.getInterval(name);
+    } catch (error) {
+      return null;
+    }
+  }
   protected setInterval(options: SetIntervalOptions) {
     const { start, end, cb, name, delay, deleteOnEnd } = options;
-    const { job } = this.getJob(name);
-    if (job) return;
+
+    const intervalJob = this.getInterval(name);
+    if (intervalJob) return;
 
     const intervalId = setInterval(async () => {
       await cb();
@@ -82,9 +102,4 @@ export class SchedulerService {
       return { jobName, job: null };
     }
   }
-}
-
-export enum JobName {
-  BucketMaintenance = 'bucket-maintenance',
-  OutboxEvents = 'outbox-events',
 }

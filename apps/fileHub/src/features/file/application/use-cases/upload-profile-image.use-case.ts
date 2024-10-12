@@ -135,7 +135,7 @@ export class UploadProfileImageUseCase
   }
 
   private async checkEventDeliveredJob(imageId: string, eventId: string) {
-    this.outboxService.initJob({
+    this.outboxService.initIntervalJob({
       name: `profile-image-event-${imageId}`,
       start: 4000,
       end: 15000,

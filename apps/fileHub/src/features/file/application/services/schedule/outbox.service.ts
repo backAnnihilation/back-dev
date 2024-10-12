@@ -61,14 +61,11 @@ export class OutboxService extends SchedulerService {
     await this.outboxRepo.deleteFailedEvents();
   }
 
-  initJob(jobInfo: JobInfo) {
+  initIntervalJob(jobInfo: JobInfo) {
     const { name, time, end, start } = jobInfo;
     const cb = this.checkNonApprovedEvents.bind(this, jobInfo.entityId, name);
-    if (start) {
-      this.setInterval({ name, start, end, cb });
-      return;
-    }
-    this.addJob(name, time, cb);
+    this.setInterval({ name, start, end, cb });
+    return;
   }
 }
 

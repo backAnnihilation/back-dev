@@ -21,6 +21,7 @@ import { PostsController } from './features/post/api/controllers/posts.controlle
 import { UserProfilesController } from './features/profile/api/profiles.controller';
 import { SecurityController } from './features/security/api/security.controller';
 import { SubsController } from './features/subs/api/subs.controller';
+import { ScheduleModule } from '@nestjs/schedule';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { SubsController } from './features/subs/api/subs.controller';
     TcpModule.register({ name: TCP_FILES_SERVICE }),
     RmqModule.register({ name: EVENTS_SERVICE, queue: EVENTS_QUEUE }),
     ThrottlerModule.forRoot([{ limit: 20, ttl: Math.pow(20, 3) }]),
+    ScheduleModule.forRoot(),
     PassportModule,
     ConfigurationModule,
     CqrsModule,

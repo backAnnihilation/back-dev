@@ -65,21 +65,10 @@ export class UploadProfileImageUseCase
 
     const transport = Transport.TCP;
     const commandName = PROFILE_IMAGE;
-
     this.transportManager.sendMessage(transport, commandName, imagePayload);
 
-    // check if after 1 minute file wont be completed, mark operation as failed
-    // try {
-    //   this.profileServiceScheduler.initTimeOutJob(imageId);
-    // } catch (error) {
-    //   console.log({ error });
-    // }
-    console.time('setTimeout to handleTimeOut');
-    setTimeout(() => {
-      console.timeEnd('setTimeout to handleTimeOut');
-      this.handleTimeOut.bind(this, imageId);
-    }, 5000);
-    // this.handleTimeOut(imageId);
+    // check if after 10 seconds file wont be completed, mark operation as failed
+    this.profileServiceScheduler.initTimeOutJob(imageId, 10000);
 
     notice.addData({
       status: ImageStatus.pending,
@@ -87,17 +76,5 @@ export class UploadProfileImageUseCase
       imageId,
     });
     return notice;
-  }
-
-  @Timeout(1 * 1000 * 60)
-  private async handleTimeOut(imageId: string) {
-    const profileImage = await this.profilesRepo.getProfileImage(imageId);
-    console.log('handleTimeOut', { profileImage });
-    if (profileImage?.status === ImageStatus.pending) {
-      await this.profilesRepo.updateProfileImageStatus(
-        imageId,
-        ImageStatus.failed,
-      );
-    }
   }
 }

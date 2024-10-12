@@ -11,6 +11,7 @@ export class ProcessedProfileImagesEvent extends BaseEvent {
       urlOriginal: eventDto.payload.urlOriginal,
       urlSmall: eventDto.payload.urlSmall,
       urlLarge: eventDto.payload.urlLarge,
+      imageMetaId: eventDto.payload.imageMetaId,
     };
   }
 }
@@ -30,4 +31,5 @@ export type ProfileImageUrlsDtoType = ProfileImageUrls & {
 type ProfileImagesPayloadType = ProfileImageUrls & {
   profileId: string;
   imageId: string;
+  imageMetaId: string;
 };
