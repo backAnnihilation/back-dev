@@ -6,7 +6,8 @@ import { EnvironmentVariables } from '@user/core';
 
 import { tgChatIds } from '../../infrastructure/utils/chatIds';
 import {
-  EVENT_TYPES, REQUEST_MESSAGES,
+  EVENT_TYPES,
+  REQUEST_MESSAGES,
   RESPONSE_MESSAGES,
 } from '../../infrastructure/utils/events';
 
@@ -69,16 +70,17 @@ export class TelegramService implements OnModuleInit {
   }
 
   async sendMessageToMultipleUsers(message: string): Promise<void> {
-    const chatIds: number[] = [tgChatIds.tony, tgChatIds.ivan];
-    for (const chatId of chatIds) {
-      await this.sendMessageToUser(chatId, message);
-    }
+    const chatIds: number[] = [tgChatIds.tony];
+    const sendPromises = chatIds.map((chatId: number) =>
+      this.sendMessageToUser(chatId, message),
+    );
+    await Promise.all(sendPromises);
   }
 
   async sendMessageToUser(chatId: number, message: string): Promise<void> {
     try {
       await this.bot.sendMessage(chatId, message);
-      this.logger.messageSent(chatId);
+      this.logger.messageSent(chatId, message);
     } catch (error) {
       this.logger.error(chatId, error);
     }

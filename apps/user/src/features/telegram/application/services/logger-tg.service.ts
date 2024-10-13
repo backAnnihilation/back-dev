@@ -10,7 +10,7 @@ export class TelegramLoggerService {
     console.error(`Error sending message to user with ID: ${chatId}:`, error);
   }
 
-  messageSent(chatId: number): void {
-    console.log(`Message sent to user with ID: ${chatId}`);
+  messageSent(chatId: number, text: string | undefined | null): void {
+    console.log(`Message sent to user with ID: ${chatId}, text: ${text}`);
   }
 }

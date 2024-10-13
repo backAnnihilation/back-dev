@@ -39,7 +39,7 @@ import { TelegramModule } from './features/telegram/telegram.module';
     TelegramModule,
   ],
   controllers: [
-    SubsController,
+    // SubsController,
     SecurityController,
     AuthController,
     SAController,

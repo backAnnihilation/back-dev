@@ -27,7 +27,6 @@ export class SubsController {
     private subsApiService: SubsCudApiService,
     private subsQueryRepo: SubsQueryRepository,
     private subsService: SubscriptionService,
-    private tgService: TelegramService,
   ) {}
 
   @Get(':id')
@@ -80,12 +79,5 @@ export class SubsController {
     });
 
     return this.subsApiService.updateOrDelete(command);
-  }
-
-  @Get('tg/get')
-  async bobr() {
-    await this.tgService.sendMessageToMultipleUsers(
-      'Alert! Error sending event.',
-    );
   }
 }
