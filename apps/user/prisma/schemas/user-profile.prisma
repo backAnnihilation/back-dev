@@ -1,6 +1,6 @@
 model UserProfile {
   id                String         @id @default(uuid())
-  userName          String         @unique
+  userName          String         
   firstName         String        
   lastName          String
   birthDate         DateTime?
@@ -13,4 +13,8 @@ model UserProfile {
   userId            String         @unique
 
   images             ProfileImage[]
+
+  @@index(userName)
+  @@index(country)
+  @@index(city)
 }

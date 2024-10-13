@@ -5,7 +5,10 @@ model Subs {
   followingId       String
 
   createdAt         DateTime       @default(now())
-  // updatedAt         DateTime       @default()
+  updatedAt         DateTime       @updatedAt
+
+  follower    UserAccount @relation("UserFollowers", fields: [followerId], references: [id])
+  following   UserAccount @relation("UserFollowing", fields: [followingId], references: [id])
 
   @@unique([followerId, followingId])
 }
