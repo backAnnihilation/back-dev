@@ -84,6 +84,8 @@ export class SubsController {
 
   @Get('tg/get')
   async bobr() {
-    await this.tgService.sendMessageToMultipleUsers('bobr kurwa ');
+    await this.tgService.sendMessageToMultipleUsers(
+      'Alert! Error sending event.',
+    );
   }
 }

@@ -5,7 +5,10 @@ import { ConfigService } from '@nestjs/config';
 import { EnvironmentVariables } from '@user/core';
 
 import { tgChatIds } from '../../infrastructure/utils/chatIds';
-import { COMMAND_START, MESSAGE_EVENT } from '../../infrastructure/utils/events';
+import {
+  EVENT_TYPES, REQUEST_MESSAGES,
+  RESPONSE_MESSAGES,
+} from '../../infrastructure/utils/events';
 
 import { TelegramLoggerService } from './logger-tg.service';
 
@@ -35,14 +38,14 @@ export class TelegramService implements OnModuleInit {
 
   private handleCommand(command: string, chatId: number): void {
     switch (command) {
-      case COMMAND_START:
+      case REQUEST_MESSAGES.COMMAND_START:
         this.handleStartCommand(chatId);
         break;
-      case '/statistic':
+      case REQUEST_MESSAGES.COMMAND_STATISTIC:
         // this.handleStatisticCommand(chatId);
         break;
       default:
-        this.sendMessageToUser(chatId, 'Unknown command.');
+        this.sendMessageToUser(chatId, RESPONSE_MESSAGES.UNKNOWN);
         break;
     }
   }
@@ -53,7 +56,7 @@ export class TelegramService implements OnModuleInit {
   }
 
   private setupMessageHandlers(): void {
-    this.bot.on(MESSAGE_EVENT, (msg: TelegramBot.Message): void => {
+    this.bot.on(EVENT_TYPES.MESSAGE, (msg: TelegramBot.Message): void => {
       const chatId = msg.chat.id;
       const text = msg.text || '';
 
@@ -64,19 +67,20 @@ export class TelegramService implements OnModuleInit {
       this.logger.message(chatId, msg.text);
     });
   }
+
+  async sendMessageToMultipleUsers(message: string): Promise<void> {
+    const chatIds: number[] = [tgChatIds.tony, tgChatIds.ivan];
+    for (const chatId of chatIds) {
+      await this.sendMessageToUser(chatId, message);
+    }
+  }
+
   async sendMessageToUser(chatId: number, message: string): Promise<void> {
     try {
       await this.bot.sendMessage(chatId, message);
       this.logger.messageSent(chatId);
     } catch (error) {
       this.logger.error(chatId, error);
-    }
-  }
-
-  async sendMessageToMultipleUsers(message: string): Promise<void> {
-    const chatIds: number[] = [tgChatIds.tony];
-    for (const chatId of chatIds) {
-      await this.sendMessageToUser(chatId, message);
     }
   }
 }
