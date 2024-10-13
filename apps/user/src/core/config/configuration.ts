@@ -66,6 +66,9 @@ export class EnvironmentVariables {
   CAPTURE_SITE_KEY: string;
 
   @IsString()
+  TELEGRAM_BOT_TOKEN: string;
+
+  @IsString()
   RMQ_URL: string;
   @IsOptional()
   RMQ_LOCAL_URL: string;
@@ -99,7 +102,7 @@ export const getEnvPaths = (env: Environment) => {
   return envPaths.map((p) => relativePrefix + p);
 };
 
-export let shouldIgnoreEnvFiles = (env: Environment) =>
+export const shouldIgnoreEnvFiles = (env: Environment) =>
   env !== Environment.TESTING && env !== Environment.DEVELOPMENT;
 
 /**

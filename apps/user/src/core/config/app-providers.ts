@@ -61,6 +61,12 @@ import { CompleteProfileImagesUseCase } from '../../features/profile/application
 import { HandleFilesEventUseCase } from '../../features/profile/application/use-cases/handle-files-event.use-case';
 import { ProfileImageDeliveryApprovedEventHandler } from '../../features/profile/application/use-cases/events/profile-image-delivery-approved.event';
 import { ProfileImageService } from '../../features/profile/application/services/profile-image.service';
+import { SubsQueryRepository } from '../../features/subs/api/subs.query.repository';
+import { SubsRepository } from '../../features/subs/domain/subs-repository';
+import { SubscribeUseCase } from '../../features/subs/application/use-cases/subscription.use-case';
+import { UnsubscribeUseCase } from '../../features/subs/application/use-cases/unsubscription.use-case';
+import { SubsCudApiService } from '../../features/subs/application/services/subs-api.service';
+import { SubscriptionService } from '../../features/subs/application/services/subs-service';
 
 const adapters = [
   BcryptAdapter,
@@ -128,4 +134,10 @@ export const providers: Provider[] = [
   CreatePostUseCase,
   PostQueryRepository,
   PostsRepository,
+  SubsQueryRepository,
+  SubsRepository,
+  SubscribeUseCase,
+  UnsubscribeUseCase,
+  SubsCudApiService,
+  SubscriptionService,
 ];

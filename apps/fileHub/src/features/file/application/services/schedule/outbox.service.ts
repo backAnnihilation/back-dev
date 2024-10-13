@@ -1,14 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression, SchedulerRegistry } from '@nestjs/schedule';
-import { CronJob } from 'cron';
 import { EVENT_COMMANDS, OUTBOX_FILE, SchedulerService } from '@app/shared';
-import { OutboxRepository } from '../../../infrastructure/events.outbox.repository';
 import { RmqAdapter } from '@file/core/adapters/rmq.adapter';
+
+import { OutboxRepository } from '../../../infrastructure/events.outbox.repository';
 import {
   EventStatus,
   OutboxDocument,
 } from '../../../domain/entities/outbox.schema';
 import { ProcessedProfileImagesEvent } from '../../../api/models/dto/processed-profile-images-event';
+import { TelegramService } from '../../../../../../../user/src/features/telegram/application/services/telegram.service';
+import { RESPONSE_MESSAGES } from '../../../../../../../user/src/features/telegram/infrastructure/utils/events';
 
 @Injectable()
 export class OutboxService extends SchedulerService {
@@ -17,6 +19,7 @@ export class OutboxService extends SchedulerService {
     scheduleRegistry: SchedulerRegistry,
     private outboxRepo: OutboxRepository,
     private rmqAdapter: RmqAdapter,
+    private tgService: TelegramService,
   ) {
     super(scheduleRegistry);
   }
@@ -42,7 +45,11 @@ export class OutboxService extends SchedulerService {
     );
   }
 
-  private async sendFailedEventAlertToManager() {}
+  private async sendFailedEventAlertToManager() {
+    await this.tgService.sendMessageToMultipleUsers(
+      RESPONSE_MESSAGES.ERROR_EVENT,
+    );
+  }
 
   private async processNonApprovedEvents(...events: OutboxDocument[]) {
     for (const event of events) {

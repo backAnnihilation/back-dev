@@ -22,6 +22,7 @@ import { UserProfilesController } from './features/profile/api/profiles.controll
 import { SecurityController } from './features/security/api/security.controller';
 import { SubsController } from './features/subs/api/subs.controller';
 import { ScheduleModule } from '@nestjs/schedule';
+import { TelegramModule } from './features/telegram/telegram.module';
 
 @Module({
   imports: [
@@ -35,6 +36,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     ConfigurationModule,
     CqrsModule,
     PrismaModule,
+    TelegramModule,
   ],
   controllers: [
     // SubsController,

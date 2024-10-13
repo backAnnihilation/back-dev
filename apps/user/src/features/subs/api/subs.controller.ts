@@ -7,15 +7,18 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { CurrentUserId } from '@user/core';
+import { ApiTagsEnum, RoutingEnum } from '@app/shared';
+import { ApiTags } from '@nestjs/swagger';
+
 import { SubsCudApiService } from '../application/services/subs-api.service';
 import { SubscribeCommand } from '../application/use-cases/subscription.use-case';
 import { UnsubscribeCommand } from '../application/use-cases/unsubscription.use-case';
 import { SubscriptionService } from '../application/services/subs-service';
 import { AccessTokenGuard } from '../../auth/infrastructure/guards/accessToken.guard';
+import { TelegramService } from '../../telegram/application/services/telegram.service';
+
 import { SubsQueryRepository } from './subs.query.repository';
 import { ViewSubs, ViewSubsCount } from './models/output-models/view-sub.model';
-import { ApiTagsEnum, RoutingEnum } from '@app/shared';
-import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags(ApiTagsEnum.Subs)
 @Controller(RoutingEnum.subs)
