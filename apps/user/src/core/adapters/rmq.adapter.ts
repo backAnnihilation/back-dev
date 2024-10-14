@@ -26,6 +26,20 @@ export class RmqAdapter {
       return void client.emit(command, payload);
     } catch (error) {
       console.log(`Send message to file service corrupted with error:`, error);
+      return null;
+    }
+  }
+
+  async sendMessageAndWaitResponse<T>(
+    command: EVENT_COMMANDS,
+    payload: TransportPayload,
+  ): Promise<T> {
+    try {
+      const client = this.getClient(command);
+      return await lastValueFrom(client.send(command, payload));
+    } catch (error) {
+      console.log(`Send message to file service corrupted with error:`, error);
+      return null;
     }
   }
 }
