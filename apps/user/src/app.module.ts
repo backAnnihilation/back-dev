@@ -37,7 +37,7 @@ import { ScheduleModule } from '@nestjs/schedule';
     PrismaModule,
   ],
   controllers: [
-    // SubsController,
+    SubsController,
     SecurityController,
     AuthController,
     SAController,

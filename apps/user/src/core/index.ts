@@ -19,3 +19,9 @@ export * from './managers/.';
 
 // infra
 export * from './infrastructure/.';
+
+//validation
+export * from './validation/upload-photo-format';
+
+// models
+export * from './api/models/.';

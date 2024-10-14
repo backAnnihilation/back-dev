@@ -4,8 +4,6 @@ import { PostsQueryRepository } from '../../features/file/api/post-image.query.r
 import { ProfilesQueryRepository } from '../../features/file/api/profile-image.query.repository';
 import { FilesService } from '../../features/file/application/services/file-metadata.service';
 import { FilesApiService } from '../../features/file/application/services/file.base.service';
-import { PostsApiService } from '../../features/file/application/services/posts-api.service';
-import { ProfilesApiService } from '../../features/file/application/services/profiles-api.service';
 import { S3BucketMaintenanceService } from '../../features/file/application/services/schedule/s3-bucket-maintenance.service';
 import { ProfileImageDeliveryApprovedUseCase } from '../../features/file/application/use-cases/approved-profile-image-urls-delivery.use-case';
 import { UploadPostImageUseCase } from '../../features/file/application/use-cases/upload-post-image.use-case';
@@ -20,6 +18,7 @@ import { FilesStorageAdapter } from '../adapters/local-files-storage.adapter';
 import { RmqAdapter } from '../adapters/rmq.adapter';
 import { S3FilesStorageAdapter } from '../adapters/s3-files-storage.adapter';
 import { OutboxService } from '../../features/file/application/services/schedule/outbox.service';
+import { ProcessImagesService } from '../../features/fileProcessing/application/services/process-images.service';
 
 export const providers: Provider[] = [
   PostsRepository,
@@ -35,13 +34,12 @@ export const providers: Provider[] = [
   ProfileImageDeliveryApprovedUseCase,
   OutboxService,
   FilesApiService,
-  PostsApiService,
-  ProfilesApiService,
   ProfilesQueryRepository,
   PostsQueryRepository,
   UploadProfileImageUseCase,
   UploadPostImageUseCase,
   ProcessingImageUseCase,
+  ProcessImagesService,
   {
     provide: FilesStorageAdapter,
     useClass:

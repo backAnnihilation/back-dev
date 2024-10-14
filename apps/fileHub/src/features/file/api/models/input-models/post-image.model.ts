@@ -5,8 +5,4 @@ export class InputPostImageDto extends BaseImageDto {
   @IsString()
   @IsNotEmpty()
   postId: string;
-
-  @IsString()
-  @IsNotEmpty()
-  userId: string;
 }

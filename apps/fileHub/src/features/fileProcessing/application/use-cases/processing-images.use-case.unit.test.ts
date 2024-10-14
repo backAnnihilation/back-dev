@@ -4,6 +4,8 @@ import {
   ProcessingImageUseCase,
   ProcessingImageCommand,
 } from './processing-images.use-case';
+import { ProcessImagesService } from '../services/process-images.service';
+import imageSizes, { ImageSizesType } from '../../../../core/utils/image-sizes';
 
 const mockFile = {
   originalname: 'test.jpg',
@@ -20,19 +22,22 @@ const mockFile = {
 
 describe('ProcessingImageUseCase', () => {
   let processingImageUseCase: ProcessingImageUseCase;
+  let entityImageSizes: ImageSizesType;
+  let buffer: Buffer;
 
   beforeEach(() => {
-    processingImageUseCase = new ProcessingImageUseCase();
+    entityImageSizes = imageSizes.profile;
+    buffer = mockFile.buffer;
+    const processImageService = new ProcessImagesService();
+    processingImageUseCase = new ProcessingImageUseCase(processImageService);
     jest.restoreAllMocks();
-
   });
   describe('execute', () => {
     it('should process images into multiple sizes', async () => {
-      const sharpMock = jest
-        .spyOn(sharp.prototype, 'toBuffer')
-        .mockResolvedValue(Buffer.from('test'));
-
-      const command = new ProcessingImageCommand(mockFile);
+      const command = new ProcessingImageCommand({
+        buffer,
+        imageSizes: entityImageSizes,
+      });
       const result = await processingImageUseCase.execute(command);
 
       for (const [k, v] of result.entries()) {
@@ -44,11 +49,11 @@ describe('ProcessingImageUseCase', () => {
 
     it('should resize the image for SMALL and LARGE sizes', async () => {
       const resizeMock = jest.spyOn(sharp.prototype, 'resize').mockReturnThis();
-      const toBufferMock = jest
-        .spyOn(sharp.prototype, 'toBuffer')
-        .mockResolvedValue(Buffer.from('test'));
 
-      const command = new ProcessingImageCommand(mockFile);
+      const command = new ProcessingImageCommand({
+        buffer,
+        imageSizes: entityImageSizes,
+      });
       await processingImageUseCase.execute(command);
 
       expect(resizeMock).toHaveBeenCalledWith(192, 95);
@@ -57,11 +62,11 @@ describe('ProcessingImageUseCase', () => {
 
     it('should not resize the ORIGINAL size', async () => {
       const resizeMock = jest.spyOn(sharp.prototype, 'resize');
-      const toBufferMock = jest
-        .spyOn(sharp.prototype, 'toBuffer')
-        .mockResolvedValue(Buffer.from('test'));
 
-      const command = new ProcessingImageCommand(mockFile);
+      const command = new ProcessingImageCommand({
+        buffer,
+        imageSizes: entityImageSizes,
+      });
       await processingImageUseCase.execute(command);
 
       expect(resizeMock).not.toHaveBeenCalledWith(0, 0);
