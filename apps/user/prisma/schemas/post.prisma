@@ -1,12 +1,16 @@
 model Post {
   id                String         @id @default(uuid())
   
-  description       String
-  imageUrl          String         @unique
-  imageId           String         @unique
+  description       String          
+  imageUrl          String?         @unique
+  imageId           String?         @unique
 
   createdAt         DateTime       @default(now())
 
   userAccount       UserAccount    @relation(fields: [userId], references: [id])
   userId            String
+
+  image            PostImage?      
+
+  @@index([description])
 }
