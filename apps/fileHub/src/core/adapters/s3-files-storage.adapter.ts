@@ -8,7 +8,6 @@ import {
 } from '@aws-sdk/client-s3';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-
 import { formatBytes } from '../../core/infrastructure/utils/format-file-size';
 import { AwsConfigType } from '../configuration/configuration';
 import { S3BucketMaintenanceService } from '../../features/file/application/services/schedule/s3-bucket-maintenance.service';
