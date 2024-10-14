@@ -5,7 +5,6 @@ import {
   ApiProperty,
   ApiOperation,
 } from '@nestjs/swagger';
-
 import { UnauthorizedViaTokenApiResponse } from '../../../auth/api/swagger/shared/authorization.response';
 
 export class SecurityViewDeviceResponse {

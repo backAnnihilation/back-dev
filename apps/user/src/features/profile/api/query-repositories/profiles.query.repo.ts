@@ -18,8 +18,10 @@ export class ProfilesQueryRepo {
 
   async getById(id: string): Promise<UserProfileViewModel | null> {
     try {
-      const result = await this.profiles.findUnique({ where: { id } });
-
+      const result = await this.profiles.findUnique({
+        where: { id },
+        include: { images: { orderBy: { createdAt: 'desc' } } },
+      });
       if (!result) return null;
 
       return getUserProfileViewModel(result);
@@ -51,8 +53,15 @@ export class ProfilesQueryRepo {
         where: { profileId, status: ImageStatus.completed },
         orderBy: { createdAt: 'desc' },
       });
+      if (!profileImages.length) return null;
       return profileImages.map(this.mapProfileImageToView);
-    } catch (error) {}
+    } catch (error) {
+      console.error(
+        'Database fails operate with find user profile images',
+        error,
+      );
+      return null;
+    }
   }
 
   private mapProfileToView() {}
@@ -61,9 +70,11 @@ export class ProfilesQueryRepo {
       id: image.id,
       profileId: image.profileId,
       createdAt: image.createdAt,
-      urlLarge: image.urlLarge,
-      urlSmall: image.urlSmall,
-      urlOriginal: image.urlOriginal,
+      urls: {
+        urlLarge: image.urlLarge,
+        urlSmall: image.urlSmall,
+        urlOriginal: image.urlOriginal,
+      },
     };
   }
 }

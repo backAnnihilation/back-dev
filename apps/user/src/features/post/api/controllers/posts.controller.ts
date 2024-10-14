@@ -1,4 +1,10 @@
 import {
+  ApiTagsEnum,
+  FileMetadata,
+  PaginationViewModel,
+  RoutingEnum,
+} from '@app/shared';
+import {
   Body,
   Controller,
   Delete,
@@ -16,13 +22,8 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
-import {
-  ApiTagsEnum,
-  RoutingEnum,
-  PaginationViewModel,
-  FileMetadata,
-} from '@app/shared';
 import { CurrentUserId } from '@user/core';
+import { ImageFilePipe } from '../../../../core/validation/upload-photo-format';
 import { UserPayload } from '../../../auth/infrastructure/decorators/user-payload.decorator';
 import { AccessTokenGuard } from '../../../auth/infrastructure/guards/accessToken.guard';
 import { UserIdExtractor } from '../../../auth/infrastructure/guards/set-user-id.guard';
@@ -31,7 +32,6 @@ import { PostCudApiService } from '../../application/services/post-cud-api.servi
 import { CreatePostCommand } from '../../application/use-cases/create-post.use-case';
 import { DeletePostCommand } from '../../application/use-cases/delete-post.use-case';
 import { EditPostCommand } from '../../application/use-cases/edit-post.use-case';
-import { ImagePhotoPipe } from '../../infrastructure/validation/create-post-photo';
 import { CreatePostInputModel } from '../models/input/create-post.model';
 import { EditPostInputModel } from '../models/input/edit-profile.model';
 import { PostsQueryFilter } from '../models/input/post-query-filter';
@@ -85,7 +85,7 @@ export class PostsController {
   async createPost(
     @CurrentUserId() userId: string,
     @Body() createPostDto: CreatePostInputModel,
-    @UploadedFile(new ImagePhotoPipe()) image: FileMetadata,
+    @UploadedFile(new ImageFilePipe({ maxSizeMb: 20 })) image: FileMetadata,
   ): Promise<PostViewModel> {
     const command = new CreatePostCommand({
       ...createPostDto,

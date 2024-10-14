@@ -1,16 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { AxiosAdapter } from '@user/core/adapters/axios.adapter';
 import { FileMetadata } from '@app/shared';
+import { Post } from '@prisma/client';
 
 @Injectable()
 export class UserPostService {
-  constructor(private resendAdapter: AxiosAdapter) {}
+  constructor() {}
 
-  async uploadProfilePhoto(uploadFileDto: UploadFileDto): Promise<void> {
-    const { image, userId } = uploadFileDto;
-    const url = `/${userId}/upload`;
-    // await this.resendAdapter.sendPostRequest(url, image);
-  }
+  async checkUserRights(post: Post, userId: string): Promise<void> {}
 }
 
 export type UploadFileDto = {

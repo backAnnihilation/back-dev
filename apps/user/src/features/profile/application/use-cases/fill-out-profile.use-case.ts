@@ -43,10 +43,12 @@ export class FillOutProfileUseCase
       userName,
     });
 
-    const result = await this.userRepo.saveEntity(
-      UserEntities.UserProfile,
-      profileDto,
-    );
+    // const result = await this.userRepo.saveEntity(
+    //   UserEntities.UserProfile,
+    //   profileDto,
+    // );
+    const result = await this.profilesRepo.save(profileDto);
+    console.log(FillOutProfileUseCase.name, { result });
 
     notice.addData({ id: result.id });
     return notice;

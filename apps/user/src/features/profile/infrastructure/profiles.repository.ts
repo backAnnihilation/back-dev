@@ -5,19 +5,34 @@ import { DatabaseService, BaseRepository } from '@user/core';
 import { UpdateProfileImageType } from '../api/models/input/update-profile-image-type.model';
 
 @Injectable()
-export class ProfilesRepository extends BaseRepository {
+export class ProfilesRepository extends BaseRepository<
+  Prisma.UserProfileDelegate<DefaultArgs>,
+  Prisma.UserProfileCreateInput,
+  UserProfile
+> {
   private userProfiles: Prisma.UserProfileDelegate<DefaultArgs>;
   private profileImages: Prisma.ProfileImageDelegate<DefaultArgs>;
-  constructor(readonly prisma: DatabaseService) {
-    super(prisma);
-    this.userProfiles = this.prisma.userProfile;
+  constructor(private readonly prisma: DatabaseService) {
+    super(prisma.userProfile);
+    this.userProfiles = this.prismaModel;
     this.profileImages = this.prisma.profileImage;
   }
-  async save(data: Prisma.UserProfileCreateInput): Promise<UserProfile> {
+  async save(data: Prisma.UserProfileUncheckedCreateInput): Promise<UserProfile> {
     try {
       return await this.userProfiles.create({ data });
     } catch (error) {
       console.log(`failed save profile ${error}`);
+      throw new Error(error);
+    }
+  }
+
+  async saveImage(
+    data: Prisma.ProfileImageUncheckedCreateInput,
+  ): Promise<ProfileImage> {
+    try {
+      return await this.profileImages.create({ data });
+    } catch (error) {
+      console.log(`failed save image ${error}`);
       throw new Error(error);
     }
   }

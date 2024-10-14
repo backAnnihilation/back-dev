@@ -14,6 +14,4 @@ export interface ICreatePostCommand extends CreatePostInputModel {
 
 export interface ICreatePostDTOModel extends CreatePostInputModel {
   userId: string;
-  imageUrl: string;
-  imageId: string;
 }

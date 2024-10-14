@@ -2,19 +2,16 @@ import {
   ImageType,
   LayerNoticeInterceptor,
   MediaType,
-  OutputId,
-  PROFILE_IMAGE,
+  PROFILE_IMAGE_UPLOAD,
 } from '@app/shared';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Transport } from '@nestjs/microservices';
-import { UploadProfileImageDto } from '../../api/models/input/upload-file-type.model';
-import { ProfilesRepository } from '../../infrastructure/profiles.repository';
-import { UserEntities } from '../../api/models/enum/user-entities.enum';
 import { ImageStatus } from '@prisma/client';
-import { ResponseProfileImageType } from '../../api/models/output/image-notice-type.model';
 import { TransportManager } from '@user/core';
+import { UploadProfileImageDto } from '../../api/models/input/upload-file-type.model';
+import { ResponseProfileImageType } from '../../api/models/output/image-notice-type.model';
+import { ProfilesRepository } from '../../infrastructure/profiles.repository';
 import { ProfileImageService } from '../services/profile-image.service';
-import { Interval, Timeout } from '@nestjs/schedule';
 
 export class UploadProfileImageCommand {
   constructor(public imageDto: UploadProfileImageDto) {}
@@ -49,25 +46,22 @@ export class UploadProfileImageUseCase
     }
     const profileId = profile.id;
 
-    const profileImage = await this.profilesRepo.saveEntity(
-      UserEntities.ProfileImage,
-      { profileId },
-    );
+    const profileImage = await this.profilesRepo.saveImage({ profileId });
     const imageId = profileImage.id;
 
-    const imagePayload = {
-      imageFormat: MediaType.IMAGE,
-      imageType: ImageType.MAIN,
+    const payload = {
       image,
       profileId,
       imageId,
     };
 
-    const transport = Transport.TCP;
-    const commandName = PROFILE_IMAGE;
-    this.transportManager.sendMessage(transport, commandName, imagePayload);
+    this.transportManager.sendMessage({
+      transport: Transport.TCP,
+      command: PROFILE_IMAGE_UPLOAD,
+      payload,
+    });
 
-    // check if after 10 seconds file wont be completed, mark operation as failed
+    // Check if the file won't be completed after 10 seconds and mark the operation as failed.
     this.profileServiceScheduler.initTimeOutJob(imageId, 10000);
 
     notice.addData({

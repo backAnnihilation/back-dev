@@ -4,16 +4,18 @@ import { DefaultArgs } from '@prisma/client/runtime/library';
 import { BaseRepository, DatabaseService } from '@user/core';
 
 @Injectable()
-export class UsersRepository extends BaseRepository {
-  private readonly userAccounts: Prisma.UserAccountDelegate<DefaultArgs>;
+export class UsersRepository extends BaseRepository<
+  Prisma.UserAccountDelegate<DefaultArgs>,
+  Prisma.UserAccountCreateInput,
+  UserAccount
+> {
   constructor(protected prisma: DatabaseService) {
-    super(prisma);
-    this.userAccounts = this.prisma.userAccount;
+    super(prisma.userAccount);
   }
 
   async save(userDto: Prisma.UserAccountCreateInput): Promise<UserAccount> {
     try {
-      return await this.userAccounts.create({ data: userDto });
+      return await this.prismaModel.create({ data: userDto });
     } catch (error) {
       console.log(error);
       throw new Error(`user is not saved: ${error}`);
@@ -22,7 +24,7 @@ export class UsersRepository extends BaseRepository {
 
   async getUserById(id: string): Promise<UserAccount | null> {
     try {
-      return await this.userAccounts.findUnique({ where: { id } });
+      return await this.prismaModel.findUnique({ where: { id } });
     } catch (error) {
       console.log(`error in getUserById: ${error}`);
       return null;
@@ -31,7 +33,7 @@ export class UsersRepository extends BaseRepository {
 
   async getUserByNameOrEmail(name: string, email: string) {
     try {
-      return await this.userAccounts.findFirst({
+      return await this.prismaModel.findFirst({
         where: { OR: [{ email }, { userName: name }] },
       });
     } catch (error) {
@@ -41,7 +43,7 @@ export class UsersRepository extends BaseRepository {
 
   async deleteUser(id: string): Promise<UserAccount> {
     try {
-      return await this.userAccounts.delete({ where: { id } });
+      return await this.prismaModel.delete({ where: { id } });
     } catch (error) {
       throw new Error(`error in deleteUser: ${error}`);
     }

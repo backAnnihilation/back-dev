@@ -2,8 +2,7 @@ import {
   ApiTagsEnum,
   BaseEvent,
   FileMetadata,
-  IMAGES_COMPLETED,
-  IMAGES_PROCESSED,
+  PROFILE_IMAGES_PROCESSED,
   RmqService,
   RoutingEnum,
 } from '@app/shared';
@@ -23,6 +22,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
+import { ImageFilePipe } from '@user/core';
 import { CurrentUserId } from '@user/core/decorators/current-user-id.decorator';
 import { UserNavigate } from '@user/core/routes/user-navigate';
 import { UserPayload } from '../../auth/infrastructure/decorators/user-payload.decorator';
@@ -34,7 +34,6 @@ import { EditProfileCommand } from '../application/use-cases/edit-profile.use-ca
 import { FillOutProfileCommand } from '../application/use-cases/fill-out-profile.use-case';
 import { HandleFilesEventCommand } from '../application/use-cases/handle-files-event.use-case';
 import { UploadProfileImageCommand } from '../application/use-cases/upload-profile-image.use-case';
-import { ImageFilePipe } from '../infrastructure/validation/upload-photo-format';
 import { EditProfileInputModel } from './models/input/edit-profile.model';
 import { FillOutProfileInputModel } from './models/input/fill-out-profile.model';
 import { ProfileImageProcessType } from './models/output/profile-image-upload-type.model';
@@ -66,43 +65,48 @@ export class UserProfilesController {
     return profile;
   }
 
+  async getProfiles(): Promise<UserProfileViewModel[] | any> {
+    // return await this.profilesQueryRepo.getProfiles();
+  }
+
   @ApiExcludeEndpoint()
   @Post(UserNavigate.UploadPhoto)
   @UseInterceptors(FileInterceptor('image'))
   @UseGuards(AccessTokenGuard)
   async uploadProfilePhoto(
     @UserPayload() { userId }: UserSessionDto,
-    @UploadedFile(ImageFilePipe)
+    @UploadedFile(new ImageFilePipe({ maxSizeMb: 10 }))
     image: FileMetadata,
   ): Promise<ProfileImageProcessType> {
     const command = new UploadProfileImageCommand({ image, userId });
     const notice = await this.commandBus.execute(command);
     if (notice.hasError) throw notice.generateErrorResponse;
-    console.log({response: notice.data});
     return notice.data;
   }
 
-  @Get(UserNavigate.GetProfileWithImage)
+  @Get(UserNavigate.GetProfileWithImages)
   @UseGuards(AccessTokenGuard)
-  async getProfileImageInfo(@UserPayload() userPayload: UserSessionDto) {
-    const result = await this.profilesQueryRepo.getProfileImage(
-      userPayload.userId,
-    );
+  async getProfile(
+    @Param('id') profileId: string,
+    @UserPayload() userPayload: UserSessionDto,
+  ) {
+    const result = await this.profilesQueryRepo.getProfileImages(profileId);
     if (!result) throw new NotFoundException('Profile image not found');
     return result;
   }
 
   @Get(UserNavigate.GetProfileWithImage)
   @UseGuards(AccessTokenGuard)
-  async getProfileImages(@UserPayload() userPayload: UserSessionDto) {
-    const result = await this.profilesQueryRepo.getProfileImage(
-      userPayload.userId,
-    );
+  async getProfileImages(
+    @Param('id') profileId: string,
+    @UserPayload() userPayload: UserSessionDto,
+  ) {
+    const result = await this.profilesQueryRepo.getProfileImage(profileId);
     if (!result) throw new NotFoundException('Profile image not found');
     return result;
   }
 
-  @EventPattern(IMAGES_PROCESSED)
+  @EventPattern(PROFILE_IMAGES_PROCESSED)
   async handleEvent<T extends BaseEvent>(
     @Payload() data: T,
     @Ctx() context: RmqContext,

@@ -69,7 +69,10 @@ export class PostQueryRepository {
   }
   async getById(id: string): Promise<PostViewModel> {
     try {
-      const post = await this.posts.findUnique({ where: { id } });
+      const post = await this.posts.findUnique({
+        where: { id },
+        include: { image: true },
+      });
 
       if (!post) return null;
 

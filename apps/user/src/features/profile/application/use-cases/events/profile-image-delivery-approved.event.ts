@@ -1,7 +1,7 @@
+import { IMAGES_DELIVERED } from '@app/shared';
+import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Transport } from '@nestjs/microservices';
 import { TransportManager } from '@user/core';
-import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { EVENT_COMMANDS, IMAGES_DELIVERED } from '@app/shared';
 
 export class ProfileImageDeliveryApprovedEvent {
   constructor(public eventId: string) {}
@@ -12,10 +12,12 @@ export class ProfileImageDeliveryApprovedEventHandler
 {
   constructor(private transportManager: TransportManager) {}
   async handle(event: ProfileImageDeliveryApprovedEvent): Promise<void> {
-    const transport = Transport.RMQ;
-    const command = IMAGES_DELIVERED;
-    console.log('ProfileImageDeliveryApprovedEventHandler', { command, event });
+    console.log('ProfileImageDeliveryApprovedEventHandler', { event });
 
-    await this.transportManager.sendMessage(transport, command, event);
+    await this.transportManager.sendMessage({
+      transport: Transport.RMQ,
+      command: IMAGES_DELIVERED,
+      payload: event,
+    });
   }
 }

@@ -1,53 +1,37 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Post, PostImage, Prisma } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
-import { DatabaseService } from '@user/core/db/prisma/prisma.service';
-import { BaseRepository } from '@user/core/db/base.repository';
-import { EditUserPostDTO } from '../application/dto/edit-post.dto';
-import { CreatePostDTO } from '../application/dto/create-post.dto';
+import { BaseRepository, DatabaseService } from '@user/core';
 
 @Injectable()
-export class PostsRepository extends BaseRepository {
-  private readonly posts: Prisma.PostDelegate<DefaultArgs>;
-  constructor(protected prisma: DatabaseService) {
-    super(prisma);
-    this.posts = this.prisma.post;
+export class PostsRepository extends BaseRepository<
+  Prisma.PostDelegate<DefaultArgs>,
+  Prisma.PostUncheckedCreateInput,
+  Post
+> {
+  private readonly postImages: Prisma.PostImageDelegate<DefaultArgs>;
+  constructor(private readonly prisma: DatabaseService) {
+    super(prisma.post);
+    this.postImages = this.prisma.postImage;
   }
-  async create(postDto: CreatePostDTO) {
+
+  async saveImage(
+    data: Prisma.PostImageUncheckedCreateInput,
+  ): Promise<PostImage> {
     try {
-      return await this.posts.create({ data: postDto });
+      return this.postImages.create({ data });
     } catch (error) {
-      console.log(error);
-      throw new Error(`post is not saved: ${error}`);
+      console.log(`failed save image ${error}`);
+      throw new Error(error.message);
     }
   }
 
-  async update(postDto: EditUserPostDTO) {
+  async updateImage(id: string, data: Prisma.PostImageUncheckedUpdateInput) {
     try {
-      return await this.posts.update({
-        data: { description: postDto.description },
-        where: { id: postDto.postId, userId: postDto.userId },
-      });
+      return this.postImages.update({ where: { id }, data });
     } catch (error) {
-      console.log(`userPost is not updated: ${error}`);
-      return null;
-    }
-  }
-
-  async getPostById(id: string) {
-    try {
-      return await this.posts.findUnique({ where: { id } });
-    } catch (error) {
-      console.log(`error in getPostById: ${error}`);
-      return null;
-    }
-  }
-
-  async deletePost(id: string) {
-    try {
-      return await this.posts.delete({ where: { id: id } });
-    } catch (error) {
-      throw new Error(`error in deletePostUser: ${error}`);
+      console.log(`failed update image ${error}`);
+      throw new Error(error.message);
     }
   }
 }

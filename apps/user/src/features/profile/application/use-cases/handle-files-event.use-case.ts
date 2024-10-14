@@ -8,7 +8,7 @@ import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { CompleteProfileImagesCommand } from './completed-profile-image.use-case';
 
 export class HandleFilesEventCommand {
-  constructor(public fileDto: IFileDto) {}
+  constructor(public dto: IFileDto) {}
 }
 interface IFileDto extends BaseEvent {}
 
@@ -19,15 +19,12 @@ export class HandleFilesEventUseCase
   private location = this.constructor.name;
   private readonly commandMap: Record<string, new (dto: any) => any> = {
     [EventType.PROFILE_IMAGES]: CompleteProfileImagesCommand,
-    [IMAGES_COMPLETED]: CompleteProfileImagesCommand,
-    [IMAGES_PROCESSED]: CompleteProfileImagesCommand,
   };
 
   constructor(private commandBus: CommandBus) {}
 
   async execute(command: HandleFilesEventCommand): Promise<void> {
-    const { fileDto } = command;
-    await this.processCommand(fileDto);
+    await this.processCommand(command.dto);
   }
 
   private async processCommand(dto: IFileDto) {

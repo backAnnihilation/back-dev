@@ -63,22 +63,22 @@ export class UserProfileService {
     const transport = Transport.TCP;
     const commandName = EVENT_COMMANDS.PROFILE_IMAGE_UPLOAD;
 
-    const result = await this.transportManager.sendMessage(
-      transport,
-      commandName,
-      imagePayload,
-    );
+    // const result = await this.transportManager.sendMessage(
+    //   transport,
+    //   commandName,
+    //   imagePayload,
+    // );
 
-    if (!result) {
-      notice.addError(
-        `Image wasn't uploaded`,
-        'uploadImage',
-        notice.errorCodes.InternalServerError,
-      );
-      return notice;
-    }
+    // if (!result) {
+    //   notice.addError(
+    //     `Image wasn't uploaded`,
+    //     'uploadImage',
+    //     notice.errorCodes.UnavailableServiceError,
+    //   );
+    //   return notice;
+    // }
 
-    notice.addData(result);
+    // notice.addData(result);
     return notice;
   }
 }

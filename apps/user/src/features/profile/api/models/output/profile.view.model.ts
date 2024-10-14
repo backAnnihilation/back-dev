@@ -1,19 +1,31 @@
-import { UserProfile } from '@prisma/client';
+import { ProfileImage, UserProfile } from '@prisma/client';
+import { PhotoType } from '@user/core';
+
+const convertImagesToView = (image: ProfileImage) => ({
+  id: image.id,
+  urls: {
+    urlOriginal: image.urlOriginal || null,
+    urlSmall: image.urlSmall || null,
+    urlLarge: image.urlLarge || null,
+  },
+  createdAt: image.createdAt.toISOString(),
+});
 
 export const getUserProfileViewModel = (
-  profile: UserProfile,
+  profile: UserProfile & { images: ProfileImage[] },
 ): UserProfileViewModel => ({
   id: profile.id,
   userName: profile.userName,
   firstName: profile.firstName,
   lastName: profile.lastName,
   birthDate: profile.birthDate.toISOString(),
-  createdAt: profile.createdAt.toISOString(),
+  about: profile.about,
   location: {
     country: profile.country,
     city: profile.city,
   },
-  about: profile.about,
+  createdAt: profile.createdAt.toISOString(),
+  mainImage: convertImagesToView(profile.images[0]) || null,
 });
 
 export type UserProfileViewModel = {
@@ -22,11 +34,11 @@ export type UserProfileViewModel = {
   firstName: string;
   lastName: string;
   birthDate: string;
-  createdAt: string;
   location: LocationViewModel;
   about?: string | null;
+  createdAt: string;
+  mainImage?: PhotoType | null;
 };
-
 export type LocationViewModel = {
   country: string | null;
   city: string | null;

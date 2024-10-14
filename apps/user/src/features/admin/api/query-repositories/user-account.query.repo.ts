@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
-import { DatabaseService } from '@user/core/db/prisma/prisma.service';
+import { DatabaseService } from '@user/core';
 import { getSAViewModel } from '../models/user.view.models/saView.model';
 import { PaginationViewModel } from '@app/shared';
 import { SAQueryFilter } from '../models/outputSA.models.ts/sa-query-filter';
@@ -57,7 +57,7 @@ export class UsersQueryRepo {
       const result = await this.userAccounts.findUnique({
         where: { id },
       });
-
+      if (!result) return null;
       return getSAViewModel(result);
     } catch (error) {
       console.error('Database fails operate with find user', error);

@@ -16,8 +16,8 @@ export class EditPostUseCase implements ICommandHandler<EditPostCommand> {
     command: EditPostCommand,
   ): Promise<LayerNoticeInterceptor<OutputId>> {
     const notice = new LayerNoticeInterceptor<null | OutputId>();
-    const { userId, postId } = command.postDto;
-    const post = await this.postRepo.getPostById(postId);
+    const { userId, postId, description } = command.postDto;
+    const post = await this.postRepo.getById(postId);
     if (post.userId !== userId) {
       notice.addError(
         'User is not the owner of the post',
@@ -26,7 +26,8 @@ export class EditPostUseCase implements ICommandHandler<EditPostCommand> {
       );
       return notice;
     }
-    await this.postRepo.update(command.postDto);
+
+    await this.postRepo.update(post.id, { description });
 
     return notice;
   }

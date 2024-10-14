@@ -11,25 +11,19 @@ export class DeletePostCommand {
 @CommandHandler(DeletePostCommand)
 export class DeletePostUseCase implements ICommandHandler<DeletePostCommand> {
   private location = this.constructor.name;
-  // constructor(private profilesRepo: ProfilesRepository) {}
-  constructor(
-    private postsRepository: PostsRepository,
-    private userRepo: UsersRepository,
-    private postRepo: PostsRepository,
-  ) {}
+  constructor(private postsRepo: PostsRepository) {}
 
   async execute(
     command: DeletePostCommand,
   ): Promise<LayerNoticeInterceptor<OutputId>> {
     const notice = new LayerNoticeInterceptor<null | OutputId>();
-
     const { userId, postId } = command.deleteDto;
 
-    const post = await this.postRepo.getPostById(postId);
+    const post = await this.postsRepo.getById(postId);
 
     if (!post) {
       notice.addError(
-        'not found post with id: ' + postId,
+        `post with id ${postId} not found`,
         this.location,
         notice.errorCodes.ResourceNotFound,
       );
@@ -38,13 +32,13 @@ export class DeletePostUseCase implements ICommandHandler<DeletePostCommand> {
 
     if (post.userId !== userId) {
       notice.addError(
-        'User is not the owner of the post',
+        `User with id ${userId} is not the owner of the post`,
         this.location,
         notice.errorCodes.AccessForbidden,
       );
       return notice;
     }
-    await this.postRepo.deletePost(post.id);
+    await this.postsRepo.delete(postId);
 
     return notice;
   }

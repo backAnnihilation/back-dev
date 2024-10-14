@@ -1,10 +1,9 @@
 import { LayerNoticeInterceptor } from '@app/shared';
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
 import { ImageStatus } from '@prisma/client';
-import { ResponseProfileImageType } from '../../api/models/output/image-notice-type.model';
+import { ImageDtoType } from '../../api/models/input/update-profile-image-type.model';
 import { ProfilesRepository } from '../../infrastructure/profiles.repository';
 import { ProfileImageDeliveryApprovedEvent } from './events/profile-image-delivery-approved.event';
-import { ImageDtoType } from '../../api/models/input/update-profile-image-type.model';
 
 export class CompleteProfileImagesCommand {
   constructor(public profileImagesDto: ImageDtoType) {}
