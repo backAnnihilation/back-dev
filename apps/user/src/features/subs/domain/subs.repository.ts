@@ -5,16 +5,18 @@ import { BaseRepository, DatabaseService } from '@user/core';
 import { InputSubscriptionDto } from '../api/models/input-models/sub.model';
 
 @Injectable()
-export class SubsRepository extends BaseRepository {
-  private readonly subs: Prisma.SubsDelegate<DefaultArgs>;
-  constructor(protected prisma: DatabaseService) {
-    super(prisma);
-    this.subs = this.prisma.subs;
+export class SubsRepository extends BaseRepository<
+  Prisma.SubsDelegate<DefaultArgs>,
+  Prisma.SubsCreateInput,
+  Subs
+> {
+  constructor(prisma: DatabaseService) {
+    super(prisma.subs);
   }
 
   async getSubscription(subDto: InputSubscriptionDto) {
     try {
-      return await this.subs.findFirst({
+      return await this.prismaModel.findFirst({
         where: { ...subDto },
       });
     } catch (e) {
@@ -24,18 +26,17 @@ export class SubsRepository extends BaseRepository {
 
   async create(subDto: InputSubscriptionDto) {
     try {
-      return await this.subs.create({
+      return await this.prismaModel.create({
         data: { ...subDto },
       });
     } catch (e) {
-      console.error('Error creating subscription', e);
-      return null;
+      throw new Error(`Error creating subscription: ${e}`);
     }
   }
 
   async delete(id: string): Promise<Subs> {
     try {
-      return await this.subs.delete({
+      return await this.prismaModel.delete({
         where: { id },
       });
     } catch (e) {

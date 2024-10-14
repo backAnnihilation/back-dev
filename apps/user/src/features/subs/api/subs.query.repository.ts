@@ -2,6 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
 import { DatabaseService } from '@user/core';
+import {
+  FollowersView,
+  FollowingView,
+  ViewSubsCount,
+} from './models/output-models/view-sub.model';
 
 @Injectable()
 export class SubsQueryRepository {
@@ -18,63 +23,53 @@ export class SubsQueryRepository {
     }
   }
 
-  async getFollowing(userId: string) {
+  async getFollowing(userId: string): Promise<FollowingView[] | null> {
     try {
       const following = await this.subs.findMany({
         where: {
           followerId: userId,
         },
-        select: {
-          followingId: true,
-        },
       });
-
-      return following.map((sub) => sub.followingId);
+      if (!following.length) return null;
+      return following.map((sub) => ({
+        id: sub.id,
+        followingId: sub.followingId,
+        createdAt: sub.createdAt,
+      }));
     } catch (e) {
       return null;
     }
   }
 
-  async getFollowers(userId: string) {
+  async getFollowers(userId: string): Promise<FollowersView[] | null> {
     try {
       const followers = await this.subs.findMany({
         where: {
           followingId: userId,
         },
-        select: {
-          followerId: true,
-        },
       });
-
-      return followers.map((sub) => sub.followerId);
+      
+      return followers.map((sub) => ({
+        id: sub.id,
+        followerId: sub.followerId,
+        createdAt: sub.createdAt,
+      }));
     } catch (e) {
       return null;
     }
   }
 
-  async getFollowingCount(userId: string) {
+  async getUserFollowCounts(userId: string): Promise<ViewSubsCount> {
     try {
-      return await this.subs.count({
-        where: {
-          followerId: userId,
-        },
-      });
-    } catch (e) {
-      console.error('Error fetching following count:', e);
-      return 0;
-    }
-  }
+      const [followingCount, followerCount] = await Promise.all([
+        this.subs.count({ where: { followingId: userId } }),
+        this.subs.count({ where: { followerId: userId } }),
+      ]);
 
-  async getFollowersCount(userId: string) {
-    try {
-      return await this.subs.count({
-        where: {
-          followingId: userId,
-        },
-      });
-    } catch (e) {
-      console.error('Error fetching followers count:', e);
-      return 0;
+      return { followingCount, followerCount };
+    } catch (error) {
+      console.log('Error fetching follower/following counts:', error);
+      return null;
     }
   }
 

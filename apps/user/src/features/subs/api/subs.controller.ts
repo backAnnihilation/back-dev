@@ -8,14 +8,20 @@ import {
 } from '@nestjs/common';
 import { CurrentUserId } from '@user/core';
 import { SubsCudApiService } from '../application/services/subs-api.service';
-import { SubscribeCommand } from '../application/use-cases/subscription.use-case';
+import { SubscribeCommand } from '../application/use-cases/subscribe-to-user.use-case';
 import { UnsubscribeCommand } from '../application/use-cases/unsubscription.use-case';
-import { SubscriptionService } from '../application/services/subs-service';
 import { AccessTokenGuard } from '../../auth/infrastructure/guards/accessToken.guard';
 import { SubsQueryRepository } from './subs.query.repository';
-import { ViewSubs, ViewSubsCount } from './models/output-models/view-sub.model';
+import {
+  FollowersView,
+  FollowingView,
+  ViewSubsCount,
+} from './models/output-models/view-sub.model';
 import { ApiTagsEnum, RoutingEnum } from '@app/shared';
 import { ApiTags } from '@nestjs/swagger';
+import { GetUserFollowersEndpoint } from './swagger/get-followers.description';
+import { SubsNavigate } from '../../../core/routes/subs-navigate';
+import { GetUserFollowingEndpoint } from './swagger/get-following.description';
 
 @ApiTags(ApiTagsEnum.Subs)
 @Controller(RoutingEnum.subs)
@@ -23,58 +29,54 @@ export class SubsController {
   constructor(
     private subsApiService: SubsCudApiService,
     private subsQueryRepo: SubsQueryRepository,
-    private subsService: SubscriptionService,
   ) {}
 
-  @Get(':id')
-  async getUserFollowersAndFollowing(
+  @GetUserFollowersEndpoint()
+  @Get(SubsNavigate.GetFollowers)
+  async getUserFollowers(
     @Param('id') userId: string,
-  ): Promise<ViewSubs> {
-    const followers = await this.subsQueryRepo.getFollowers(userId);
-    const following = await this.subsQueryRepo.getFollowing(userId);
-
-    const payload = {
-      followers,
-      following,
-    };
-
-    return payload;
+  ): Promise<FollowersView[]> {
+    return this.subsQueryRepo.getFollowers(userId);
   }
 
-  @Get('count/:userId')
-  async getUserFollowersAndFollowingCount(
-    @Param('userId') userId: string,
+  @GetUserFollowingEndpoint()
+  @Get(SubsNavigate.GetFollowing)
+  async getUserFollowing(
+    @Param('id') userId: string,
+  ): Promise<FollowingView[]> {
+    return this.subsQueryRepo.getFollowing(userId);
+  }
+
+  @Get(SubsNavigate.CountFollow)
+  async getUserFollowCounts(
+    @Param('id') userId: string,
   ): Promise<ViewSubsCount> {
-    const payload =
-      await this.subsService.getUserFollowersAndFollowingCount(userId);
-    return payload;
+    return this.subsQueryRepo.getUserFollowCounts(userId);
   }
 
-  @Post(':followingId')
+  @Post(SubsNavigate.Subscribe)
   @UseGuards(AccessTokenGuard)
   async subscribe(
     @CurrentUserId() userId: string,
-    @Param('followingId') followingId: string,
+    @Param('id') followingId: string,
   ) {
     const command = new SubscribeCommand({
       followingId,
       followerId: userId,
     });
-
     return this.subsApiService.updateOrDelete(command);
   }
 
-  @Delete(':followingId')
+  @Delete(SubsNavigate.Unsubscribe)
   @UseGuards(AccessTokenGuard)
   async unsubscribe(
     @CurrentUserId() userId: string,
-    @Param('followingId') followingId: string,
+    @Param('id') followingId: string,
   ) {
     const command = new UnsubscribeCommand({
       followingId,
       followerId: userId,
     });
-
     return this.subsApiService.updateOrDelete(command);
   }
 }

@@ -9,14 +9,19 @@ export type ViewFollowingModel = {
 export type ViewSubsModels = ViewFollowerModel & ViewFollowingModel;
 
 export type ViewSubsCount = {
-  followersCount: number;
+  followerCount: number;
   followingCount: number;
 };
-
-export type ViewSubs = {
-  followers: string[];
-  following: string[];
-};
+export type FollowersView = {
+  id: string;
+  followerId: string;
+  createdAt: Date;
+} 
+export type FollowingView = {
+  id: string;
+  followingId: string;
+  createdAt: Date;
+}
 
 export type SubViewModel = {
   id: string;

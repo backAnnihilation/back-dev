@@ -33,7 +33,6 @@ import { UserProfilesApiService } from '../../features/profile/application/servi
 import { EditProfileUseCase } from '../../features/profile/application/use-cases/edit-profile.use-case';
 import { FillOutProfileUseCase } from '../../features/profile/application/use-cases/fill-out-profile.use-case';
 import { ProfilesRepository } from '../../features/profile/infrastructure/profiles.repository';
-import { ImageFilePipe } from '../../features/profile/infrastructure/validation/upload-photo-format';
 import { SecurityQueryRepo } from '../../features/security/api/query-repositories/security.query.repo';
 import { CreateUserSessionUseCase } from '../../features/security/application/use-cases/create-user-session.use-case';
 import { DeleteActiveSessionUseCase } from '../../features/security/application/use-cases/delete-active-session.use-case';
@@ -61,6 +60,11 @@ import { CompleteProfileImagesUseCase } from '../../features/profile/application
 import { HandleFilesEventUseCase } from '../../features/profile/application/use-cases/handle-files-event.use-case';
 import { ProfileImageDeliveryApprovedEventHandler } from '../../features/profile/application/use-cases/events/profile-image-delivery-approved.event';
 import { ProfileImageService } from '../../features/profile/application/services/profile-image.service';
+import { SubsCudApiService } from '../../features/subs/application/services/subs-api.service';
+import { SubsRepository } from '../../features/subs/domain/subs.repository';
+import { SubsQueryRepository } from '../../features/subs/api/subs.query.repository';
+import { SubscribeUseCase } from '../../features/subs/application/use-cases/subscribe-to-user.use-case';
+import { UnsubscribeUseCase } from '../../features/subs/application/use-cases/unsubscription.use-case';
 
 const adapters = [
   BcryptAdapter,
@@ -71,9 +75,18 @@ const adapters = [
   AxiosAdapter,
 ];
 
+const subProviders = [
+  SubsCudApiService,
+  SubsQueryRepository,
+  SubsRepository,
+  SubscribeUseCase,
+  UnsubscribeUseCase,
+];
+
 const managers = [EmailManager, TransportManager];
 
 export const providers: Provider[] = [
+  ...subProviders,
   ...adapters,
   ...managers,
   AuthService,
@@ -120,7 +133,6 @@ export const providers: Provider[] = [
   ProfilesRepository,
   FillOutProfileUseCase,
   EditProfileUseCase,
-  ImageFilePipe,
   UserProfileService,
   PostCudApiService,
   EditPostUseCase,

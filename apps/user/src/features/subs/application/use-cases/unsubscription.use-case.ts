@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { LayerNoticeInterceptor } from '@app/shared';
 import { InputSubscriptionDto } from '../../api/models/input-models/sub.model';
-import { SubsRepository } from '../../domain/subs-repository';
+import { SubsRepository } from '../../domain/subs.repository';
 
 export class UnsubscribeCommand {
   constructor(public subDto: InputSubscriptionDto) {}
@@ -25,7 +25,7 @@ export class UnsubscribeUseCase implements ICommandHandler<UnsubscribeCommand> {
       );
     }
     const deletedSubscription = await this.subsRepo.delete(subscription.id);
-    
+
     return notice;
   }
 }

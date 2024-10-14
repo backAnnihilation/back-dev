@@ -3,6 +3,6 @@ export enum UserNavigate {
   EditProfile = 'edit',
   GetProfile = ':id',
   UploadPhoto = 'photo',
-  GetProfileWithImage = 'profile/image',
-  GetProfileWithImages = 'profile/images',
+  GetProfileWithImage = ':id/image',
+  GetProfileWithImages = ':id/images',
 }
