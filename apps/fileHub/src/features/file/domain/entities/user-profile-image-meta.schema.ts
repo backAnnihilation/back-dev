@@ -6,10 +6,6 @@ import { LayerNoticeInterceptor } from '@app/shared';
 export type ProfileImageDocument = HydratedDocument<ProfileImageMeta>;
 export type ProfileImageModel = Model<ProfileImageDocument> &
   ProfileImageMetaStatics;
-export type ProfileImageMetaDto = BaseImageMetaDto & {
-  profileId: string;
-  imageId: string;
-};
 
 @Schema({ timestamps: true })
 export class ProfileImageMeta {
@@ -26,7 +22,7 @@ export class ProfileImageMeta {
   updatedAt: Date;
 
   static async makeInstance(
-    imageDto: Partial<ProfileImageMeta> & Partial<BaseImageMeta>,
+    imageDto: Partial<ProfileImageMeta>,
   ) {
     const notice = new LayerNoticeInterceptor<ProfileImageDocument>();
     const imageMeta = new this() as ProfileImageDocument;

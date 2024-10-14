@@ -1,7 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import { CronJob } from 'cron';
-import { EVENT_COMMANDS, OUTBOX_FILE, SchedulerService } from '@app/shared';
+import {
+  EVENT_COMMANDS,
+  OUTBOX_FILE,
+  PROFILE_IMAGES_PROCESSED,
+  SchedulerService,
+} from '@app/shared';
 import { OutboxRepository } from '../../../infrastructure/events.outbox.repository';
 import { RmqAdapter } from '@file/core/adapters/rmq.adapter';
 import {
@@ -36,10 +41,7 @@ export class OutboxService extends SchedulerService {
 
   private async retrySendingEvent(eventRaw: OutboxDocument) {
     const event = new ProcessedProfileImagesEvent(eventRaw);
-    return this.rmqAdapter.sendMessage(
-      eventRaw.eventType as EVENT_COMMANDS,
-      event,
-    );
+    return this.rmqAdapter.sendMessage(PROFILE_IMAGES_PROCESSED, event);
   }
 
   private async sendFailedEventAlertToManager() {}

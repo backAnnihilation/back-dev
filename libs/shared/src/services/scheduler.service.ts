@@ -63,9 +63,7 @@ export class SchedulerService {
   protected deleteIntervalJob(jobName: string) {
     try {
       this.scheduleRegistry.deleteInterval(jobName);
-    } catch (error) {
-      console.log('deleteIntervalJob', { error });
-    }
+    } catch (error) {}
   }
 
   private getInterval(name: string) {

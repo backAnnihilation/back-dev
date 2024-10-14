@@ -3,6 +3,7 @@ import {
   ForbiddenException,
   InternalServerErrorException,
   NotFoundException,
+  ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { validateOrReject, ValidationError } from 'class-validator';
@@ -25,6 +26,7 @@ export class LayerNoticeInterceptor<D = null> {
   ) {
     this.data = data;
     this.errorCodes = {
+      UnavailableServiceError: 503,
       InternalServerError: 500,
       ResourceNotFound: 404,
       AccessForbidden: 403,
@@ -76,6 +78,9 @@ export class LayerNoticeInterceptor<D = null> {
     };
 
     const errorMap = {
+      [errorCodes.UnavailableServiceError]: new ServiceUnavailableException(
+        errorObject,
+      ),
       [errorCodes.InternalServerError]: new InternalServerErrorException(
         errorObject,
       ),
@@ -97,6 +102,7 @@ export class LayerInterceptorExtension {
 }
 
 type ErrorCodes = {
+  UnavailableServiceError: 503;
   InternalServerError: 500;
   ResourceNotFound: 404;
   AccessForbidden: 403;

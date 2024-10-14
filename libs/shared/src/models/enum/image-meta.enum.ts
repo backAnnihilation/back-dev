@@ -24,4 +24,5 @@ export enum ImageSize {
   ORIGINAL = 'original',
   LARGE = 'large',
   SMALL = 'small',
+  MEDIUM = 'medium',
 }

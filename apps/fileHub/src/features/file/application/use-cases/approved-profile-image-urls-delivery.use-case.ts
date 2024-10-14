@@ -17,7 +17,7 @@ export class ProfileImageDeliveryApprovedUseCase
     command: ProfileImageDeliveryApprovedCommand,
   ): Promise<LayerNoticeInterceptor> {
     const notice = new LayerNoticeInterceptor();
-
+ 
     const event = await this.outboxRepo.getById(command.eventId);
     if (!event) {
       notice.addError(

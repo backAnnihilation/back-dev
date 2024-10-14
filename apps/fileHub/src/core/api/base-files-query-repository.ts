@@ -29,10 +29,10 @@ export class BaseFilesQueryRepository<TDocument extends Document, ViewModel> {
     createdAt: file.createdAt.toString(),
   });
 
-  private postImageToViewModel = (image: PostImageMetaDocument) => ({
-    id: image._id.toString(),
-    url: image.url,
-    postId: image.postId,
-    createdAt: image.createdAt.toString(),
-  });
+  // private postImageToViewModel = (image: PostImageMetaDocument) => ({
+  //   id: image._id.toString(),
+  //   url: image,
+  //   postId: image.postId,
+  //   createdAt: image.createdAt.toString(),
+  // });
 }

@@ -1,29 +1,31 @@
-import {
-  BaseCUDApiService,
-  BaseQueryRepository,
-  RmqService,
-} from '@app/shared';
+import { LayerNoticeInterceptor, RmqService } from '@app/shared';
 import { CommandBus } from '@nestjs/cqrs';
-import { RmqContext } from '@nestjs/microservices';
+import { RmqContext, TcpContext } from '@nestjs/microservices';
 
-export class BaseEventsApiService<
-  TCommand,
-  TViewModel,
-> extends BaseCUDApiService<TCommand, TViewModel> {
+export class BaseEventsApiService<TCommand> {
   constructor(
     private readonly rmqService: RmqService,
-    commandBus: CommandBus,
-    queryRepo: BaseQueryRepository<TViewModel>,
-  ) {
-    super(commandBus, queryRepo);
-  }
+    private readonly commandBus: CommandBus,
+  ) {}
 
-  async handleEvent(
+  protected async handleEvent(
     command: TCommand,
-    context: RmqContext,
-  ): Promise<TViewModel> {
-    const responseModel = await this.create(command);
-    this.rmqService.ack(context);
-    return responseModel as Promise<TViewModel>;
+    context: RmqContext | TcpContext,
+    withResponse = false,
+  ): Promise<void> {
+    if (context instanceof RmqContext) {
+      this.rmqService.ack(context);
+    }
+
+    const notification = await this.commandBus.execute<
+      TCommand,
+      LayerNoticeInterceptor<any>
+    >(command);
+
+    if (notification.hasError) {
+      throw notification.generateErrorResponse;
+    }
+
+    if (withResponse) return notification.data;
   }
 }

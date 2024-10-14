@@ -28,6 +28,7 @@ export * from './models/enum/event.enum';
 export * from './models/output/output-id.dto';
 export * from './models/output/image-view.models';
 export * from './models/base/base-event';
+export * from './models/output/image-urls-response';
 
 // routing
 export * from './routing/routing';

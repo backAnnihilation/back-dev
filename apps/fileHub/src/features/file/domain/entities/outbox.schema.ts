@@ -1,9 +1,13 @@
+import { EventType } from '@app/shared';
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { EVENT_COMMANDS, EventType } from '@app/shared';
-import { HydratedDocument, Model, set } from 'mongoose';
+import { HydratedDocument, Model } from 'mongoose';
 
 export type OutboxDocument = HydratedDocument<OutboxEntity>;
 export type OutboxModel = Model<OutboxDocument> & StaticMethodType;
+type OutboxDto = {
+  eventType: EventType;
+  imageId: string;
+};
 
 export enum EventStatus {
   PENDING = 'PENDING',
@@ -15,14 +19,17 @@ export enum EventStatus {
 
 @Schema({ timestamps: true })
 export class OutboxEntity {
-  @Prop({ required: true, enum: EventStatus })
+  @Prop({ required: true, enum: EventStatus, default: EventStatus.PENDING })
   status: EventStatus;
+
+  @Prop({ required: true, type: String })
+  imageId: string;
 
   @Prop({ type: Object })
   payload: Record<string, any>;
 
   @Prop({ required: true, type: String })
-  eventType: EventType | EVENT_COMMANDS;
+  eventType: EventType;
 
   @Prop({ default: 0 })
   retryCount: number;
@@ -30,10 +37,9 @@ export class OutboxEntity {
   createdAt: Date;
   updatedAt: Date;
 
-  static makeInstance(outboxDto: Partial<OutboxEntity>) {
+  static makeInstance(dto: OutboxDto) {
     const outbox = new this() as OutboxDocument;
-    outbox.status = EventStatus.PENDING;
-    outbox.eventType = outboxDto.eventType;
+    Object.assign(outbox, dto);
     return outbox;
   }
 

@@ -1,36 +1,35 @@
 import {
   EVENT_COMMANDS,
+  EventType,
   ImageCategory,
-  IMAGES_COMPLETED,
+  IMAGES_PROCESSED,
   ImageSize,
   LayerNoticeInterceptor,
-  EventType,
-  IMAGES_PROCESSED,
+  PROFILE_IMAGES_PROCESSED,
 } from '@app/shared';
+import { RmqAdapter } from '@file/core/adapters/rmq.adapter';
 import { CommandBus, CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { InjectModel } from '@nestjs/mongoose';
-import { RmqAdapter } from '@file/core/adapters/rmq.adapter';
 import { ProcessingImageCommand } from '../../../fileProcessing/application/use-cases/processing-images.use-case';
+import { ProcessedProfileImagesEvent } from '../../api/models/dto/processed-profile-images-event';
 import { Bucket } from '../../api/models/enums/file-models.enum';
 import { InputProfileImageDto } from '../../api/models/input-models/profile-image.model';
 import {
-  ProfileImageDocument,
-  ProfileImageMeta,
-  ProfileImageMetaDto,
-  ProfileImageModel,
-} from '../../domain/entities/user-profile-image-meta.schema';
-import { FilesService } from '../services/file-metadata.service';
-import {
+  EventStatus,
   OutboxDocument,
   OutboxEntity,
   OutboxModel,
-  EventStatus,
 } from '../../domain/entities/outbox.schema';
+import {
+  ProfileImageMeta,
+  ProfileImageModel,
+} from '../../domain/entities/user-profile-image-meta.schema';
 import { OutboxRepository } from '../../infrastructure/events.outbox.repository';
-import { ProcessedProfileImagesEvent } from '../../api/models/dto/processed-profile-images-event';
-import { OutboxService } from '../services/schedule/outbox.service';
 import { ProfilesRepository } from '../../infrastructure/profiles-image.repository';
-import { BaseImageMeta } from '../../domain/entities/base-image-meta.schema';
+import { FilesService } from '../services/file-metadata.service';
+import { OutboxService } from '../services/schedule/outbox.service';
+import imageSizes from '@file/core/utils/image-sizes';
+const profileImageSizes = imageSizes.profile;
 
 export class UploadProfileImageCommand {
   constructor(public imageDto: InputProfileImageDto) {}
@@ -40,7 +39,8 @@ export class UploadProfileImageCommand {
 export class UploadProfileImageUseCase
   implements ICommandHandler<UploadProfileImageCommand>
 {
-  private readonly eventType: EVENT_COMMANDS;
+  private readonly eventType: EventType;
+  private readonly commandType: EVENT_COMMANDS;
   constructor(
     private filesService: FilesService,
     private filesRepo: ProfilesRepository,
@@ -53,27 +53,34 @@ export class UploadProfileImageUseCase
     private outboxRepo: OutboxRepository,
     private outboxService: OutboxService,
   ) {
-    this.eventType = IMAGES_PROCESSED;
+    this.eventType = EventType.PROFILE_IMAGES;
+    this.commandType = PROFILE_IMAGES_PROCESSED;
   }
 
   async execute(
     command: UploadProfileImageCommand,
   ): Promise<LayerNoticeInterceptor> {
+    const notice = new LayerNoticeInterceptor();
+
     const { profileId, imageId, image } = command.imageDto;
-    const { originalname, size, mimetype } = image;
+    const { originalname, size, mimetype, buffer } = image;
 
     const outboxEvent = await this.outboxRepo.getEventByImageId(imageId);
     if (outboxEvent) {
-      this.rmqAdapter.sendMessage(this.eventType, outboxEvent);
-      return;
+      this.rmqAdapter.sendMessage(this.commandType, outboxEvent);
+      return notice;
     }
 
     const initOutboxInstance = this.OutboxModel.makeInstance({
       eventType: this.eventType,
+      imageId,
     });
     const outbox = await this.outboxRepo.save(initOutboxInstance);
 
-    const processingCommand = new ProcessingImageCommand(image);
+    const processingCommand = new ProcessingImageCommand({
+      buffer,
+      imageSizes: profileImageSizes,
+    });
     const processedImages = await this.commandBus.execute<
       ProcessingImageCommand,
       Map<ImageSize, Buffer>
@@ -91,6 +98,7 @@ export class UploadProfileImageUseCase
           bucket,
           category,
           profileId,
+          imageId,
         });
       imageMeta[type] = {
         url,
@@ -124,14 +132,18 @@ export class UploadProfileImageUseCase
     };
 
     outbox.update(EventStatus.AWAITING_DELIVERY, payload);
-    const savedEvent = await this.outboxRepo.save(outbox);
+    const savedOutbox = await this.outboxRepo.save(outbox);
 
+    await this.sendProcessedImagesPayload(savedOutbox);
+
+    this.checkEventDeliveredJob(imageId, savedOutbox.id);
+
+    return notice;
+  }
+
+  private async sendProcessedImagesPayload(outbox: OutboxDocument) {
     const event = new ProcessedProfileImagesEvent(outbox);
-    await this.rmqAdapter.sendMessage(this.eventType, event);
-
-    this.checkEventDeliveredJob(imageId, savedEvent.id);
-
-    return new LayerNoticeInterceptor();
+    await this.rmqAdapter.sendMessage(this.commandType, event);
   }
 
   private async checkEventDeliveredJob(imageId: string, eventId: string) {
