@@ -3,8 +3,12 @@ import * as TelegramBot from 'node-telegram-bot-api';
 import * as Telegraph from 'telegraph-node';
 import { ConfigService } from '@nestjs/config';
 import { EnvironmentVariables } from '@user/core';
-import { tgChatIds } from '../../../../apps/user/src/features/telegram/infrastructure/utils/chatIds';
-import { EVENT_TYPES, REQUEST_MESSAGES, RESPONSE_MESSAGES } from './tg-events';
+import { tgChatIds } from './utils/chatIds';
+import {
+  EVENT_TYPES,
+  REQUEST_MESSAGES,
+  RESPONSE_MESSAGES,
+} from './utils/tg-events';
 
 @Injectable()
 export class TelegramService implements OnModuleInit {

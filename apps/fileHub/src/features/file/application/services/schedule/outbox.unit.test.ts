@@ -2,6 +2,7 @@ import { SchedulerRegistry } from '@nestjs/schedule';
 import { RmqAdapter } from '../../../../../core/adapters/rmq.adapter';
 import { OutboxRepository } from '../../../infrastructure/events.outbox.repository';
 import { OutboxService } from './outbox.service';
+import { TelegramService } from '@app/shared';
 
 const wait = (sec: number) =>
   new Promise((resolve) => setTimeout(resolve, sec * 1000));
@@ -13,6 +14,7 @@ describe('SchedulerService', () => {
   let outboxService: OutboxService;
   let outboxRepo: OutboxRepository;
   let rmqAdapter: RmqAdapter;
+  let telegramService: TelegramService;
 
   beforeEach(() => {
     schedulerRegistry = new SchedulerRegistry();
@@ -22,11 +24,15 @@ describe('SchedulerService', () => {
     rmqAdapter = {
       sendMessage: jest.fn(),
     } as unknown as RmqAdapter;
+    telegramService = {
+      sendMessageToMultipleUsers: jest.fn(),
+    } as unknown as TelegramService;
 
     outboxService = new OutboxService(
       schedulerRegistry,
       outboxRepo,
       rmqAdapter,
+      telegramService,
     );
   });
 
@@ -98,7 +104,7 @@ describe('SchedulerService', () => {
   // describe('deleteJob', () => {
   //     it('should delete an existing job', async () => {
   //         const jobName = 'testJob';
-  //         const cronTime = '* * * * *'; // Каждую минуту
+  //         const cronTime = '* * * * *';
   //         const cb = jest.fn();
 
   //         outboxService.addJob(jobName, cronTime, cb);
@@ -111,15 +117,15 @@ describe('SchedulerService', () => {
   //     it('should do nothing if job does not exist', async () => {
   //         const jobName = 'nonExistentJob';
 
-  //         outboxService.deleteJob(jobName); // Не должно вызывать ошибок
-  //         expect(true).toBe(true); // Простой тест, чтобы убедиться, что нет ошибок
+  //         outboxService.deleteJob(jobName);
+  //         expect(true).toBe(true);
   //     });
   // });
 
   // describe('initIntervalJob', () => {
   //     it('should initialize a job with interval', async () => {
   //         const jobInfo = { name: 'testIntervalJob', start: 1000, end: 5000 };
-  //         jest.spyOn(outboxService, 'setInterval'); // Шпион на метод setInterval
+  //         jest.spyOn(outboxService, 'setInterval');
 
   //         outboxService.initIntervalJob(jobInfo);
 
@@ -128,7 +134,7 @@ describe('SchedulerService', () => {
 
   //     it('should initialize a job with cron time', async () => {
   //         const jobInfo = { name: 'testCronJob', time: '* * * * *' };
-  //         jest.spyOn(outboxService, 'addJob'); // Шпион на метод addJob
+  //         jest.spyOn(outboxService, 'addJob');
 
   //         outboxService.initIntervalJob(jobInfo);
 
@@ -139,7 +145,7 @@ describe('SchedulerService', () => {
   // describe('checkNonApprovedEvents', () => {
   //     it('should process non-approved events', async () => {
   //         const event = { eventType: 'testEvent' };
-  //         outboxRepo.getNonApprovedEvents = jest.fn().mockResolvedValue([event]); // Мокируем возврат непроверенных событий
+  //         outboxRepo.getNonApprovedEvents = jest.fn().mockResolvedValue([event]);
 
   //         await outboxService.checkNonApprovedEvents();
 

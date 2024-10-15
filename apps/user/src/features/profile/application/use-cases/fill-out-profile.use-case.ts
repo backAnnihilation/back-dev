@@ -1,8 +1,7 @@
+import { LayerNoticeInterceptor, OutputId } from '@app/shared';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { OutputId, LayerNoticeInterceptor } from '@app/shared';
 import { UsersRepository } from '../../../admin/infrastructure/users.repository';
 import { IFillOutProfileCommand } from '../../api/models/input/fill-out-profile.model';
-import { UserEntities } from '../../api/models/enum/user-entities.enum';
 import { ProfilesRepository } from '../../infrastructure/profiles.repository';
 import { UserProfileDTO } from '../dto/create-profile.dto';
 
@@ -43,12 +42,7 @@ export class FillOutProfileUseCase
       userName,
     });
 
-    // const result = await this.userRepo.saveEntity(
-    //   UserEntities.UserProfile,
-    //   profileDto,
-    // );
     const result = await this.profilesRepo.save(profileDto);
-    console.log(FillOutProfileUseCase.name, { result });
 
     notice.addData({ id: result.id });
     return notice;

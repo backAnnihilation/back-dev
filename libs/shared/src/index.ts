@@ -6,7 +6,7 @@ export * from './rmq/rmq.config';
 //telegram
 export * from './telegram/telegram.module';
 export * from './telegram/telegram.service';
-export * from './telegram/tg-events';
+export * from './telegram/utils/tg-events';
 
 // tcp
 export * from './tcp/tcp.module';

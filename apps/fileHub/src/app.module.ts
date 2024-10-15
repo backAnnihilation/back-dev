@@ -5,6 +5,7 @@ import {
   RmqModule,
   TCP_FILES_SERVICE,
   TcpModule,
+  TelegramModule,
   USERS_QUEUE,
 } from '@app/shared';
 import { Module } from '@nestjs/common';
@@ -29,6 +30,7 @@ import { FilesController } from './features/file/api/files.controller';
     ScheduleModule.forRoot(),
     RmqModule,
     TcpModule,
+    TelegramModule
   ],
   controllers: [FilesController],
   providers,

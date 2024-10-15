@@ -16,7 +16,6 @@ beforeAll(async () => {
    * @description get database url from .env
    *
    */
-  config.set('ENV', Environment.DEVELOPMENT);
   const dbUrl = config.get('DATABASE_URL_FOR_TESTS');
   console.log({ dbUrl });
 
