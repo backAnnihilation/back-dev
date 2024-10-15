@@ -15,9 +15,8 @@ import { isValidAge } from '../../../infrastructure/validation/user-age-validate
 import { Gender } from '../enum/profile.enums';
 
 export class FillOutProfileInputModel {
-  @IsOptional()
   @iSValidField(userNameLength, stringMatch)
-  userName?: string;
+  userName: string;
 
   @iSValidField(nameInitials, nameInitialsMatch)
   firstName: string;
@@ -28,7 +27,7 @@ export class FillOutProfileInputModel {
   @IsOptional()
   @IsDateFormat()
   @isValidAge()
-  dateOfBirth: string;
+  dateOfBirth?: string;
 
   @IsOptional()
   @iSValidField(frequentLength)

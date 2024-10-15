@@ -73,7 +73,6 @@ export class CreatePostUseCase implements ICommandHandler<CreatePostCommand> {
         return notice;
       }
       const { imageMetaId, urls } = result;
-      console.log({ result });
 
       await this.postsRepo.updateImage(imageId, {
         imageMetaId,
