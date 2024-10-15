@@ -11,6 +11,8 @@ import { SubsCudApiService } from '../application/services/subs-api.service';
 import { SubscribeCommand } from '../application/use-cases/subscribe-to-user.use-case';
 import { UnsubscribeCommand } from '../application/use-cases/unsubscription.use-case';
 import { AccessTokenGuard } from '../../auth/infrastructure/guards/accessToken.guard';
+import { TelegramService } from '../../telegram/application/services/telegram.service';
+
 import { SubsQueryRepository } from './subs.query.repository';
 import {
   FollowersView,

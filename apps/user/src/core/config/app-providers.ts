@@ -65,6 +65,7 @@ import { SubsRepository } from '../../features/subs/domain/subs.repository';
 import { SubsQueryRepository } from '../../features/subs/api/subs.query.repository';
 import { SubscribeUseCase } from '../../features/subs/application/use-cases/subscribe-to-user.use-case';
 import { UnsubscribeUseCase } from '../../features/subs/application/use-cases/unsubscription.use-case';
+import { SubscriptionService } from '../../features/subs/application/services/subs.service';
 
 const adapters = [
   BcryptAdapter,
@@ -140,4 +141,10 @@ export const providers: Provider[] = [
   CreatePostUseCase,
   PostQueryRepository,
   PostsRepository,
+  SubsQueryRepository,
+  SubsRepository,
+  SubscribeUseCase,
+  UnsubscribeUseCase,
+  SubsCudApiService,
+  SubscriptionService,
 ];
