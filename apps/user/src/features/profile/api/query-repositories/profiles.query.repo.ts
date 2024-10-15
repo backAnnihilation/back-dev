@@ -23,7 +23,6 @@ export class ProfilesQueryRepo {
         include: { images: { orderBy: { createdAt: 'desc' } } },
       });
       if (!result) return null;
-
       return getUserProfileViewModel(result);
     } catch (error) {
       console.error('Database fails operate with find user profile', error);

@@ -25,65 +25,65 @@ spec:
              - name: STORAGE
                valueFrom:
                  secretKeyRef:
-                   name: file-hub-microservice-production-config-secret
+                   name: file-micro-production-config-secret
                    key: STORAGE
              - name: AWS_REGION
                valueFrom:
                  secretKeyRef:
-                   name: file-hub-microservice-production-config-secret
+                   name: file-micro-production-config-secret
                    key: AWS_REGION
              - name: AWS_ACCESS_KEY_ID
                valueFrom:
                  secretKeyRef:
-                   name: file-hub-microservice-production-config-secret
+                   name: file-micro-production-config-secret
                    key: AWS_ACCESS_KEY_ID
              - name: AWS_SECRET_ACCESS_KEY
                valueFrom:
                  secretKeyRef:
-                   name: file-hub-microservice-production-config-secret
+                   name: file-micro-production-config-secret
                    key: AWS_SECRET_ACCESS_KEY
              - name: AWS_ACCESS_POINT
                valueFrom:
                  secretKeyRef:
-                   name: file-hub-microservice-production-config-secret
+                   name: file-micro-production-config-secret
                    key: AWS_ACCESS_POINT
              - name: AWS_PUBLIC_BUCKET_NAME
                valueFrom:
                  secretKeyRef:
-                   name: file-hub-microservice-production-config-secret
+                   name: file-micro-production-config-secret
                    key: AWS_PUBLIC_BUCKET_NAME
              - name: RMQ_URL
                valueFrom:
                  secretKeyRef:
-                   name: file-hub-microservice-production-config-secret
+                   name: file-micro-production-config-secret
                    key: RMQ_URL
              - name: RMQ_FILES_QUEUE
                valueFrom:
                  secretKeyRef:
-                   name: file-hub-microservice-production-config-secret
+                   name: file-micro-production-config-secret
                    key: RMQ_FILES_QUEUE
              - name: RMQ_USERS_QUEUE
                valueFrom:
                  secretKeyRef:
-                   name: file-hub-microservice-production-config-secret
+                   name: file-micro-production-config-secret
                    key: RMQ_USERS_QUEUE
              - name: RMQ_EVENTS_QUEUE
                valueFrom:
                  secretKeyRef:
-                   name: file-hub-microservice-production-config-secret
+                   name: file-micro-production-config-secret
                    key: RMQ_EVENTS_QUEUE
              - name: TCP_PORT
                valueFrom:
                  secretKeyRef:
-                   name: file-hub-microservice-production-config-secret
+                   name: file-micro-production-config-secret
                    key: TCP_PORT
              - name: TCP_HOST
                valueFrom:
                  secretKeyRef:
-                   name: file-hub-microservice-production-config-secret
+                   name: file-micro-production-config-secret
                    key: TCP_HOST
              - name: DATABASE_URL
                valueFrom:
                  secretKeyRef:
-                   name: file-hub-microservice-production-config-secret
+                   name: file-micro-production-config-secret
                    key: DATABASE_URL

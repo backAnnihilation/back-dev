@@ -1,28 +1,18 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import * as TelegramBot from 'node-telegram-bot-api';
 import * as Telegraph from 'telegraph-node';
 import { ConfigService } from '@nestjs/config';
 import { EnvironmentVariables } from '@user/core';
-
-import { tgChatIds } from '../../infrastructure/utils/chatIds';
-import {
-  EVENT_TYPES,
-  REQUEST_MESSAGES,
-  RESPONSE_MESSAGES,
-} from '../../infrastructure/utils/events';
-
-import { TelegramLoggerService } from './logger-tg.service';
+import { tgChatIds } from '../../../../apps/user/src/features/telegram/infrastructure/utils/chatIds';
+import { EVENT_TYPES, REQUEST_MESSAGES, RESPONSE_MESSAGES } from './tg-events';
 
 @Injectable()
 export class TelegramService implements OnModuleInit {
   private bot: TelegramBot;
   private telegraphClient: Telegraph;
   private botToken: string;
-
-  constructor(
-    private configService: ConfigService<EnvironmentVariables>,
-    private logger: TelegramLoggerService,
-  ) {
+  private logger = new Logger(TelegramService.name);
+  constructor(private configService: ConfigService<EnvironmentVariables>) {
     this.telegraphClient = new Telegraph();
     this.botToken = this.configService.get('TELEGRAM_BOT_TOKEN');
   }
@@ -40,19 +30,17 @@ export class TelegramService implements OnModuleInit {
   private handleCommand(command: string, chatId: number): void {
     switch (command) {
       case REQUEST_MESSAGES.COMMAND_START:
-        this.handleStartCommand(chatId);
-        break;
+        return void this.handleStartCommand(chatId);
       case REQUEST_MESSAGES.COMMAND_STATISTIC:
         // this.handleStatisticCommand(chatId);
         break;
       default:
-        this.sendMessageToUser(chatId, RESPONSE_MESSAGES.UNKNOWN);
-        break;
+        return void this.sendMessageToUser(chatId, RESPONSE_MESSAGES.UNKNOWN);
     }
   }
 
   private handleStartCommand(chatId: number): void {
-    const message = 'Hello bobr';
+    const message = 'Hello bebra';
     this.sendMessageToUser(chatId, message);
   }
 
@@ -65,12 +53,12 @@ export class TelegramService implements OnModuleInit {
         this.handleCommand(text, chatId);
       }
 
-      this.logger.message(chatId, msg.text);
+      this.logger.log(chatId, msg.text);
     });
   }
 
   async sendMessageToMultipleUsers(message: string): Promise<void> {
-    const chatIds: number[] = [tgChatIds.tony];
+    const chatIds: number[] = [tgChatIds.tony, tgChatIds.ik];
     const sendPromises = chatIds.map((chatId: number) =>
       this.sendMessageToUser(chatId, message),
     );
@@ -80,7 +68,7 @@ export class TelegramService implements OnModuleInit {
   async sendMessageToUser(chatId: number, message: string): Promise<void> {
     try {
       await this.bot.sendMessage(chatId, message);
-      this.logger.messageSent(chatId, message);
+      this.logger.log(chatId, message);
     } catch (error) {
       this.logger.error(chatId, error);
     }

@@ -3,8 +3,8 @@ pipeline {
     agent any
     environment {
         ENV_TYPE = "production"
-        PORT = 3541
-        NAMESPACE = "incta-team"
+        PORT = 3553
+        NAMESPACE = "netchill-ru"
         REGISTRY_HOSTNAME = "backinstateam"
         PROJECT = "user-gayway"
         SERVICE="user"
@@ -65,7 +65,7 @@ pipeline {
              steps {
                  echo "Push image started..."
                      script {
-                        docker.withRegistry("https://${env.REGISTRY}", 'incta-team') {
+                        docker.withRegistry("https://${env.REGISTRY}", 'netchill-ru') {
                             app.push("${env.IMAGE_NAME}")
                         }
                      }

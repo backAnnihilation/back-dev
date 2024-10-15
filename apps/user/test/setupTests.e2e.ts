@@ -12,6 +12,11 @@ let dbCleaner: () => Promise<void>;
 beforeAll(async () => {
   config = new ConfigService();
 
+  /**
+   * @description get database url from .env
+   *
+   */
+  config.set('ENV', Environment.DEVELOPMENT);
   const dbUrl = config.get('DATABASE_URL_FOR_TESTS');
   console.log({ dbUrl });
 
@@ -29,7 +34,7 @@ beforeAll(async () => {
     datasources: {
       db: { url: dbUrl },
     },
-    log: ['query'],
+    // log: ['query'],
   });
 
   dbCleaner = databaseCleanUp.bind(null, databaseService);

@@ -13,8 +13,7 @@ import {
   OutboxDocument,
 } from '../../../domain/entities/outbox.schema';
 import { ProcessedProfileImagesEvent } from '../../../api/models/dto/processed-profile-images-event';
-import { TelegramService } from '../../../../../../../user/src/features/telegram/application/services/telegram.service';
-import { RESPONSE_MESSAGES } from '../../../../../../../user/src/features/telegram/infrastructure/utils/events';
+import { TelegramService, RESPONSE_MESSAGES } from '@app/shared';
 import { RmqAdapter } from '@file/core/adapters/rmq.adapter';
 
 @Injectable()

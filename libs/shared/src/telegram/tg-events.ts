@@ -4,7 +4,7 @@ export const enum EVENT_TYPES {
 
 export const enum RESPONSE_MESSAGES {
   UNKNOWN = 'Unknown message',
-  ERROR_EVENT = 'Alert! Error sending event.',
+  ERROR_EVENT = 'Alert! Error sending event',
 }
 
 export const enum REQUEST_MESSAGES {

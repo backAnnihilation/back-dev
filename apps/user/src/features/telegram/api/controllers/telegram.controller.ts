@@ -1,7 +1,7 @@
 import { Controller, Get } from '@nestjs/common';
 
-import { TelegramService } from '../../application/services/telegram.service';
-import { RESPONSE_MESSAGES } from '../../infrastructure/utils/events';
+import { TelegramService } from '../../../../../../../libs/shared/src/telegram/telegram.service';
+import { RESPONSE_MESSAGES } from '../../../../../../../libs/shared/src/telegram/tg-events';
 
 @Controller('tg')
 export class TelegramController {

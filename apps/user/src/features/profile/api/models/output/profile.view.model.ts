@@ -25,7 +25,8 @@ export const getUserProfileViewModel = (
     city: profile.city,
   },
   createdAt: profile.createdAt.toISOString(),
-  mainImage: convertImagesToView(profile.images[0]) || null,
+  mainImage:
+    (profile.images.length && convertImagesToView(profile.images[0])) || null,
 });
 
 export type UserProfileViewModel = {

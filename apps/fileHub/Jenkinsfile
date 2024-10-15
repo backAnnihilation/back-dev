@@ -3,13 +3,13 @@ pipeline {
     agent any
     environment {
         ENV_TYPE = "production"
-        PORT = 3551
-        NAMESPACE = "incta-team"
+        PORT = 3556
+        NAMESPACE = "netchill-ru"
         REGISTRY_HOSTNAME = "backinstateam"
-        PROJECT = "file-hub-microservice"
+        PROJECT = "file-micro"
         SERVICE="fileHub"
         REGISTRY = "registry.hub.docker.com"
-        DEPLOYMENT_NAME = "file-hub-microservice-deployment"
+        DEPLOYMENT_NAME = "file-micro-deployment"
         IMAGE_NAME = "${env.BUILD_ID}_${env.ENV_TYPE}_${env.GIT_COMMIT}"
         DOCKER_BUILD_NAME = "${env.REGISTRY_HOSTNAME}/${env.PROJECT}:${env.IMAGE_NAME}"
     }
@@ -22,7 +22,6 @@ pipeline {
         }
         stage('Unit tests') {
             steps {
-                echo "unit tests in progress..."
                 // script {
                 //     sh '''
                 //        export NVM_DIR="$HOME/.nvm"
@@ -36,7 +35,6 @@ pipeline {
         }
         stage('e2e tests') {
             steps {
-                echo "e2e tests in progress..."
                 // script {
                 //     sh '''
                 //        export NVM_DIR="$HOME/.nvm"
@@ -60,7 +58,7 @@ pipeline {
              steps {
                  echo "Push image started..."
                      script {
-                        docker.withRegistry("https://${env.REGISTRY}", 'incta-team') {
+                        docker.withRegistry("https://${env.REGISTRY}", 'netchill-ru') {
                             app.push("${env.IMAGE_NAME}")
                         }
                      }

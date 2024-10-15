@@ -22,16 +22,6 @@ spec:
              - containerPort: PORT_CONTAINER
 
            env:
-             - name: OAUTH_GOOGLE_CLIENT_ID
-               valueFrom:
-                 secretKeyRef:
-                   name: user-gayway-production-config-secret
-                   key: OAUTH_GOOGLE_CLIENT_ID
-             - name: GOOGLE_CAPTURE_SECRET
-               valueFrom:
-                 secretKeyRef:
-                   name: user-gayway-production-config-secret
-                   key: GOOGLE_CAPTURE_SECRET
              - name: CAPTURE_SITE_KEY
                valueFrom:
                  secretKeyRef:
@@ -77,16 +67,16 @@ spec:
                  secretKeyRef:
                    name: user-gayway-production-config-secret
                    key: BASIC_AUTH_PASSWORD
-             - name: OAUTH_GITHUB_CLIENT_SECRET
+             - name: OAUTH_GOOGLE_CLIENT_ID
                valueFrom:
                  secretKeyRef:
                    name: user-gayway-production-config-secret
-                   key: OAUTH_GITHUB_CLIENT_SECRET
-             - name: OAUTH_GITHUB_REDIRECT_URL
+                   key: OAUTH_GOOGLE_CLIENT_ID
+             - name: OAUTH_GOOGLE_CLIENT_SECRET
                valueFrom:
                  secretKeyRef:
                    name: user-gayway-production-config-secret
-                   key: OAUTH_GITHUB_REDIRECT_URL
+                   key: OAUTH_GOOGLE_CLIENT_SECRET
              - name: OAUTH_GOOGLE_REDIRECT_URL
                valueFrom:
                  secretKeyRef:
@@ -97,26 +87,36 @@ spec:
                  secretKeyRef:
                    name: user-gayway-production-config-secret
                    key: OAUTH_GITHUB_CLIENT_ID
+             - name: OAUTH_GITHUB_CLIENT_SECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: OAUTH_GITHUB_CLIENT_SECRET
+             - name: OAUTH_GITHUB_REDIRECT_URL
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: OAUTH_GITHUB_REDIRECT_URL
              - name: RMQ_URL
                valueFrom:
                  secretKeyRef:
                    name: user-gayway-production-config-secret
                    key: RMQ_URL
-             - name: RMQ_EVENTS_QUEUE
-               valueFrom:
-                 secretKeyRef:
-                   name: user-gayway-production-config-secret
-                   key: RMQ_EVENTS_QUEUE
-             - name: RMQ_USERS_QUEUE
-               valueFrom:
-                 secretKeyRef:
-                   name: user-gayway-production-config-secret
-                   key: RMQ_USERS_QUEUE
              - name: RMQ_FILES_QUEUE
                valueFrom:
                  secretKeyRef:
                    name: user-gayway-production-config-secret
                    key: RMQ_FILES_QUEUE
+             - name: RMQ_USERS_QUEUE
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: RMQ_USERS_QUEUE
+             - name: RMQ_EVENTS_QUEUE
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: RMQ_EVENTS_QUEUE
              - name: TCP_PORT
                valueFrom:
                  secretKeyRef:
@@ -127,8 +127,13 @@ spec:
                  secretKeyRef:
                    name: user-gayway-production-config-secret
                    key: TCP_HOST
-             - name: OAUTH_GOOGLE_CLIENT_SECRET
+             - name: TELEGRAM_BOT_TOKEN
                valueFrom:
                  secretKeyRef:
                    name: user-gayway-production-config-secret
-                   key: OAUTH_GOOGLE_CLIENT_SECRET
+                   key: TELEGRAM_BOT_TOKEN
+             - name: GOOGLE_CAPTURE_SECRET
+               valueFrom:
+                 secretKeyRef:
+                   name: user-gayway-production-config-secret
+                   key: GOOGLE_CAPTURE_SECRET

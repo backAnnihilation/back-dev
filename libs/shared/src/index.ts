@@ -3,6 +3,11 @@ export * from './rmq/rmq.module';
 export * from './rmq/rmq.service';
 export * from './rmq/rmq.config';
 
+//telegram
+export * from './telegram/telegram.module';
+export * from './telegram/telegram.service';
+export * from './telegram/tg-events';
+
 // tcp
 export * from './tcp/tcp.module';
 export * from './tcp/tcp.service';
