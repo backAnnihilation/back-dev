@@ -1,9 +1,7 @@
-import { IsNotEmpty, Length } from 'class-validator';
-import { FileMetadata } from '@app/shared';
+import { descriptionLength, FileMetadata, iSValidField } from '@app/shared';
 
 export class CreatePostInputModel {
-  @IsNotEmpty()
-  @Length(0, 500)
+  @iSValidField(descriptionLength)
   description: string;
 }
 

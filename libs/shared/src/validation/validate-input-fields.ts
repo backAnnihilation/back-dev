@@ -16,11 +16,11 @@ export const iSValidField = (
 ) => {
   const decorators = [
     Length(min, max, { message: `range of values [${min}, ${max}] ` }),
-    IsNotEmpty(),
+    IsNotEmpty({ message: 'Field should not be empty' }),
     Trim(),
     IsString(),
   ];
-
+  
   if (regexOption) {
     decorators.unshift(Matches(regexOption, { message }));
   }

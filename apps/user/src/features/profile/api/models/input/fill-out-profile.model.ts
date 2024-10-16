@@ -8,8 +8,9 @@ import {
   stringMatch,
   textMatch,
   userNameLength,
+  iSValidField,
+  answerLength,
 } from '@app/shared';
-import { iSValidField } from '@app/shared';
 import { IsDateFormat } from '../../../infrastructure/validation/date-format-validate';
 import { isValidAge } from '../../../infrastructure/validation/user-age-validate';
 import { Gender } from '../enum/profile.enums';
@@ -30,7 +31,7 @@ export class FillOutProfileInputModel {
   dateOfBirth?: string;
 
   @IsOptional()
-  @iSValidField(frequentLength)
+  @iSValidField(answerLength)
   country?: string;
 
   @IsOptional()

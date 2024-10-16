@@ -1,6 +1,8 @@
 // routes
 export * from './routes/auth-navigate';
 export * from './routes/user-navigate';
+export * from './routes/posts-navigate';
+export * from './routes/subs-navigate';
 
 // decorators
 export * from './decorators/current-user-id.decorator';

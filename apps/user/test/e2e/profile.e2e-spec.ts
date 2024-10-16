@@ -19,29 +19,46 @@ import {
   InputConstantsType,
 } from '../tools/utils/test-constants';
 import { ProfileTestManager } from '../tools/managers/ProfileTestManager';
+import {
+  initializeTestData,
+  PrepareTestOptions,
+} from '../tools/utils/seed-setup';
+import { RmqAdapter, TcpAdapter } from '../../src/core';
+import { RmqAdapterMocked, TcpAdapterMocked } from '../tools/mock/transport-adapters.mock';
 
 aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
-  'UserProfileController',
+  'UserProfilesController',
   () => {
     let app: INestApplication;
     let usersTestManager: UsersTestManager;
-    let profileTestManager: ProfileTestManager;
+    let profilesTestManager: ProfileTestManager;
     let dbService: DatabaseService;
     let constants: InputConstantsType;
+    let dataSeeder: (options: PrepareTestOptions) => Promise<void>;
 
     beforeAll(async () => {
       const testSettings = await initSettings(
         (moduleBuilder: TestingModuleBuilder) =>
           moduleBuilder
             .overrideGuard(CaptureGuard)
-            .useValue(mockedCaptureGuard),
-        // .overrideProvider(RmqAdapter)
-        // .useValue(RmqAdapterMocked),
+            .useValue(mockedCaptureGuard)
+            .overrideProvider(RmqAdapter)
+            .useValue(RmqAdapterMocked)
+            .overrideProvider(TcpAdapter)
+            .useValue(TcpAdapterMocked),
       );
       app = testSettings.app;
-      profileTestManager = new ProfileTestManager(app, databaseService);
+      profilesTestManager = new ProfileTestManager(app, databaseService);
       constants = constantsTesting.inputData;
       usersTestManager = testSettings.usersTestManager;
+      dataSeeder = (options) =>
+        initializeTestData(
+          () => ({
+            usersTestManager,
+            profilesTestManager,
+          }),
+          options,
+        );
     });
 
     afterAll(async () => {
@@ -73,7 +90,7 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
           lastName: 'newLastName',
           dateOfBirth: '12.12.2011',
         };
-        await profileTestManager.fillOutProfile(
+        await profilesTestManager.fillOutProfile(
           accessToken,
           profileDto,
           HttpStatus.BAD_REQUEST,
@@ -82,12 +99,12 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
       it(`should fill out profile info; user is older than 13`, async () => {
         const { accessToken, userName } = expect.getState();
 
-        const profileDto = profileTestManager.createInputData({
+        const profileDto = profilesTestManager.createInputData({
           userName,
           dateOfBirth: '12.06.2011',
         });
 
-        await profileTestManager.fillOutProfile(accessToken, profileDto);
+        await profilesTestManager.fillOutProfile(accessToken, profileDto);
       });
 
       it(`should update profile`, async () => {
@@ -104,7 +121,7 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
           about,
         };
 
-        await profileTestManager.editProfile(accessToken, profileDto);
+        await profilesTestManager.editProfile(accessToken, profileDto);
 
         const editProfileDto = {
           userName,
@@ -114,7 +131,7 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
           country,
           about,
         };
-        await profileTestManager.editProfile(accessToken, editProfileDto);
+        await profilesTestManager.editProfile(accessToken, editProfileDto);
       });
       it(`shouldn't update profile; age < 13`, async () => {
         const { accessToken, userName } = expect.getState();
@@ -124,7 +141,7 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
           lastName: 'newLastName',
           dateOfBirth: '12.12.2011',
         };
-        await profileTestManager.editProfile(
+        await profilesTestManager.editProfile(
           accessToken,
           profileDto,
           HttpStatus.BAD_REQUEST,
@@ -137,7 +154,7 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
           firstName: 'newFirstName#',
           lastName: 'newLastName',
         };
-        await profileTestManager.editProfile(
+        await profilesTestManager.editProfile(
           accessToken,
           profileDto,
           HttpStatus.BAD_REQUEST,
@@ -150,7 +167,7 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
           firstName: 'newFirstName',
           lastName: 'newLastName#',
         };
-        await profileTestManager.editProfile(
+        await profilesTestManager.editProfile(
           accessToken,
           profileDto,
           HttpStatus.BAD_REQUEST,
@@ -158,9 +175,9 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
       });
     });
 
-    describe.skip('profile-photo-upload', () => {
+    describe('profile-photo-upload', () => {
       afterAll(async () => {
-        // await dbCleaner();
+        await dbCleaner();
       });
 
       beforeAll(async () => {
@@ -168,9 +185,9 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
         await usersTestManager.registration(inputData);
         const { accessToken } = await usersTestManager.signIn(inputData);
 
-        const profile = await profileTestManager.fillOutProfile(
+        const profile = await profilesTestManager.fillOutProfile(
           accessToken,
-          profileTestManager.createInputData({
+          profilesTestManager.createInputData({
             userName: inputData.userName,
             firstName: 'newFirstName',
             lastName: 'newLastName',
@@ -181,43 +198,31 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
         expect.setState({ accessToken, profile });
       });
 
-      it('mediator', async () => {
-        const { accessToken, profile } = expect.getState();
-        console.log({ accessToken, profile });
-      });
-
       it('get profile', async () => {
         const { accessToken, profile } = expect.getState();
-        await usersTestManager.getProfile(profile.id);
+        console.log({ accessToken, profile });
+        await profilesTestManager.getProfile(profile.id);
       });
 
       it.skip(`should upload profile photo`, async () => {
         const { accessToken } = expect.getState();
-        const imageDto = await usersTestManager.retrieveImageMeta(
-          ImageNames.FRESCO,
-        );
 
-        await usersTestManager.uploadPhoto(accessToken, imageDto);
+        await profilesTestManager.uploadPhoto(accessToken, ImageNames.FRESCO);
       });
     });
 
-    describe.skip('subs', () => {
+    describe('subs', () => {
       afterAll(async () => {
         // await dbCleaner();
       });
 
       beforeAll(async () => {
-        const inputData = usersTestManager.createInputData({});
-        await usersTestManager.registration(inputData);
-        const { accessToken } = await usersTestManager.signIn(inputData);
+        await dataSeeder({ profiles: { quantity: 10 } });
+      });
 
-        const profileDto = profileTestManager.createInputData();
-        const profile = await profileTestManager.fillOutProfile(
-          accessToken,
-          profileDto,
-        );
-
-        expect.setState({ accessToken, profile });
+      it(``, async () => {
+        const { accessToken, users, profiles } = expect.getState();
+        console.log(profiles);
       });
     });
   },

@@ -22,7 +22,7 @@ import {
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiTags } from '@nestjs/swagger';
-import { CurrentUserId } from '@user/core';
+import { CurrentUserId, PostNavigate } from '@user/core';
 import { ImageFilePipe } from '../../../../core/validation/upload-photo-format';
 import { UserPayload } from '../../../auth/infrastructure/decorators/user-payload.decorator';
 import { AccessTokenGuard } from '../../../auth/infrastructure/guards/accessToken.guard';
@@ -61,7 +61,7 @@ export class PostsController {
   }
 
   @GetUserPostsEndpoint()
-  @Get(':id/posts')
+  @Get(PostNavigate.GetUserPosts)
   async getUserPosts(
     @Param('id') userId: string,
     @Query() queryOptions: PostsQueryFilter,
@@ -70,10 +70,9 @@ export class PostsController {
   }
 
   @GetPostEndpoint()
-  @UseGuards(AccessTokenGuard)
-  @Get(':id')
-  async getPost(@Param('id') userId: string): Promise<PostViewModel> {
-    const post = await this.postQueryRepo.getById(userId);
+  @Get(PostNavigate.GetPost)
+  async getPost(@Param('id') postId: string): Promise<PostViewModel> {
+    const post = await this.postQueryRepo.getById(postId);
     if (!post) throw new NotFoundException();
     return post;
   }
@@ -98,14 +97,14 @@ export class PostsController {
   @UpdatePostEndpoint()
   @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Put(':id')
+  @Put(PostNavigate.UpdatePost)
   async updatePost(
     @UserPayload() userPayload: UserSessionDto,
-    @Body() editPostDto: EditPostInputModel,
+    @Body() dto: EditPostInputModel,
     @Param('id') postId: string,
   ) {
     const command = new EditPostCommand({
-      ...editPostDto,
+      ...dto,
       userId: userPayload.userId,
       postId,
     });
@@ -115,7 +114,7 @@ export class PostsController {
   @DeletePostEndpoint()
   @UseGuards(AccessTokenGuard)
   @HttpCode(HttpStatus.NO_CONTENT)
-  @Delete(':id')
+  @Delete(PostNavigate.DeletePost)
   async deletePost(
     @Param('id') postId: string,
     @UserPayload() userPayload: UserSessionDto,

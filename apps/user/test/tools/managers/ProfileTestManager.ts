@@ -1,27 +1,22 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
+import { readFile } from 'fs/promises';
+import { resolve } from 'node:path';
+import { basename } from 'path';
 import * as request from 'supertest';
 import { DatabaseService } from '../../../src/core/db/prisma/prisma.service';
-import { SAViewType } from '../../../src/features/admin/api/models/user.view.models/userAdmin.view-type';
-import { JwtTokens } from '../../../src/features/auth/api/models/auth-input.models.ts/jwt.types';
-import { RecoveryPassDto } from '../../../src/features/auth/api/models/auth-input.models.ts/recovery.model';
-import { UserProfileType } from '../../../src/features/auth/api/models/auth.output.models/auth.output.models';
-import { AuthUserType } from '../../../src/features/auth/api/models/auth.output.models/auth.user.types';
-import { SecurityViewDeviceModel } from '../../../src/features/security/api/models/security.view.models/security.view.types';
+import { EditProfileInputModel } from '../../../src/features/profile/api/models/input/edit-profile.model';
 import { FillOutProfileInputModel } from '../../../src/features/profile/api/models/input/fill-out-profile.model';
+import { UserProfileViewModel } from '../../../src/features/profile/api/models/output/profile.view.model';
 import { SuperTestBody } from '../models/body.response.model';
+import { ImageNames } from '../models/image-names.enum';
 import { AuthUsersRouting } from '../routes/auth-users.routing';
 import { ProfileRouting } from '../routes/profile-user.routing';
 import { SAUsersRouting } from '../routes/sa-users.routing';
-import { SecurityRouting } from '../routes/security.routing';
-import { UserProfileViewModel } from '../../../src/features/profile/api/models/output/profile.view.model';
-import { EditProfileInputModel } from '../../../src/features/profile/api/models/input/edit-profile.model';
 import { BaseTestManager } from './BaseTestManager';
-import { readFile } from 'fs/promises';
-import { resolve } from 'node:path';
-import { ImageNames } from '../models/image-names.enum';
-import { basename } from 'path';
+import { AuthUserType } from '../../../src/features/auth/api/models/auth.output.models/auth.user.types';
+import { profileImages } from '../utils/test-constants';
 
 type ImageDtoType = {
   fileName: string;
@@ -56,7 +51,7 @@ export class ProfileTestManager extends BaseTestManager {
     const model = field as FillOutProfileInputModel;
     return {
       userName: model.userName || 'newUserName',
-      firstName: model.firstName || 'test@gmail.com',
+      firstName: model.firstName || 'newFirstName',
       lastName: model.lastName || 'newLastName',
       dateOfBirth: model.dateOfBirth || '12.12.1212',
       city: model.city || 'Berlin',
@@ -74,9 +69,7 @@ export class ProfileTestManager extends BaseTestManager {
       .get(this.profileRouting.getProfile(profileId))
       .expect(expectedStatus)
       .expect(({ body, status }: SuperTestBody<UserProfileViewModel>) => {
-        if (status === HttpStatus.OK) {
-          profile = body;
-        }
+        status === expectedStatus && (profile = body);
       });
     return profile;
   }
@@ -89,54 +82,58 @@ export class ProfileTestManager extends BaseTestManager {
     let profile: UserProfileViewModel;
     await request(this.application)
       .post(this.profileRouting.fillOutProfile())
-      .auth(accessToken, this.constants.authBearer)
+      .auth(accessToken, this.authConstants.authBearer)
       .send(profileDto)
-      .expect(expectedStatus)
       .expect(({ body }: SuperTestBody<UserProfileViewModel>) => {
+        console.log(body);
         profile = body;
-      });
+      })
+      .expect(expectedStatus);
+
     return profile;
   }
 
   async uploadPhoto(
     accessToken: string,
-    imageDto: ImageDtoType,
+    imageName: ImageNames,
     expectedStatus = HttpStatus.CREATED,
   ) {
-    let { buffer, contentType, fileName } = imageDto;
-    const filename = fileName || 'profile';
-    contentType = contentType || 'image/png';
+    const { buffer, contentType, filename } =
+      await this.retrieveImageMeta(imageName);
 
     await request(this.application)
       .post(this.profileRouting.uploadPhoto())
-      .auth(accessToken, this.constants.authBearer)
+      .auth(accessToken, this.authConstants.authBearer)
       .attach('image', buffer, { filename, contentType })
       .expect(expectedStatus);
   }
 
-  async retrieveImageMeta(imageName: ImageNames): Promise<ImageDtoType> {
-    const profileImages = {
-      fresco: '../images/fresco.jpg',
-      jpeg: '../images/jpeg.jpg',
-      insta: '../images/insta.png',
-    };
-    const imagePath = resolve(__dirname, profileImages[imageName]);
-    const baseName = basename(imagePath);
-    const contentType =
-      baseName === 'fresco.jpg'
-        ? 'image/jpeg'
-        : `image/${baseName.split('.')[1]}`;
-    const buffer = await this.retrieveFileBuffer(imagePath);
-    const fileName = this.parseFileName(baseName);
+  async createProfiles(
+    users: (AuthUserType & { accessToken: string })[],
+  ): Promise<UserProfileViewModel[]> {
+    const { LAST_NAMES, FIRST_NAMES, CITIES, COUNTRIES, BIRTH_DATES } =
+      this.constants;
+    const profiles = [];
 
-    return {
-      fileName,
-      contentType,
-      buffer,
-    };
+    for (let i = 0; i < users.length; i++) {
+      const profileData = this.createInputData({
+        userName: users[i].userName,
+        firstName: FIRST_NAMES[i] || `firstName${i}`,
+        lastName: LAST_NAMES[i] || `lastName${i}`,
+        dateOfBirth: BIRTH_DATES[i] || '12.12.1912',
+        city: CITIES[i] || 'Rome',
+        country: COUNTRIES[i] || 'Italy',
+      });
+      console.log(profileData, users);
+
+      const profile = await this.fillOutProfile(
+        users[i].accessToken,
+        profileData,
+      );
+      profiles.push(profile);
+    }
+    return profiles;
   }
-  private retrieveFileBuffer = async (filePath: string) => readFile(filePath);
-  private parseFileName = (fileName: string) => fileName.split('.')[0];
 
   async editProfile(
     accessToken: string,
@@ -145,7 +142,7 @@ export class ProfileTestManager extends BaseTestManager {
   ) {
     await request(this.application)
       .put(this.profileRouting.editProfile())
-      .auth(accessToken, this.constants.authBearer)
+      .auth(accessToken, this.authConstants.authBearer)
       .send(profileDto)
       .expect(expectedStatus);
   }

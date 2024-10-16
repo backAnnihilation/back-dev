@@ -10,6 +10,8 @@ import {
   Body,
   Controller,
   Get,
+  HttpCode,
+  HttpStatus,
   NotFoundException,
   Param,
   Post,
@@ -135,6 +137,7 @@ export class UserProfilesController {
 
   @EditProfileEndpoint()
   @UseGuards(AccessTokenGuard)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @Put(UserNavigate.EditProfile)
   async editProfile(
     @UserPayload() userPayload: UserSessionDto,
