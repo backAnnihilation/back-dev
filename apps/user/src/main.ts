@@ -1,9 +1,10 @@
+import { EVENTS_QUEUE, RmqService, USERS_QUEUE } from '@app/shared';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
+import { RmqOptions } from '@nestjs/microservices';
 import { AppModule } from './app.module';
-import { applyAppSettings, EnvironmentVariables } from '@user/core';
-import { RmqOptions, TcpOptions, Transport } from '@nestjs/microservices';
-import { EVENTS_QUEUE, RmqService, USERS_QUEUE } from '@app/shared';
+import { applyAppSettings } from './core/config/app-settings';
+import { EnvironmentVariables } from './core/config/configuration';
 
 (async () => {
   const app = await NestFactory.create(AppModule, { rawBody: true });

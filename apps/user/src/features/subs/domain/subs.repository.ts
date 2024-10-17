@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma, Subs } from '@prisma/client';
+import { Prisma, Subs, SubStatus } from '@prisma/client';
 import { BaseRepository, DatabaseService } from '@user/core';
 import { InputSubscriptionDto } from '../api/models/input-models/sub.model';
 
@@ -13,13 +13,25 @@ export class SubsRepository extends BaseRepository<
     super(prisma.subs);
   }
 
-  async getSubscription(subDto: InputSubscriptionDto) {
+  async findFollowerSubscription(subDto: InputSubscriptionDto) {
+    const { followerId, followingId } = subDto;
     try {
-      return await this.prismaModel.findFirst({
-        where: { ...subDto },
+      return await this.prismaModel.findUnique({
+        where: { followerId_followingId: { followerId, followingId } },
       });
     } catch (e) {
       return null;
+    }
+  }
+
+  async updateStatus(id: string, status: SubStatus) {
+    try {
+      return await this.prismaModel.update({
+        where: { id },
+        data: { status },
+      });
+    } catch (error) {
+      throw new Error(`Error updating subscription status: ${error}`);
     }
   }
 
@@ -31,6 +43,7 @@ export class SubsRepository extends BaseRepository<
       return await this.prismaModel.findUnique({
         where: {
           followerId_followingId: { followerId, followingId },
+          status: SubStatus.active,
         },
       });
     } catch (e) {

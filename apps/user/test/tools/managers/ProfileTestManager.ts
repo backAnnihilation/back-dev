@@ -18,12 +18,16 @@ import { BaseTestManager } from './BaseTestManager';
 import { AuthUserType } from '../../../src/features/auth/api/models/auth.output.models/auth.user.types';
 import { profileImages } from '../utils/test-constants';
 import { SubsRouting } from '../routes/subs.routing';
-import { SubViewModel } from '../../../src/features/subs/api/models/output-models/view-sub-types.model';
+import {
+  SubViewModel,
+  ViewSubsCount,
+} from '../../../src/features/subs/api/models/output-models/view-sub-types.model';
 
 export class ProfileTestManager extends BaseTestManager {
   private readonly subsRouting: SubsRouting;
   private readonly profileRouting: ProfileRouting;
   private readonly profilesRepo: Prisma.UserProfileDelegate;
+  private readonly subsRepo: Prisma.SubsDelegate;
   constructor(
     app: INestApplication,
     private prisma: DatabaseService,
@@ -32,6 +36,7 @@ export class ProfileTestManager extends BaseTestManager {
     this.profileRouting = new ProfileRouting();
     this.subsRouting = new SubsRouting();
     this.profilesRepo = this.prisma.userProfile;
+    this.subsRepo = this.prisma.subs;
   }
 
   createInputData(
@@ -166,8 +171,55 @@ export class ProfileTestManager extends BaseTestManager {
     expectedStatus = HttpStatus.NO_CONTENT,
   ) {
     await request(this.application)
-      .delete(this.subsRouting.unsubscribe(profileId))
+      .put(this.subsRouting.unsubscribe(profileId))
       .auth(accessToken, this.authConstants.authBearer)
       .expect(expectedStatus);
+  }
+
+  async getUserFollowCounts(userId: string, expectedStatus = HttpStatus.OK) {
+    let sub: ViewSubsCount;
+    await request(this.application)
+      .get(this.subsRouting.getCountFollow(userId))
+      .expect(HttpStatus.OK)
+      .expect(({ body }: SuperTestBody<ViewSubsCount>) => {
+        expectedStatus === HttpStatus.OK && (sub = body);
+      });
+    return sub;
+  }
+
+  async getFollowers(
+    id: string,
+    accessToken: string,
+    expectedStatus = HttpStatus.OK,
+  ) {
+    let sub: SubViewModel;
+    await request(this.application)
+      .get(this.subsRouting.getFollowers(id))
+      .auth(accessToken || '', this.authConstants.authBearer)
+      .expect(expectedStatus)
+      .expect(({ body, status }: SuperTestBody<SubViewModel>) => {
+        if (status === HttpStatus.OK)
+          expect(body.status).toBe(SubStatus.active);
+        sub = body;
+      });
+    return sub;
+  }
+
+  async getFollowing(
+    id: string,
+    accessToken: string,
+    expectedStatus = HttpStatus.OK,
+  ) {
+    let sub: SubViewModel;
+    await request(this.application)
+      .get(this.subsRouting.getFollowing(id))
+      .auth(accessToken || '', this.authConstants.authBearer)
+      .expect(expectedStatus)
+      .expect(({ body, status }: SuperTestBody<SubViewModel>) => {
+        if (status === HttpStatus.OK)
+          expect(body.status).toBe(SubStatus.active);
+        sub = body;
+      });
+    return sub;
   }
 }

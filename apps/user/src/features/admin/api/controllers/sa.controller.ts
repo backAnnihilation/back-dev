@@ -19,20 +19,20 @@ import { SACudApiService } from '../../application/sa-cud-api.service';
 import { CreateUserDto } from '../models/input-sa.dtos.ts/create-user.model';
 import { SAQueryFilter } from '../models/outputSA.models.ts/sa-query-filter';
 import { SAViewType } from '../models/user.view.models/userAdmin.view-type';
-import { UsersQueryRepo } from '../query-repositories/user-account.query.repo';
 import { CleanUpDatabaseRepository } from '../../infrastructure/clean-up.repo';
 import { DropDatabaseSaEndpoint } from './swagger/drop-database-sa.description';
 import { CreateSaUserEndpoint } from './swagger/create-user-sa.description';
 import { GetAllUsersEndpoint } from './swagger/get-all-users-sa.description';
 import { DeleteSaUserEndpoint } from './swagger/delete-user-sa.description';
+import { UsersQueryRepo } from '../query-repositories/user-account.query.repo';
 
 @ApiTags(RoutingEnum.admins)
 @UseGuards(BasicSAAuthGuard)
 @Controller(RoutingEnum.admins)
 export class SAController {
   constructor(
-    private usersQueryRepo: UsersQueryRepo,
     private saCrudApiService: SACudApiService,
+    private usersQueryRepo: UsersQueryRepo,
     private dbRepo: CleanUpDatabaseRepository,
   ) {}
 

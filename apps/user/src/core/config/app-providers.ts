@@ -1,5 +1,4 @@
 import { Provider } from '@nestjs/common';
-import { UsersQueryRepo } from '../../features/admin/api/query-repositories/user-account.query.repo';
 import { SACudApiService } from '../../features/admin/application/sa-cud-api.service';
 import { CreateSAUseCase } from '../../features/admin/application/use-cases/create-sa.use.case';
 import { CleanUpDatabaseRepository } from '../../features/admin/infrastructure/clean-up.repo';
@@ -53,7 +52,7 @@ import {
   AxiosAdapter,
   TcpAdapter,
   RmqAdapter,
-} from '@user/core/adapters';
+} from '@user/core';
 import { UploadProfileImageUseCase } from '../../features/profile/application/use-cases/upload-profile-image.use-case';
 import { TransportManager } from '../managers/transport.manager';
 import { CompleteProfileImagesUseCase } from '../../features/profile/application/use-cases/completed-profile-image.use-case';
@@ -67,6 +66,7 @@ import { SubscribeUseCase } from '../../features/subs/application/use-cases/subs
 import { UnsubscribeUseCase } from '../../features/subs/application/use-cases/unsubscription.use-case';
 import { SubscriptionService } from '../../features/subs/application/services/subs.service';
 import { DeleteSAUseCase } from '../../features/admin/application/use-cases/delete-sa.use.case';
+import { UsersQueryRepo } from '../../features/admin/api/query-repositories/user-account.query.repo';
 
 const adapters = [
   BcryptAdapter,
@@ -77,7 +77,12 @@ const adapters = [
   AxiosAdapter,
 ];
 
-const saProviders = [DeleteSAUseCase, CreateSAUseCase, SACudApiService];
+const saProviders = [
+  UsersQueryRepo,
+  SACudApiService,
+  DeleteSAUseCase,
+  CreateSAUseCase,
+];
 
 const subProviders = [
   SubsCudApiService,
@@ -90,17 +95,12 @@ const subProviders = [
 const managers = [EmailManager, TransportManager];
 
 export const providers: Provider[] = [
-  ...saProviders,
-  ...subProviders,
-  ...adapters,
-  ...managers,
   AuthService,
   UserService,
   AuthQueryRepository,
   CleanUpDatabaseRepository,
   ProfileImageService,
   SecurityQueryRepo,
-  UsersQueryRepo,
   BasicSAAuthGuard,
   BasicSAStrategy,
   LocalStrategy,
@@ -149,4 +149,8 @@ export const providers: Provider[] = [
   UnsubscribeUseCase,
   SubsCudApiService,
   SubscriptionService,
+  ...saProviders,
+  ...subProviders,
+  ...adapters,
+  ...managers,
 ];

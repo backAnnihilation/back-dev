@@ -2,8 +2,11 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
+  HttpStatus,
   Param,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import { CurrentUserId } from '@user/core';
@@ -70,7 +73,8 @@ export class SubsController {
     return this.subsApiService.create(command);
   }
 
-  @Delete(SubsNavigate.Unsubscribe)
+  @Put(SubsNavigate.Unsubscribe)
+  @HttpCode(HttpStatus.NO_CONTENT)
   @UseGuards(AccessTokenGuard)
   async unsubscribe(
     @CurrentUserId() userId: string,

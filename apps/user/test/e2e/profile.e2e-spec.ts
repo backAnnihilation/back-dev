@@ -250,6 +250,35 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
           HttpStatus.BAD_REQUEST,
         );
       });
+
+      it(`should unsubscribe`, async () => {
+        const { users } = expect.getState();
+        await profilesTestManager.unsubscribe(
+          users[0].accessToken,
+          users[1].id,
+        );
+        const { followerCount, followingCount } =
+          await profilesTestManager.getUserFollowCounts(users[0].id);
+        expect(followerCount && followingCount).toBe(0);
+      });
+      it(`shouldn't unsubscribe twice`, async () => {
+        const { users } = expect.getState();
+        await profilesTestManager.unsubscribe(
+          users[0].accessToken,
+          users[1].id,
+          HttpStatus.BAD_REQUEST,
+        );
+      });
+
+      it('should subscribe after unsubscribe', async () => {
+        const { users } = expect.getState();
+        const sub = await profilesTestManager.subscribe(
+          users[0].accessToken,
+          users[1].id,
+        );
+        expect(sub.followingCount).toBe(1);
+        expect(sub.followerCount).toBe(0);
+      });
     });
   },
 );
