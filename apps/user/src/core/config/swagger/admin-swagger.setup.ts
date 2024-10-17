@@ -17,6 +17,7 @@ export const adminSwaggerSetup = (app: INestApplication) => {
     RoutingEnum.security,
     RoutingEnum.profiles,
     RoutingEnum.posts,
+    RoutingEnum.subs
   ];
 
   const appPaths = Object.keys(adminDocument.paths);

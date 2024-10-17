@@ -13,8 +13,8 @@ model Subs {
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
 
-  follower          UserAccount    @relation("UserFollowers", fields: [followerId], references: [id])
-  following         UserAccount    @relation("UserFollowing", fields: [followingId], references: [id])
+  follower          UserAccount    @relation("UserFollowers", fields: [followerId], references: [id], onDelete: Cascade)
+  following         UserAccount    @relation("UserFollowing", fields: [followingId], references: [id], onDelete: Cascade)
 
   @@unique([followerId, followingId])
 }

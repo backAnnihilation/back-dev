@@ -66,6 +66,7 @@ import { SubsQueryRepository } from '../../features/subs/api/subs.query.reposito
 import { SubscribeUseCase } from '../../features/subs/application/use-cases/subscribe-to-user.use-case';
 import { UnsubscribeUseCase } from '../../features/subs/application/use-cases/unsubscription.use-case';
 import { SubscriptionService } from '../../features/subs/application/services/subs.service';
+import { DeleteSAUseCase } from '../../features/admin/application/use-cases/delete-sa.use.case';
 
 const adapters = [
   BcryptAdapter,
@@ -75,6 +76,8 @@ const adapters = [
   TcpAdapter,
   AxiosAdapter,
 ];
+
+const saProviders = [DeleteSAUseCase, CreateSAUseCase, SACudApiService];
 
 const subProviders = [
   SubsCudApiService,
@@ -87,6 +90,7 @@ const subProviders = [
 const managers = [EmailManager, TransportManager];
 
 export const providers: Provider[] = [
+  ...saProviders,
   ...subProviders,
   ...adapters,
   ...managers,
@@ -97,11 +101,9 @@ export const providers: Provider[] = [
   ProfileImageService,
   SecurityQueryRepo,
   UsersQueryRepo,
-  SACudApiService,
   BasicSAAuthGuard,
   BasicSAStrategy,
   LocalStrategy,
-  CreateSAUseCase,
   UsersRepository,
   CaptureGuard,
   VerificationCredentialsUseCase,

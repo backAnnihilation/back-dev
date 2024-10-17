@@ -10,6 +10,28 @@ import {
 import { UnauthorizedViaTokenApiResponse } from '../../../auth/api/swagger/shared/authorization.response';
 import { SubStatus } from '@prisma/client';
 
+class FollowerInfo {
+  @ApiProperty({ description: 'Profile ID of the follower' })
+  profileId: string;
+
+  @ApiProperty({ description: 'Profile name of the follower' })
+  profileName: string;
+
+  @ApiProperty({ description: "URL of the follower's profile image" })
+  imageUrl: string | null;
+}
+
+class FollowingInfo {
+  @ApiProperty({ description: 'Profile ID of the followed user' })
+  profileId: string;
+
+  @ApiProperty({ description: 'Profile name of the followed user' })
+  profileName: string;
+
+  @ApiProperty({ description: "URL of the followed user's profile image" })
+  imageUrl: string | null;
+}
+
 export class SubViewModel {
   @ApiProperty({ description: 'Subscription ID' })
   id: string;
@@ -37,28 +59,6 @@ export class SubViewModel {
 
   @ApiProperty({ description: 'Creation date of the subscription' })
   createdAt: string;
-}
-
-class FollowerInfo {
-  @ApiProperty({ description: 'Profile ID of the follower' })
-  profileId: string;
-
-  @ApiProperty({ description: 'Profile name of the follower' })
-  profileName: string;
-
-  @ApiProperty({ description: "URL of the follower's profile image" })
-  imageUrl: string | null;
-}
-
-class FollowingInfo {
-  @ApiProperty({ description: 'Profile ID of the followed user' })
-  profileId: string;
-
-  @ApiProperty({ description: 'Profile name of the followed user' })
-  profileName: string;
-
-  @ApiProperty({ description: "URL of the followed user's profile image" })
-  imageUrl: string | null;
 }
 
 class ErrorMessageDto {

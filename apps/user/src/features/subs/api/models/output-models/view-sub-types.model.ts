@@ -31,6 +31,7 @@ type FollowInfo = {
   imageUrl?: string;
 };
 type Follower = FollowInfo;
+
 type Following = FollowInfo & {
   followerCount: number;
   followingCount: number;
