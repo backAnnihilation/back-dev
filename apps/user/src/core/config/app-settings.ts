@@ -16,7 +16,11 @@ export const applyAppSettings = (app: INestApplication) => {
   app.setGlobalPrefix(appPrefix);
 
   const corsSetup = {
-    origin: ['http://localhost:3000', 'https://incta.team'],
+    origin: [
+      'http://localhost:3000',
+      'https://netchill.ru',
+      'http://netchill.ru',
+    ],
     credentials: true,
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
   };

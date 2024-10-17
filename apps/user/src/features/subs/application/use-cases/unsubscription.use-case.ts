@@ -14,12 +14,21 @@ export class UnsubscribeUseCase implements ICommandHandler<UnsubscribeCommand> {
 
   async execute(command: UnsubscribeCommand) {
     const notice = new LayerNoticeInterceptor<any>();
+    const { followerId, followingId } = command.subDto;
+    
+    if (followerId === followingId) {
+      notice.addError(
+        `followerId and followingId must be different`,
+        this.location,
+        notice.errorCodes.ValidationError,
+      );
+    }
 
     const subscription = await this.subsRepo.getSubscription(command.subDto);
 
     if (!subscription) {
       notice.addError(
-        `user's subscription was not founded`,
+        `subscription was not founded`,
         this.location,
         notice.errorCodes.ResourceNotFound,
       );
