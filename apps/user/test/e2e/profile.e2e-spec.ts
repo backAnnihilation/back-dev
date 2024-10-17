@@ -24,7 +24,10 @@ import {
   PrepareTestOptions,
 } from '../tools/utils/seed-setup';
 import { RmqAdapter, TcpAdapter } from '../../src/core';
-import { RmqAdapterMocked, TcpAdapterMocked } from '../tools/mock/transport-adapters.mock';
+import {
+  RmqAdapterMocked,
+  TcpAdapterMocked,
+} from '../tools/mock/transport-adapters.mock';
 
 aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
   'UserProfilesController',
@@ -211,7 +214,7 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
       });
     });
 
-    describe('subs', () => {
+    describe.only('subs', () => {
       afterAll(async () => {
         // await dbCleaner();
       });
@@ -220,9 +223,32 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
         await dataSeeder({ profiles: { quantity: 10 } });
       });
 
-      it(``, async () => {
-        const { accessToken, users, profiles } = expect.getState();
-        console.log(profiles);
+      it(`shouldn't subscribe on yourself`, async () => {
+        const { users } = expect.getState();
+        await profilesTestManager.subscribe(
+          users[0].accessToken,
+          users[0].id,
+          HttpStatus.BAD_REQUEST,
+        );
+      });
+
+      it(`should subscribe`, async () => {
+        const { users } = expect.getState();
+        const sub = await profilesTestManager.subscribe(
+          users[0].accessToken,
+          users[1].id,
+        );
+        expect(sub.followingCount).toBe(1);
+        expect(sub.followerCount).toBe(0);
+      });
+
+      it(`shouldn't subscribe twice`, async () => {
+        const { users } = expect.getState();
+        await profilesTestManager.subscribe(
+          users[0].accessToken,
+          users[1].id,
+          HttpStatus.BAD_REQUEST,
+        );
       });
     });
   },

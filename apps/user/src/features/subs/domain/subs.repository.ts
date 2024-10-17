@@ -1,12 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, Subs } from '@prisma/client';
-import { DefaultArgs } from '@prisma/client/runtime/library';
 import { BaseRepository, DatabaseService } from '@user/core';
 import { InputSubscriptionDto } from '../api/models/input-models/sub.model';
 
 @Injectable()
 export class SubsRepository extends BaseRepository<
-  Prisma.SubsDelegate<DefaultArgs>,
+  Prisma.SubsDelegate,
   Prisma.SubsCreateInput,
   Subs
 > {
@@ -24,23 +23,27 @@ export class SubsRepository extends BaseRepository<
     }
   }
 
-  async create(subDto: InputSubscriptionDto) {
+  async isSubscribed(
+    followerId: string,
+    followingId: string,
+  ): Promise<Subs | null> {
     try {
-      return await this.prismaModel.create({
-        data: { ...subDto },
+      return await this.prismaModel.findUnique({
+        where: {
+          followerId_followingId: { followerId, followingId },
+        },
       });
     } catch (e) {
-      throw new Error(`Error creating subscription: ${e}`);
+      return null;
     }
   }
 
-  async delete(id: string): Promise<Subs> {
+  async create(data: InputSubscriptionDto) {
     try {
-      return await this.prismaModel.delete({
-        where: { id },
-      });
+      return await this.prismaModel.create({ data });
     } catch (e) {
-      throw new Error('Error deleting subscription');
+      console.error(e);
+      throw new Error(`Error creating subscription: ${e}`);
     }
   }
 }

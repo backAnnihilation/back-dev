@@ -4,7 +4,7 @@ import { BaseCUDApiService } from '@app/shared';
 import { SubsQueryRepository } from '../../api/subs.query.repository';
 import { SubscribeCommand } from '../use-cases/subscribe-to-user.use-case';
 import { UnsubscribeCommand } from '../use-cases/unsubscription.use-case';
-import { SubViewModel } from '../../api/models/output-models/view-sub.model';
+import { SubViewModel } from '../../api/models/output-models/view-sub-types.model';
 
 @Injectable()
 export class SubsCudApiService extends BaseCUDApiService<

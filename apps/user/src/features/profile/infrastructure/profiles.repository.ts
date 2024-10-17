@@ -1,23 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { ImageStatus, Prisma, ProfileImage, UserProfile } from '@prisma/client';
-import { DefaultArgs } from '@prisma/client/runtime/library';
-import { DatabaseService, BaseRepository } from '@user/core';
+import { BaseRepository, DatabaseService } from '@user/core';
 import { UpdateProfileImageType } from '../api/models/input/update-profile-image-type.model';
+import { FollowCountUpdate } from '../api/models/input/follow-counts.model';
 
 @Injectable()
 export class ProfilesRepository extends BaseRepository<
-  Prisma.UserProfileDelegate<DefaultArgs>,
+  Prisma.UserProfileDelegate,
   Prisma.UserProfileCreateInput,
   UserProfile
 > {
-  private userProfiles: Prisma.UserProfileDelegate<DefaultArgs>;
-  private profileImages: Prisma.ProfileImageDelegate<DefaultArgs>;
+  private userProfiles: Prisma.UserProfileDelegate;
+  private profileImages: Prisma.ProfileImageDelegate;
   constructor(private readonly prisma: DatabaseService) {
     super(prisma.userProfile);
     this.userProfiles = this.prismaModel;
     this.profileImages = this.prisma.profileImage;
   }
-  async save(data: Prisma.UserProfileUncheckedCreateInput): Promise<UserProfile> {
+  async save(
+    data: Prisma.UserProfileUncheckedCreateInput,
+  ): Promise<UserProfile> {
     try {
       return await this.userProfiles.create({ data });
     } catch (error) {
@@ -127,6 +129,26 @@ export class ProfilesRepository extends BaseRepository<
       });
     } catch (error) {
       console.error(`updateProfileImage ${error}`);
+      throw new Error(error);
+    }
+  }
+
+  async updateFollowerAndFollowingCounts(
+    dto: FollowCountUpdate,
+  ): Promise<void> {
+    const { followerId, followingId, operation } = dto;
+    try {
+      await this.userProfiles.update({
+        where: { userId: followerId },
+        data: { followingCount: { increment: operation } },
+      });
+
+      await this.userProfiles.update({
+        where: { userId: followingId },
+        data: { followerCount: { increment: operation } },
+      });
+    } catch (error) {
+      console.error(`updateFollowerAndFollowingCounts ${error}`);
       throw new Error(error);
     }
   }

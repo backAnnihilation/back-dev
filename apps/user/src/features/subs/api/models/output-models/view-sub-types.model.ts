@@ -1,3 +1,5 @@
+import { SubStatus } from '@prisma/client';
+
 export type ViewFollowerModel = {
   followerId: string;
 };
@@ -16,16 +18,32 @@ export type FollowersView = {
   id: string;
   followerId: string;
   createdAt: Date;
-} 
+};
 export type FollowingView = {
   id: string;
   followingId: string;
   createdAt: Date;
-}
+};
+
+type FollowInfo = {
+  profileId: string;
+  profileName: string;
+  imageUrl?: string;
+};
+type Follower = FollowInfo;
+type Following = FollowInfo & {
+  followerCount: number;
+  followingCount: number;
+};
 
 export type SubViewModel = {
   id: string;
-  followingId: string;
+  status: SubStatus;
   followerId: string;
-  createdAt: Date;
+  followingId: string;
+  follower: Follower;
+  following: Following;
+  createdAt: string;
+  followerCount: number;
+  followingCount: number;
 };

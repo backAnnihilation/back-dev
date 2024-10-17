@@ -1,16 +1,20 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { DefaultArgs } from '@prisma/client/runtime/library';
 import { DatabaseService } from '@user/core';
+import {
+  mapSubToView,
+  SubPayload,
+} from './models/output-models/sub.view.model';
 import {
   FollowersView,
   FollowingView,
+  SubViewModel,
   ViewSubsCount,
-} from './models/output-models/view-sub.model';
+} from './models/output-models/view-sub-types.model';
 
 @Injectable()
 export class SubsQueryRepository {
-  private readonly subs: Prisma.SubsDelegate<DefaultArgs>;
+  private readonly subs: Prisma.SubsDelegate;
   constructor(protected prisma: DatabaseService) {
     this.subs = this.prisma.subs;
   }
@@ -48,7 +52,7 @@ export class SubsQueryRepository {
           followingId: userId,
         },
       });
-      
+
       return followers.map((sub) => ({
         id: sub.id,
         followerId: sub.followerId,
@@ -73,7 +77,65 @@ export class SubsQueryRepository {
     }
   }
 
-  async getById(userId: string) {
+  async getById(id: string): Promise<SubViewModel | null> {
+    try {
+      const result = await this.subs.findUnique({
+        where: { id },
+        select: {
+          id: true,
+          status: true,
+          followerId: true,
+          followingId: true,
+          follower: {
+            select: {
+              userProfile: {
+                select: {
+                  id: true,
+                  userName: true,
+                  followerCount: true,
+                  followingCount: true,
+                  images: {
+                    orderBy: { createdAt: 'desc' },
+                    take: 1,
+                    select: { urlOriginal: true },
+                  },
+                },
+              },
+            },
+          },
+          following: {
+            select: {
+              userProfile: {
+                select: {
+                  id: true,
+                  userName: true,
+                  followerCount: true,
+                  followingCount: true,
+                  images: {
+                    orderBy: { createdAt: 'desc' },
+                    take: 1,
+                    select: { urlOriginal: true },
+                  },
+                },
+              },
+            },
+          },
+          createdAt: true,
+        },
+      });
+      if (!result) return null;
+
+      return mapSubToView(result);
+    } catch (error) {
+      console.log(
+        'subQueryRepo.getById:',
+        error.message || JSON.stringify(error),
+      );
+      return null;
+    }
+  }
+
+  async getByFollowerId(userId: string) {
     try {
       const following = await this.subs.findFirst({
         where: {

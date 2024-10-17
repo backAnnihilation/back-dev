@@ -53,3 +53,6 @@ export * from './config/environment.enum';
 
 // services
 export * from './services/scheduler.service';
+
+// swagger
+export * from '../swagger/create-error-response-message-type';

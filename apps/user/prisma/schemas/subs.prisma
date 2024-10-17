@@ -1,14 +1,20 @@
+enum SubStatus {
+  active
+  inactive
+  blocked
+}
+
 model Subs {
   id                String         @id @default(uuid())
 
   followerId        String
   followingId       String
-
+  status            SubStatus      @default(active)
   createdAt         DateTime       @default(now())
   updatedAt         DateTime       @updatedAt
 
-  follower    UserAccount @relation("UserFollowers", fields: [followerId], references: [id])
-  following   UserAccount @relation("UserFollowing", fields: [followingId], references: [id])
+  follower          UserAccount    @relation("UserFollowers", fields: [followerId], references: [id])
+  following         UserAccount    @relation("UserFollowing", fields: [followingId], references: [id])
 
   @@unique([followerId, followingId])
 }

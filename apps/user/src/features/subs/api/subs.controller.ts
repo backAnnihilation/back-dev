@@ -15,13 +15,15 @@ import { SubsQueryRepository } from './subs.query.repository';
 import {
   FollowersView,
   FollowingView,
+  SubViewModel,
   ViewSubsCount,
-} from './models/output-models/view-sub.model';
+} from './models/output-models/view-sub-types.model';
 import { ApiTagsEnum, RoutingEnum } from '@app/shared';
 import { ApiTags } from '@nestjs/swagger';
 import { GetUserFollowersEndpoint } from './swagger/get-followers.description';
 import { SubsNavigate } from '../../../core/routes/subs-navigate';
 import { GetUserFollowingEndpoint } from './swagger/get-following.description';
+import { SubscribeDoc } from './swagger/subscribe.description';
 
 @ApiTags(ApiTagsEnum.Subs)
 @Controller(RoutingEnum.subs)
@@ -54,17 +56,18 @@ export class SubsController {
     return this.subsQueryRepo.getUserFollowCounts(userId);
   }
 
+  @SubscribeDoc()
   @Post(SubsNavigate.Subscribe)
   @UseGuards(AccessTokenGuard)
   async subscribe(
     @CurrentUserId() userId: string,
     @Param('id') followingId: string,
-  ) {
+  ): Promise<SubViewModel> {
     const command = new SubscribeCommand({
       followingId,
       followerId: userId,
     });
-    return this.subsApiService.updateOrDelete(command);
+    return this.subsApiService.create(command);
   }
 
   @Delete(SubsNavigate.Unsubscribe)

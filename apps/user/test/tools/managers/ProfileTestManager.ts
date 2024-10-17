@@ -1,5 +1,5 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, Subs, SubStatus } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
 import { readFile } from 'fs/promises';
 import { resolve } from 'node:path';
@@ -17,47 +17,44 @@ import { SAUsersRouting } from '../routes/sa-users.routing';
 import { BaseTestManager } from './BaseTestManager';
 import { AuthUserType } from '../../../src/features/auth/api/models/auth.output.models/auth.user.types';
 import { profileImages } from '../utils/test-constants';
-
-type ImageDtoType = {
-  fileName: string;
-  contentType: string;
-  buffer: Buffer;
-};
+import { SubsRouting } from '../routes/subs.routing';
+import { SubViewModel } from '../../../src/features/subs/api/models/output-models/view-sub-types.model';
 
 export class ProfileTestManager extends BaseTestManager {
-  protected readonly routing: AuthUsersRouting;
-  protected readonly saRouting: SAUsersRouting;
-  protected readonly profileRouting: ProfileRouting;
-  protected usersRepo: Prisma.UserAccountDelegate<DefaultArgs>;
+  private readonly subsRouting: SubsRouting;
+  private readonly profileRouting: ProfileRouting;
+  private readonly profilesRepo: Prisma.UserProfileDelegate;
   constructor(
-    protected readonly app: INestApplication,
+    app: INestApplication,
     private prisma: DatabaseService,
   ) {
     super(app);
     this.profileRouting = new ProfileRouting();
-    this.usersRepo = this.prisma.userAccount;
+    this.subsRouting = new SubsRouting();
+    this.profilesRepo = this.prisma.userProfile;
   }
 
   createInputData(
     field?: Partial<FillOutProfileInputModel> | object,
   ): FillOutProfileInputModel {
-    if (!field) {
-      return {
-        userName: ' ',
-        firstName: ' ',
-        lastName: ' ',
-      };
-    }
-    const model = field as FillOutProfileInputModel;
-    return {
-      userName: model.userName || 'newUserName',
-      firstName: model.firstName || 'newFirstName',
-      lastName: model.lastName || 'newLastName',
-      dateOfBirth: model.dateOfBirth || '12.12.1212',
-      city: model.city || 'Berlin',
-      about: model.about || 'about me',
-      country: model.country || 'Germany',
+    let profileModel = {
+      userName: ' ',
+      firstName: ' ',
+      lastName: ' ',
     };
+    if (field) {
+      const model = field as FillOutProfileInputModel;
+      profileModel = {
+        userName: model.userName || 'newUserName',
+        firstName: model.firstName || 'newFirstName',
+        lastName: model.lastName || 'newLastName',
+        dateOfBirth: model.dateOfBirth || '12.12.1212',
+        city: model.city || 'Berlin',
+        about: model.about || 'about me',
+        country: model.country || 'Germany',
+      } as FillOutProfileInputModel;
+    }
+    return profileModel;
   }
 
   async getProfile(
@@ -85,7 +82,6 @@ export class ProfileTestManager extends BaseTestManager {
       .auth(accessToken, this.authConstants.authBearer)
       .send(profileDto)
       .expect(({ body }: SuperTestBody<UserProfileViewModel>) => {
-        console.log(body);
         profile = body;
       })
       .expect(expectedStatus);
@@ -124,7 +120,6 @@ export class ProfileTestManager extends BaseTestManager {
         city: CITIES[i] || 'Rome',
         country: COUNTRIES[i] || 'Italy',
       });
-      console.log(profileData, users);
 
       const profile = await this.fillOutProfile(
         users[i].accessToken,
@@ -144,6 +139,35 @@ export class ProfileTestManager extends BaseTestManager {
       .put(this.profileRouting.editProfile())
       .auth(accessToken, this.authConstants.authBearer)
       .send(profileDto)
+      .expect(expectedStatus);
+  }
+
+  async subscribe(
+    accessToken: string,
+    profileId: string,
+    expectedStatus = HttpStatus.CREATED,
+  ) {
+    let sub: SubViewModel;
+    await request(this.application)
+      .post(this.subsRouting.subscribe(profileId))
+      .auth(accessToken, this.authConstants.authBearer)
+      .expect(expectedStatus)
+      .expect(({ body, status }: SuperTestBody<SubViewModel>) => {
+        if (status === HttpStatus.CREATED)
+          expect(body.status).toBe(SubStatus.active);
+        sub = body;
+      });
+    return sub;
+  }
+
+  async unsubscribe(
+    accessToken: string,
+    profileId: string,
+    expectedStatus = HttpStatus.NO_CONTENT,
+  ) {
+    await request(this.application)
+      .delete(this.subsRouting.unsubscribe(profileId))
+      .auth(accessToken, this.authConstants.authBearer)
       .expect(expectedStatus);
   }
 }

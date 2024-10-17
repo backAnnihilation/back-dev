@@ -23,9 +23,7 @@ export class AccessTokenStrategy extends PassportStrategy(
   }
 
   async validate(payload: IPayload) {
-    const userSession = await this.securityQueryRepo.getUserSession(
-      payload.deviceId,
-    );
+    const userSession = await this.securityQueryRepo.getUserSession(payload.deviceId);
     if (!userSession) return false;
 
     return { ...payload };

@@ -35,7 +35,7 @@ import { EditPostCommand } from '../../application/use-cases/edit-post.use-case'
 import { CreatePostInputModel } from '../models/input/create-post.model';
 import { EditPostInputModel } from '../models/input/edit-profile.model';
 import { PostsQueryFilter } from '../models/input/post-query-filter';
-import { PostViewModel } from '../models/output/post.view.model';
+import { PostViewModel } from '../models/output/post-view-type.model';
 import { PostQueryRepository } from '../query-repositories/post.query.repository';
 import { CreatePostEndpoint } from '../swagger/create-post.description';
 import { DeletePostEndpoint } from '../swagger/delete-post.description';

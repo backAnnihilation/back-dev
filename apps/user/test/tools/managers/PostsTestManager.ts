@@ -5,13 +5,16 @@ import { PostsRouting } from '../routes/posts.routing';
 import { DatabaseService } from '../../../src/core';
 import { Prisma } from '@prisma/client';
 import { CreatePostInputModel } from '../../../src/features/post/api/models/input/create-post.model';
-import { PostViewModel } from '../../../src/features/post/api/models/output/post.view.model';
+import { PostViewModel } from '../../../src/features/post/api/models/output/post-view-type.model';
 import { EditPostInputModel } from '../../../src/features/post/api/models/input/edit-profile.model';
 import { PostsQueryFilter } from '../../../src/features/post/api/models/input/post-query-filter';
 import { PaginationViewModel } from '@app/shared';
 import { SuperTestBody } from '../models/body.response.model';
 import { ImageNames } from '../models/image-names.enum';
-import { AuthUserType, AuthUserWithToken } from '../../../src/features/auth/api/models/auth.output.models/auth.user.types';
+import {
+  AuthUserType,
+  AuthUserWithToken,
+} from '../../../src/features/auth/api/models/auth.output.models/auth.user.types';
 
 export class PostsTestManager extends BaseTestManager {
   private readonly routing: PostsRouting;

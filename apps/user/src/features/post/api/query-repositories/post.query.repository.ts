@@ -4,8 +4,8 @@ import { DefaultArgs } from '@prisma/client/runtime/library';
 import { PaginationViewModel } from '@app/shared';
 import { DatabaseService } from '@user/core';
 import { PostsQueryFilter } from '../models/input/post-query-filter';
-import { getPostViewModel } from '../models/output/post.output.model';
-import { PostViewModel } from '../models/output/post.view.model';
+import { getPostViewModel } from '../models/output/post.view.model';
+import { PostViewModel } from '../models/output/post-view-type.model';
 
 @Injectable()
 export class PostQueryRepository {

@@ -5,7 +5,6 @@ import {
   ApiProperty,
   ApiResponse,
 } from '@nestjs/swagger';
-
 import { UnauthorizedViaTokenApiResponse } from './shared/authorization.response';
 
 export const GetProfileEndpoint = () =>
