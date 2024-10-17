@@ -1,4 +1,5 @@
 import { CommandBus, EventsHandler, IEventHandler } from '@nestjs/cqrs';
+
 import { CreateUserAccountEvent } from '../create-user-account-event';
 import { CreateUserCommand } from '../../commands/create-user.command';
 

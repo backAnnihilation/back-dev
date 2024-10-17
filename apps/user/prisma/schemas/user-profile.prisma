@@ -1,0 +1,23 @@
+model UserProfile {
+  id                String         @id @default(uuid())
+  userName          String         
+  firstName         String        
+  lastName          String
+  birthDate         DateTime?
+  country           String?
+  city              String?
+  about             String?        @db.VarChar(255)
+  createdAt         DateTime       @default(now())
+
+  userAccount       UserAccount    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId            String         @unique
+
+  followerCount     Int            @default(0)
+  followingCount    Int            @default(0)
+
+  images            ProfileImage[]
+
+  @@index(userName)
+  @@index(country)
+  @@index(city)
+}

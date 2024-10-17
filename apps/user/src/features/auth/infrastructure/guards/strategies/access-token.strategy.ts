@@ -2,9 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { EnvironmentVariables } from '../../../../../../core/config/configuration';
+import { EnvironmentVariables, StrategyType } from '@user/core';
 import { SecurityQueryRepo } from '../../../../security/api/query-repositories/security.query.repo';
-import { StrategyType } from '../../../../../../core/infrastructure/guards/models/strategy.enum';
+import { IPayload } from '../../../api/models/auth-input.models.ts/jwt.types';
 
 @Injectable()
 export class AccessTokenStrategy extends PassportStrategy(
@@ -13,20 +13,17 @@ export class AccessTokenStrategy extends PassportStrategy(
 ) {
   constructor(
     private securityQueryRepo: SecurityQueryRepo,
-    private configService: ConfigService<EnvironmentVariables>,
+    configService: ConfigService<EnvironmentVariables>,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: configService.get('ACCESS_TOKEN_SECRET'),
+      secretOrKey: configService.getOrThrow('ACCESS_TOKEN_SECRET'),
     });
   }
 
-  async validate(payload: any) {
-    const userSession = await this.securityQueryRepo.getUserSession(
-      payload.deviceId,
-    );
-
+  async validate(payload: IPayload) {
+    const userSession = await this.securityQueryRepo.getUserSession(payload.deviceId);
     if (!userSession) return false;
 
     return { ...payload };

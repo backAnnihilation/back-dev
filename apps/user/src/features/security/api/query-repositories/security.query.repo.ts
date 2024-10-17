@@ -1,9 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { getSessionViewModel } from '../models/security.view.models/security.view.model';
-import { SecurityViewDeviceModel } from '../models/security.view.models/security.view.types';
-import { DatabaseService } from '../../../../../core/db/prisma/prisma.service';
 import { DefaultArgs } from '@prisma/client/runtime/library';
 import { Prisma } from '@prisma/client';
+
+import { getSessionViewModel } from '../models/security.view.models/security.view.model';
+import { SecurityViewDeviceModel } from '../models/security.view.models/security.view.types';
+import { DatabaseService } from '../../../../core/db/prisma/prisma.service';
 
 @Injectable()
 export class SecurityQueryRepo {
@@ -17,13 +18,10 @@ export class SecurityQueryRepo {
   ): Promise<SecurityViewDeviceModel[] | null> {
     try {
       const sessions = await this.userSessions.findMany({ where: { userId } });
-
-      if (!sessions) return null;
-
       return sessions.map(getSessionViewModel);
     } catch (error) {
       console.log(`Database fails operate with find user sessions ${error}`);
-      return null;
+      throw new Error('Database fails operate with find user sessions');
     }
   }
 
