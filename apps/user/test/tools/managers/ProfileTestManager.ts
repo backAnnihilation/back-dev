@@ -5,7 +5,7 @@ import { readFile } from 'fs/promises';
 import { resolve } from 'node:path';
 import { basename } from 'path';
 import * as request from 'supertest';
-import { DatabaseService } from '../../../src/core/db/prisma/prisma.service';
+import { PrismaService } from '../../../src/core/db/prisma/prisma.service';
 import { EditProfileInputModel } from '../../../src/features/profile/api/models/input/edit-profile.model';
 import { FillOutProfileInputModel } from '../../../src/features/profile/api/models/input/fill-out-profile.model';
 import { UserProfileViewModel } from '../../../src/features/profile/api/models/output/profile.view.model';
@@ -30,7 +30,7 @@ export class ProfileTestManager extends BaseTestManager {
   private readonly subsRepo: Prisma.SubsDelegate;
   constructor(
     app: INestApplication,
-    private prisma: DatabaseService,
+    private prisma: PrismaService,
   ) {
     super(app);
     this.profileRouting = new ProfileRouting();

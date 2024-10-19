@@ -9,7 +9,7 @@ import {
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { CurrentUserId } from '@user/core';
+import { CurrentUserId, SubsNavigate } from '@user/core';
 import { SubsCudApiService } from '../application/services/subs-api.service';
 import { SubscribeCommand } from '../application/use-cases/subscribe-to-user.use-case';
 import { UnsubscribeCommand } from '../application/use-cases/unsubscription.use-case';
@@ -24,7 +24,6 @@ import {
 import { ApiTagsEnum, RoutingEnum } from '@app/shared';
 import { ApiTags } from '@nestjs/swagger';
 import { GetUserFollowersEndpoint } from './swagger/get-followers.description';
-import { SubsNavigate } from '../../../core/routes/subs-navigate';
 import { GetUserFollowingEndpoint } from './swagger/get-following.description';
 import { SubscribeDoc } from './swagger/subscribe.description';
 
@@ -65,12 +64,13 @@ export class SubsController {
   async subscribe(
     @CurrentUserId() userId: string,
     @Param('id') followingId: string,
-  ): Promise<SubViewModel> {
+  ): Promise<SubViewModel | any> {
     const command = new SubscribeCommand({
       followingId,
       followerId: userId,
     });
     return this.subsApiService.create(command);
+    // return this.subService.runInTransaction(command);
   }
 
   @Put(SubsNavigate.Unsubscribe)

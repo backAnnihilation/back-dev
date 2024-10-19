@@ -1,7 +1,7 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
-import { Prisma } from '@prisma/client';
+import { Prisma, UserAccount } from '@prisma/client';
 import * as request from 'supertest';
-import { DatabaseService } from '../../../src/core';
+import { PrismaService } from '../../../src/core';
 import { SAViewType } from '../../../src/features/admin/api/models/user.view.models/userAdmin.view-type';
 import { JwtTokens } from '../../../src/features/auth/api/models/auth-input.models.ts/jwt.types';
 import { RecoveryPassDto } from '../../../src/features/auth/api/models/auth-input.models.ts/recovery.model';
@@ -26,7 +26,7 @@ export class UsersTestManager extends BaseTestManager {
   protected usersRepo: Prisma.UserAccountDelegate;
   constructor(
     protected readonly app: INestApplication,
-    private prisma: DatabaseService,
+    private prisma: PrismaService,
   ) {
     super(app);
     this.routing = new AuthUsersRouting();
@@ -106,13 +106,17 @@ export class UsersTestManager extends BaseTestManager {
   async registration(
     inputData: AuthUserType,
     expectedStatus = HttpStatus.NO_CONTENT,
+    options = { errors: null },
   ) {
-    const response = await request(this.application)
+    await request(this.application)
       .post(this.routing.registration())
       .send(inputData)
-      .expect(expectedStatus);
-
-    return response.body;
+      .expect(expectedStatus)
+      .expect(({ body }: SuperTestBody<UserProfileType>) => {
+        if (options.errors) {
+          expect(body).toEqual(options.errors);
+        }
+      });
   }
 
   async registrationEmailResending(

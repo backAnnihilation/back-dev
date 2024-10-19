@@ -8,7 +8,7 @@ import { EmailManager } from '../../src/core/managers/email.manager';
 import { databaseService } from '../setupTests.e2e';
 import { UsersTestManager } from './managers/UsersTestManager';
 import { EmailManagerMock } from './mock/email-manager.mock';
-import { DatabaseService } from '../../src/core';
+import { PrismaService } from '../../src/core';
 
 export const initSettings = async (
   addSettingsToModuleBuilder?: (moduleBuilder: TestingModuleBuilder) => void,
@@ -21,7 +21,7 @@ export const initSettings = async (
     )
       .overrideProvider(EmailManager)
       .useClass(EmailManagerMock)
-      .overrideProvider(DatabaseService)
+      .overrideProvider(PrismaService)
       .useValue(databaseService);
 
     if (addSettingsToModuleBuilder) {

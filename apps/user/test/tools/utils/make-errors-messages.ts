@@ -1,6 +1,6 @@
 type ErrorsMessages = {
   message: string;
-  field: string;
+  field?: string;
 };
 
 type ErrorType = { errorsMessages: ErrorsMessages[] };
@@ -24,15 +24,22 @@ export enum ErrorField {
 }
 
 export const constructErrorMessages = (
-  fields: ErrorField[],
+  fields: ErrorField[] | null,
   message?: string,
 ): ErrorType => {
   const errorsMessages: ErrorsMessages[] = [];
-  for (const field of fields) {
+  if (!fields) {
     errorsMessages.push({
-      message: message ?? expect.any(String),
-      field: field ?? expect.any(String),
+      message,
     });
+  } else {
+    for (const field of fields) {
+      errorsMessages.push({
+        message: message ?? expect.any(String),
+        field: field ?? expect.any(String),
+      });
+    }
   }
+
   return { errorsMessages };
 };

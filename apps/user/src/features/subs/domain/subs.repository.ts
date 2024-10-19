@@ -1,22 +1,24 @@
+import { TransactionHost } from '@nestjs-cls/transactional';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { Injectable } from '@nestjs/common';
 import { Prisma, Subs, SubStatus } from '@prisma/client';
-import { BaseRepository, DatabaseService } from '@user/core';
+import { BaseRepository, PrismaService } from '@user/core';
 import { InputSubscriptionDto } from '../api/models/input-models/sub.model';
 
 @Injectable()
-export class SubsRepository extends BaseRepository<
-  Prisma.SubsDelegate,
-  Prisma.SubsCreateInput,
-  Subs
-> {
-  constructor(prisma: DatabaseService) {
-    super(prisma.subs);
+export class SubsRepository extends BaseRepository<Subs> {
+  private readonly txModel: Prisma.SubsDelegate;
+  constructor(
+    prisma: PrismaService,
+    private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
+  ) {
+    super(prisma, 'subs');
   }
 
   async findFollowerSubscription(subDto: InputSubscriptionDto) {
     const { followerId, followingId } = subDto;
     try {
-      return await this.prismaModel.findUnique({
+      return await this.model.findUnique({
         where: { followerId_followingId: { followerId, followingId } },
       });
     } catch (e) {
@@ -26,7 +28,7 @@ export class SubsRepository extends BaseRepository<
 
   async updateStatus(id: string, status: SubStatus) {
     try {
-      return await this.prismaModel.update({
+      return await this.model.update({
         where: { id },
         data: { status },
       });
@@ -40,7 +42,7 @@ export class SubsRepository extends BaseRepository<
     followingId: string,
   ): Promise<Subs | null> {
     try {
-      return await this.prismaModel.findUnique({
+      return await this.model.findUnique({
         where: {
           followerId_followingId: { followerId, followingId },
           status: SubStatus.active,
@@ -53,10 +55,15 @@ export class SubsRepository extends BaseRepository<
 
   async create(data: InputSubscriptionDto) {
     try {
-      return await this.prismaModel.create({ data });
+      return await this.getRepository.create({ data });
     } catch (e) {
       console.error(e);
       throw new Error(`Error creating subscription: ${e}`);
     }
+  }
+
+  get getRepository(): Prisma.SubsDelegate {
+    const isTxActive = this.txHost.isTransactionActive();
+    return (isTxActive && this.txHost.tx.subs) || this.model;
   }
 }

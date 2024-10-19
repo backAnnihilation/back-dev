@@ -1,26 +1,34 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { LayerNoticeInterceptor, OutputId } from '@app/shared';
+import { Transactional } from '@nestjs-cls/transactional';
+import { CommandHandler } from '@nestjs/cqrs';
+import { SubStatus } from '@prisma/client';
+import {
+  BaseUseCase,
+  PrismaService,
+  PrismaTransactionClient,
+} from '@user/core';
+import { FollowCountOperation } from '../../../profile/api/models/input/follow-counts.model';
+import { ProfilesRepository } from '../../../profile/infrastructure/profiles.repository';
 import { InputSubscriptionDto } from '../../api/models/input-models/sub.model';
 import { SubsRepository } from '../../domain/subs.repository';
-import { ProfilesRepository } from '../../../profile/infrastructure/profiles.repository';
-import { FollowCountOperation } from '../../../profile/api/models/input/follow-counts.model';
-import { SubStatus } from '@prisma/client';
 
 export class SubscribeCommand {
   constructor(public subDto: InputSubscriptionDto) {}
 }
 
 @CommandHandler(SubscribeCommand)
-export class SubscribeUseCase implements ICommandHandler<SubscribeCommand> {
-  private location = this.constructor.name;
+export class SubscribeUseCase extends BaseUseCase<SubscribeCommand, OutputId> {
+  private readonly location = this.constructor.name;
   constructor(
+    prisma: PrismaService,
     private subsRepo: SubsRepository,
     private profilesRepo: ProfilesRepository,
-  ) {}
+  ) {
+    super(prisma);
+  }
 
-  async execute(
-    command: SubscribeCommand,
-  ): Promise<LayerNoticeInterceptor<OutputId>> {
+  @Transactional()
+  async onExecute(command: SubscribeCommand, prisma: PrismaTransactionClient) {
     const notice = new LayerNoticeInterceptor<OutputId>();
     const { followerId, followingId } = command.subDto;
 

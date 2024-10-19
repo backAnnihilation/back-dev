@@ -2,12 +2,12 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@prisma/client';
 import { Environment } from '@app/shared';
-import { EnvironmentVariables, DatabaseService } from '@user/core';
+import { EnvironmentVariables, PrismaService } from '@user/core';
 
 @Injectable()
 export class CleanUpDatabaseRepository {
   constructor(
-    private prisma: DatabaseService,
+    private prisma: PrismaService,
     private config: ConfigService<EnvironmentVariables>,
   ) {}
 

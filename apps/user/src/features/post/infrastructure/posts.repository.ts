@@ -1,16 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { Post, PostImage, Prisma } from '@prisma/client';
-import { BaseRepository, DatabaseService } from '@user/core';
+import { BaseRepository, PrismaService } from '@user/core';
 
 @Injectable()
-export class PostsRepository extends BaseRepository<
-  Prisma.PostDelegate,
-  Prisma.PostUncheckedCreateInput,
-  Post
-> {
+export class PostsRepository extends BaseRepository<Post> {
   private readonly postImages: Prisma.PostImageDelegate;
-  constructor(private readonly prisma: DatabaseService) {
-    super(prisma.post);
+  constructor(private readonly prisma: PrismaService) {
+    super(prisma, 'post');
     this.postImages = this.prisma.postImage;
   }
 

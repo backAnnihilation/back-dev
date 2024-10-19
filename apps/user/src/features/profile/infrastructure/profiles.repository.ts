@@ -1,21 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import { ImageStatus, Prisma, ProfileImage, UserProfile } from '@prisma/client';
-import { BaseRepository, DatabaseService } from '@user/core';
+import { BaseRepository, PrismaService } from '@user/core';
 import { UpdateProfileImageType } from '../api/models/input/update-profile-image-type.model';
 import { FollowCountUpdate } from '../api/models/input/follow-counts.model';
+import { TransactionHost } from '@nestjs-cls/transactional';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 
 @Injectable()
-export class ProfilesRepository extends BaseRepository<
-  Prisma.UserProfileDelegate,
-  Prisma.UserProfileCreateInput,
-  UserProfile
-> {
+export class ProfilesRepository extends BaseRepository<UserProfile> {
   private userProfiles: Prisma.UserProfileDelegate;
   private profileImages: Prisma.ProfileImageDelegate;
-  constructor(private readonly prisma: DatabaseService) {
-    super(prisma.userProfile);
-    this.userProfiles = this.prismaModel;
-    this.profileImages = this.prisma.profileImage;
+  constructor(
+    private prisma: PrismaService,
+    private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
+  ) {
+    super(prisma, 'profileImage');
+    this.profileImages = this.model;
+    this.userProfiles = this.prisma.userProfile;
   }
   async save(
     data: Prisma.UserProfileUncheckedCreateInput,
@@ -138,15 +139,16 @@ export class ProfilesRepository extends BaseRepository<
   ): Promise<void> {
     const { followerId, followingId, operation } = dto;
     try {
-      await this.userProfiles.update({
-        where: { userId: followerId },
-        data: { followingCount: { increment: operation } },
-      });
-
-      await this.userProfiles.update({
-        where: { userId: followingId },
-        data: { followerCount: { increment: operation } },
-      });
+      await Promise.all([
+        this.userProfiles.update({
+          where: { userId: followerId },
+          data: { followingCount: { increment: operation } },
+        }),
+        this.userProfiles.update({
+          where: { userId: followingId },
+          data: { followerCount: { increment: operation } },
+        }),
+      ]);
     } catch (error) {
       console.error(`updateFollowerAndFollowingCounts ${error}`);
       throw new Error(error);

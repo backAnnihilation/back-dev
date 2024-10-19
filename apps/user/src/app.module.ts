@@ -8,6 +8,7 @@ import {
   TcpModule,
 } from '@app/shared';
 import { Module } from '@nestjs/common';
+import { PrismaModule } from './core/db/prisma/prisma.module';
 import { ConfigurationModule } from './core/config';
 import { providers } from './core/config/app-providers';
 import { CqrsModule } from '@nestjs/cqrs';
@@ -21,7 +22,10 @@ import { UserProfilesController } from './features/profile/api/profiles.controll
 import { SecurityController } from './features/security/api/security.controller';
 import { SubsController } from './features/subs/api/subs.controller';
 import { ScheduleModule } from '@nestjs/schedule';
-import { PrismaModule } from './core/db/prisma/prisma.module';
+import { PrismaService } from './core/db/prisma/prisma.service';
+import { ClsModule } from 'nestjs-cls';
+import { ClsPluginTransactional } from '@nestjs-cls/transactional';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 
 @Module({
   imports: [
@@ -35,6 +39,17 @@ import { PrismaModule } from './core/db/prisma/prisma.module';
     ConfigurationModule,
     CqrsModule,
     PrismaModule,
+    ClsModule.forRoot({
+      plugins: [
+        new ClsPluginTransactional({
+          imports: [],
+          adapter: new TransactionalAdapterPrisma({
+            prismaInjectionToken: PrismaService,
+          }),
+        }),
+      ],
+      
+    }),
   ],
   controllers: [
     SubsController,

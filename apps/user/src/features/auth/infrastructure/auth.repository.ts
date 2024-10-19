@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma, Provider, UserAccount } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
-import { DatabaseService } from '@user/core';
+import { PrismaService } from '@user/core';
 import { UpdatePasswordDto } from '../api/models/auth-input.models.ts/password-recovery.types';
 import {
   UpdateConfirmationCodeDto,
@@ -10,8 +10,8 @@ import {
 
 @Injectable()
 export class AuthRepository {
-  private userAccounts: Prisma.UserAccountDelegate<DefaultArgs>;
-  constructor(private readonly prisma: DatabaseService) {
+  private userAccounts: Prisma.UserAccountDelegate;
+  constructor(private readonly prisma: PrismaService) {
     this.userAccounts = this.prisma.userAccount;
   }
 

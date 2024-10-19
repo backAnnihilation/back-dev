@@ -6,6 +6,7 @@ import {
   HttpStatus,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
+import { Environment } from '@app/shared';
 
 type ErrorResponse = {
   errorsMessages: ErrorsMessageType[];
@@ -45,10 +46,11 @@ export class HttpExceptionFilter implements ExceptionFilter {
         prodErrorResponse.errorsMessages.push({ message });
       }
 
-      const envCondition =
-        this.currentENV === 'DEVELOPMENT' || this.currentENV === 'TESTING';
+      const testEnvironment =
+        this.currentENV === Environment.DEVELOPMENT ||
+        this.currentENV === Environment.TESTING;
 
-      const errorResponse = !envCondition
+      const errorResponse = !testEnvironment
         ? devErrorResponse
         : prodErrorResponse;
 

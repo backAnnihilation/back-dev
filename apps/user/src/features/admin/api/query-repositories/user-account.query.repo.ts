@@ -1,7 +1,7 @@
 import { PaginationViewModel } from '@app/shared';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { DatabaseService } from '@user/core';
+import { PrismaService } from '@user/core';
 import { SAQueryFilter } from '../models/outputSA.models.ts/sa-query-filter';
 import { getSAViewModel } from '../models/user.view.models/saView.model';
 import { SAViewType } from '../models/user.view.models/userAdmin.view-type';
@@ -9,7 +9,7 @@ import { SAViewType } from '../models/user.view.models/userAdmin.view-type';
 @Injectable()
 export class UsersQueryRepo {
   private readonly userAccounts: Prisma.UserAccountDelegate;
-  constructor(private prisma: DatabaseService) {
+  constructor(private prisma: PrismaService) {
     this.userAccounts = this.prisma.userAccount;
   }
 

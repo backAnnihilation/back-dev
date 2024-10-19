@@ -3,10 +3,10 @@ import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
 import { Environment } from '@app/shared';
 import { EnvironmentVariables } from '../src/core/config/configuration';
-import { DatabaseService } from '../src/core/db/prisma/prisma.service';
+import { PrismaService } from '../src/core/db/prisma/prisma.service';
 import { databaseCleanUp } from './tools/utils/db-cleanUp';
 
-let databaseService: DatabaseService;
+let databaseService: PrismaService;
 let config: ConfigService<EnvironmentVariables>;
 let dbCleaner: () => Promise<void>;
 beforeAll(async () => {
@@ -29,7 +29,7 @@ beforeAll(async () => {
   //   cwd: workerDir,
   // });
 
-  databaseService = new DatabaseService({
+  databaseService = new PrismaService({
     datasources: {
       db: { url: dbUrl },
     },

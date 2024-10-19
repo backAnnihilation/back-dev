@@ -4,12 +4,12 @@ import { Prisma } from '@prisma/client';
 
 import { getSessionViewModel } from '../models/security.view.models/security.view.model';
 import { SecurityViewDeviceModel } from '../models/security.view.models/security.view.types';
-import { DatabaseService } from '../../../../core/db/prisma/prisma.service';
+import { PrismaService } from '../../../../core/db/prisma/prisma.service';
 
 @Injectable()
 export class SecurityQueryRepo {
   private userSessions: Prisma.UserSessionDelegate<DefaultArgs>;
-  constructor(private prisma: DatabaseService) {
+  constructor(private prisma: PrismaService) {
     this.userSessions = this.prisma.userSession;
   }
 

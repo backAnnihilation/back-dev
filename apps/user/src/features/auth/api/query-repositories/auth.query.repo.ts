@@ -2,14 +2,14 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
 import { EmailDtoType } from '../models/auth.output.models/auth.user.types';
-import { DatabaseService } from '@user/core';
+import { PrismaService } from '@user/core';
 import { getUserAccountViewModel } from '../models/auth.output.models/auth.view.model';
 import { UserAccountViewModel } from '../models/auth.output.models/auth.output.models';
 
 @Injectable()
 export class AuthQueryRepository {
   private userAccounts: Prisma.UserAccountDelegate<DefaultArgs>;
-  constructor(private prisma: DatabaseService) {
+  constructor(private prisma: PrismaService) {
     this.userAccounts = this.prisma.userAccount;
   }
 

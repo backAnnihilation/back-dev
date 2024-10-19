@@ -1,10 +1,15 @@
-import { PrismaClient } from '@prisma/client';
+import { Prisma, PrismaClient } from '@prisma/client';
 import { LayerNoticeInterceptor } from '@app/shared';
 import * as runtime from '@prisma/client/runtime/library.js';
-type PrismaTransactionClient = Omit<PrismaClient, runtime.ITXClientDenyList>;
+import { ICommandHandler } from '@nestjs/cqrs';
+import { PrismaService } from '../../db';
 
-export abstract class BaseUseCase<TCommand, TOutputResponse> {
-  protected constructor(private readonly prisma: PrismaClient) {}
+export type PrismaTransactionClient = Prisma.TransactionClient;
+
+export abstract class BaseUseCase<TCommand, TOutputResponse>
+  implements ICommandHandler<TCommand>
+{
+  protected constructor(protected readonly prisma: PrismaService) {}
 
   protected abstract onExecute(
     command: TCommand,
@@ -18,24 +23,22 @@ export abstract class BaseUseCase<TCommand, TOutputResponse> {
   }
 
   private async launchTransaction(
-    data: TCommand,
+    command: TCommand,
   ): Promise<LayerNoticeInterceptor<TOutputResponse>> {
-    try {
-      const transactionResult = await this.prisma.$transaction(
-        async (prisma) => {
-          const resultNotification = await this.onExecute(data, prisma);
-          if (resultNotification.hasError) {
-            throw new Error('Transaction failed due to errors in execution.');
-          }
-
-          return resultNotification;
-        },
-      );
-
-      return transactionResult;
-    } catch (error) {
-      console.log(BaseUseCase.name, error);
-      // Handle the rollback...
-    }
+    return await this.prisma.$transaction<
+      LayerNoticeInterceptor<TOutputResponse>
+    >(async (tx) => {
+      try {
+        return await this.onExecute(command, tx);
+      } catch (error) {
+        const notice = new LayerNoticeInterceptor();
+        notice.addError(
+          error?.message || 'unexpected error during transaction',
+          BaseUseCase.name,
+          notice.errorCodes.InternalServerError,
+        );
+        return notice;
+      }
+    });
   }
 }

@@ -1,94 +1,74 @@
-import { applyDecorators, HttpStatus } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiBody,
-  ApiOperation,
-  ApiPropertyOptional,
-  ApiResponse,
-} from '@nestjs/swagger';
 import {
   aboutLength,
   frequentLength,
   nameInitials,
   nameInitialsMatch,
-  passwordLength,
+  userNameLength,
 } from '@app/shared';
+import { applyDecorators, HttpStatus } from '@nestjs/common';
+import {
+  ApiBearerAuth,
+  ApiBody,
+  ApiOperation,
+  ApiProperty,
+  ApiPropertyOptional,
+  ApiResponse,
+} from '@nestjs/swagger';
 import { UnauthorizedViaTokenApiResponse } from '../../../auth/api/swagger/shared/authorization.response';
-import { Gender } from '../models/enum/profile.enums';
 import { ErrorResponseDto } from './fill-out-profile.description';
 
-export const EditProfileEndpoint = () =>
-  applyDecorators(
-    ApiOperation({
-      summary: 'Fill out user profile',
-      description: 'User has to fill his profile with relevant information',
-    }),
-    ApiResponse({
-      status: HttpStatus.NO_CONTENT,
-      description: 'Profile successfully edited',
-    }),
-    ApiBody({ required: true, type: EditProfileInputModel }),
-    ApiResponse({
-      status: HttpStatus.BAD_REQUEST,
-      type: ErrorResponseDto,
-    }),
-    UnauthorizedViaTokenApiResponse(),
-    ApiBearerAuth('accessToken'),
-  );
-
-export class EditProfileInputModel {
-  @ApiPropertyOptional({
+class EditProfileModel {
+  @ApiProperty({
+    required: true,
+    example: 'Batman',
+    minLength: userNameLength.min,
+    maxLength: userNameLength.max,
+    description: 'must be unique',
+    format:
+      'Username should consist of letters, numbers, underscores, or dashes',
+    pattern: '^[a-zA-Z0-9_-]+$',
+  })
+  userName: string;
+  @ApiProperty({
     description: "User's first name",
     example: 'John',
     minLength: nameInitials.min,
     maxLength: nameInitials.max,
     pattern: nameInitialsMatch.toString(),
-    nullable: true,
   })
   firstName?: string;
 
-  @ApiPropertyOptional({
+  @ApiProperty({
     description: "User's last name",
     example: 'Doe',
-    minLength: passwordLength.min,
-    maxLength: passwordLength.max,
+    minLength: nameInitials.min,
+    maxLength: nameInitials.max,
     pattern: nameInitialsMatch.toString(),
-    nullable: true,
   })
   lastName?: string;
 
   @ApiPropertyOptional({
-    description: "User's date of birth in YYYY.MM.DD format",
-    example: '1990.01.01',
+    description: 'Date of birth of the user in mm.dd.yyyy format',
+    example: '01.01.1991',
     type: String,
-    format: 'date',
-    nullable: true,
+    format: 'date-time',
+    pattern: '^\\d{2}\\.\\d{2}\\.\\d{4}$',
   })
-  dateOfBirth?: string;
+  dateOfBirth: string;
 
   @ApiPropertyOptional({
     description: 'Country of the user',
     example: 'USA',
     minLength: frequentLength.min,
     maxLength: frequentLength.max,
-    nullable: true,
   })
   country?: string;
-
-  @ApiPropertyOptional({
-    description: "User's gender",
-    example: Gender.Male,
-    enum: Gender,
-    nullable: true,
-  })
-  gender?: Gender;
 
   @ApiPropertyOptional({
     description: 'City of the user',
     example: 'New York',
     minLength: frequentLength.min,
     maxLength: frequentLength.max,
-    nullable: true,
   })
   city?: string;
 
@@ -97,7 +77,25 @@ export class EditProfileInputModel {
     example: 'A software developer with 10 years of experience...',
     minLength: aboutLength.min,
     maxLength: aboutLength.max,
-    nullable: true,
   })
   about?: string;
 }
+
+export const EditProfileEndpoint = () =>
+  applyDecorators(
+    ApiOperation({
+      summary: 'Edit user profile',
+      description: 'User can edit his profile with relevant information',
+    }),
+    ApiResponse({
+      status: HttpStatus.NO_CONTENT,
+      description: 'Profile successfully edited',
+    }),
+    ApiBody({ required: true, type: EditProfileModel }),
+    ApiResponse({
+      status: HttpStatus.BAD_REQUEST,
+      type: ErrorResponseDto,
+    }),
+    UnauthorizedViaTokenApiResponse(),
+    ApiBearerAuth('accessToken'),
+  );

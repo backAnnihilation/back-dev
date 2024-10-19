@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
-import { DatabaseService } from '@user/core';
+import { PrismaService } from '@user/core';
 import {
   mapSubToView,
   SubPayload,
@@ -15,7 +15,7 @@ import {
 @Injectable()
 export class SubsQueryRepository {
   private readonly subs: Prisma.SubsDelegate;
-  constructor(protected prisma: DatabaseService) {
+  constructor(protected prisma: PrismaService) {
     this.subs = this.prisma.subs;
   }
 

@@ -1,7 +1,7 @@
 import { Prisma } from '@prisma/client';
-import { DatabaseService } from '@user/core';
+import { PrismaService } from '@user/core';
 
-export const databaseCleanUp = async (dbService: DatabaseService) => {
+export const databaseCleanUp = async (dbService: PrismaService) => {
   try {
     const tableNames = Object.values(Prisma.ModelName);
     const truncatedTables = [];

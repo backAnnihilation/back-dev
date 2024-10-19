@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
 import { PaginationViewModel } from '@app/shared';
-import { DatabaseService } from '@user/core';
+import { PrismaService } from '@user/core';
 import { PostsQueryFilter } from '../models/input/post-query-filter';
 import { getPostViewModel } from '../models/output/post.view.model';
 import { PostViewModel } from '../models/output/post-view-type.model';
@@ -10,7 +10,7 @@ import { PostViewModel } from '../models/output/post-view-type.model';
 @Injectable()
 export class PostQueryRepository {
   private readonly posts: Prisma.PostDelegate<DefaultArgs>;
-  constructor(private prisma: DatabaseService) {
+  constructor(private prisma: PrismaService) {
     this.posts = this.prisma.post;
   }
 

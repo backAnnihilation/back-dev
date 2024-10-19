@@ -25,8 +25,8 @@ export class EditProfileInputModel {
   lastName: string;
 
   @IsOptional()
-  @IsDateFormat()
   @isValidAge()
+  @IsDateFormat()
   dateOfBirth?: string;
 
   @IsOptional()

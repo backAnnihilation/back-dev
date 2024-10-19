@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ImageStatus, Prisma, ProfileImage } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
-import { DatabaseService } from '@user/core';
+import { PrismaService } from '@user/core';
 import {
   getUserProfileViewModel,
   UserProfileViewModel,
@@ -11,7 +11,7 @@ import {
 export class ProfilesQueryRepo {
   private readonly profiles: Prisma.UserProfileDelegate<DefaultArgs>;
   private readonly profileImages: Prisma.ProfileImageDelegate<DefaultArgs>;
-  constructor(private prisma: DatabaseService) {
+  constructor(private prisma: PrismaService) {
     this.profiles = this.prisma.userProfile;
     this.profileImages = this.prisma.profileImage;
   }

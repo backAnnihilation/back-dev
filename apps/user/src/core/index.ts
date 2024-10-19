@@ -27,3 +27,6 @@ export * from './validation/upload-photo-format';
 
 // models
 export * from './api/models/.';
+
+// application
+export * from './application/use-cases/base-prisma-transaction.use-case'

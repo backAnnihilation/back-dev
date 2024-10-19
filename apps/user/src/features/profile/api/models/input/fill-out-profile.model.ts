@@ -26,12 +26,12 @@ export class FillOutProfileInputModel {
   lastName: string;
 
   @IsOptional()
-  @IsDateFormat()
   @isValidAge()
+  @IsDateFormat()
   dateOfBirth?: string;
 
   @IsOptional()
-  @iSValidField(answerLength)
+  @iSValidField(frequentLength)
   country?: string;
 
   @IsOptional()

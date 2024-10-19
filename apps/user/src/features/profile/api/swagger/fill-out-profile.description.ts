@@ -1,3 +1,10 @@
+import {
+  aboutLength,
+  frequentLength,
+  nameInitials,
+  nameInitialsMatch,
+  userNameLength
+} from '@app/shared';
 import { applyDecorators, HttpStatus } from '@nestjs/common';
 import {
   ApiBearerAuth,
@@ -7,18 +14,22 @@ import {
   ApiPropertyOptional,
   ApiResponse,
 } from '@nestjs/swagger';
-import {
-  aboutLength,
-  frequentLength,
-  nameInitials,
-  nameInitialsMatch,
-  passwordLength,
-} from '@app/shared';
 import { UnauthorizedViaTokenApiResponse } from '../../../auth/api/swagger/shared/authorization.response';
-import { Gender } from '../models/enum/profile.enums';
 import { UserProfileResponseType } from './get-profile.description';
 
 class FillOutProfileInputModel {
+  @ApiProperty({
+    required: true,
+    example: 'Batman',
+    minLength: userNameLength.min,
+    maxLength: userNameLength.max,
+    description: 'user name',
+    format:
+      'Username should consist of letters, numbers, underscores, or dashes',
+    pattern: '^[a-zA-Z0-9_-]+$',
+  })
+  userName: string;
+
   @ApiProperty({
     description: 'First name of the user',
     example: 'John',
@@ -32,17 +43,18 @@ class FillOutProfileInputModel {
   @ApiProperty({
     description: 'Last name of the user',
     example: 'Doe',
-    minLength: passwordLength.min,
-    maxLength: passwordLength.max,
+    minLength: nameInitials.min,
+    maxLength: nameInitials.max,
     required: true,
   })
   lastName: string;
 
-  @ApiProperty({
-    description: 'Date of birth of the user in YYYY.MM.DD format',
-    example: '1990.01.01',
+  @ApiPropertyOptional({
+    description: 'Date of birth of the user in mm.dd.yyyy format',
+    example: '01.01.1991',
+    format: 'date-time',
+    pattern: '^\\d{2}\\.\\d{2}\\.\\d{4}$',
     type: String,
-    required: true,
   })
   dateOfBirth: string;
 
@@ -53,13 +65,6 @@ class FillOutProfileInputModel {
     maxLength: frequentLength.max,
   })
   country?: string;
-
-  @ApiPropertyOptional({
-    description: 'Gender of the user',
-    example: Gender.Male,
-    enum: Gender,
-  })
-  gender?: Gender;
 
   @ApiPropertyOptional({
     description: 'City of the user',
@@ -77,27 +82,6 @@ class FillOutProfileInputModel {
   })
   about?: string;
 }
-
-// const fillOutProfileErrorResponseType = createErrorMessageDto({
-//   message: {
-//     description: 'Error message',
-//     example: 'Invalid lastName',
-//     nullable: false,
-//   },
-//   field: {
-//     description: 'Field with error',
-//     example: 'firstName',
-//     nullable: false,
-//   },
-// });
-
-// class ErrorResponseDto {
-//   @ApiProperty({
-//     description: 'If the inputModel has incorrect values',
-//     type: () => [fillOutProfileErrorResponseType],
-//   })
-//   errorsMessages: (typeof fillOutProfileErrorResponseType)[];
-// }
 
 class ErrorMessageType {
   @ApiProperty({

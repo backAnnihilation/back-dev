@@ -62,7 +62,9 @@ import { ProfileImageService } from '../../features/profile/application/services
 import { SubsCudApiService } from '../../features/subs/application/services/subs-api.service';
 import { SubsRepository } from '../../features/subs/domain/subs.repository';
 import { SubsQueryRepository } from '../../features/subs/api/subs.query.repository';
-import { SubscribeUseCase } from '../../features/subs/application/use-cases/subscribe-to-user.use-case';
+import {
+  SubscribeUseCase,
+} from '../../features/subs/application/use-cases/subscribe-to-user.use-case';
 import { UnsubscribeUseCase } from '../../features/subs/application/use-cases/unsubscription.use-case';
 import { SubscriptionService } from '../../features/subs/application/services/subs.service';
 import { DeleteSAUseCase } from '../../features/admin/application/use-cases/delete-sa.use.case';
@@ -145,7 +147,6 @@ export const providers: Provider[] = [
   PostsRepository,
   SubsQueryRepository,
   SubsRepository,
-  SubscribeUseCase,
   UnsubscribeUseCase,
   SubsCudApiService,
   SubscriptionService,

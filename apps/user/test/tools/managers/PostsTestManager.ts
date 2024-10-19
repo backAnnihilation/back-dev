@@ -2,7 +2,7 @@ import { HttpStatus, INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { BaseTestManager } from './BaseTestManager';
 import { PostsRouting } from '../routes/posts.routing';
-import { DatabaseService } from '../../../src/core';
+import { PrismaService } from '../../../src/core';
 import { Prisma } from '@prisma/client';
 import { CreatePostInputModel } from '../../../src/features/post/api/models/input/create-post.model';
 import { PostViewModel } from '../../../src/features/post/api/models/output/post-view-type.model';
@@ -21,7 +21,7 @@ export class PostsTestManager extends BaseTestManager {
   private readonly postsRepo: Prisma.PostDelegate;
   constructor(
     protected readonly app: INestApplication,
-    private prisma: DatabaseService,
+    private prisma: PrismaService,
   ) {
     super(app);
     this.postsRepo = this.prisma.post;
