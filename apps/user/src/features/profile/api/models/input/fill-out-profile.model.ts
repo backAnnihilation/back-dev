@@ -31,7 +31,7 @@ export class FillOutProfileInputModel {
   dateOfBirth?: string;
 
   @IsOptional()
-  @iSValidField(frequentLength)
+  @iSValidField(answerLength)
   country?: string;
 
   @IsOptional()

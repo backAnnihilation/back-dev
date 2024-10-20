@@ -1,7 +1,8 @@
-import { IsEnum, IsOptional } from 'class-validator';
 import {
   aboutLength,
+  answerLength,
   frequentLength,
+  iSValidField,
   nameInitials,
   nameInitialsMatch,
   passwordLength,
@@ -9,7 +10,7 @@ import {
   textMatch,
   userNameLength,
 } from '@app/shared';
-import { iSValidField } from '@app/shared';
+import { IsEnum, IsOptional } from 'class-validator';
 import { IsDateFormat } from '../../../infrastructure/validation/date-format-validate';
 import { isValidAge } from '../../../infrastructure/validation/user-age-validate';
 import { Gender } from '../enum/profile.enums';
@@ -30,7 +31,7 @@ export class EditProfileInputModel {
   dateOfBirth?: string;
 
   @IsOptional()
-  @iSValidField(frequentLength)
+  @iSValidField(answerLength)
   country?: string;
 
   @IsOptional()
