@@ -21,15 +21,16 @@ export class VerificationCredentialsUseCase
     command: VerificationCredentialsCommand,
   ): Promise<LayerNoticeInterceptor<UserIdType | null>> {
     const notice = new LayerNoticeInterceptor<UserIdType>();
+    const errorCode = notice.errorCodes.UnauthorizedAccess;
     const { email, password } = command.verificationDto;
 
     const userAccount = await this.authRepo.findUserByEmail(email);
 
     if (!userAccount) {
       notice.addError(
-        'User not found',
+        `User not registered in the system`,
         this.location,
-        notice.errorCodes.ResourceNotFound,
+        errorCode,
       );
       return notice;
     }
@@ -43,9 +44,9 @@ export class VerificationCredentialsUseCase
       notice.addData({ userId: userAccount.id });
     } else {
       notice.addError(
-        'Incorrect password',
+        'User password failed to verify',
         this.location,
-        notice.errorCodes.UnauthorizedAccess,
+        errorCode,
       );
     }
 
