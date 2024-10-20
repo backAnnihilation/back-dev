@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
-import { ExtractJwt, Strategy } from 'passport-jwt';
 import { EnvironmentVariables, StrategyType } from '@user/core';
+import { ExtractJwt, Strategy } from 'passport-jwt';
 import { SecurityQueryRepo } from '../../../../security/api/query-repositories/security.query.repo';
 import { IPayload } from '../../../api/models/auth-input.models.ts/jwt.types';
 
@@ -25,7 +25,6 @@ export class AccessTokenStrategy extends PassportStrategy(
   async validate(payload: IPayload) {
     const userSession = await this.securityQueryRepo.getUserSession(payload.deviceId);
     if (!userSession) return false;
-
     return { ...payload };
   }
 }

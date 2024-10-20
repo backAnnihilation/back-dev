@@ -1,18 +1,16 @@
+import { LayerNoticeInterceptor, validationErrorsMapper } from '@app/shared';
 import {
   BadRequestException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
-import { ValidationError, validateOrReject } from 'class-validator';
-import { Strategy } from 'passport-local';
 import { CommandBus } from '@nestjs/cqrs';
 import { PassportStrategy } from '@nestjs/passport';
-
+import { ValidationError, validateOrReject } from 'class-validator';
+import { Strategy } from 'passport-local';
 import { UserIdType } from '../../../../admin/api/models/outputSA.models.ts/user-models';
-import { VerificationCredentialsCommand } from '../../../application/use-cases/commands/verification-credentials.command';
 import { UserCredentialsDto } from '../../../api/models/auth-input.models.ts/verify-credentials.model';
-import { LayerNoticeInterceptor } from '../../../../../../../../libs/shared/src/interceptors/notification';
-import { validationErrorsMapper } from '../../../../../../../../libs/shared/src';
+import { VerificationCredentialsCommand } from '../../../application/use-cases/commands/verification-credentials.command';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -28,15 +26,13 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       password,
     });
 
-    const result = await this.commandBus.execute<
+    const resultNotice = await this.commandBus.execute<
       VerificationCredentialsCommand,
       LayerNoticeInterceptor<UserIdType | null>
     >(command);
 
-    if (result.hasError)
-      throw new UnauthorizedException(result.extensions[0].message);
-
-    return result.data;
+    if (resultNotice.hasError) throw resultNotice.generateErrorResponse;
+    return resultNotice.data;
   }
 
   private async validateInputModel(email: string, password: string) {
@@ -54,9 +50,7 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
     errors: ValidationError[],
   ): Promise<void> {
     const errorResponse =
-      validationErrorsMapper.mapValidationErrorToValidationPipeErrorTArray(
-        errors,
-      );
+      validationErrorsMapper.mapErrorToValidationPipeError(errors);
     throw new BadRequestException(errorResponse);
   }
 }

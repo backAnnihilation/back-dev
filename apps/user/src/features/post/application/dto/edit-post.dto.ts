@@ -1,4 +1,4 @@
-import { IEditPostCommand } from '../../api/models/input/edit-profile.model';
+import { IEditPostCommand } from '../../api/models/input/edit-post.model';
 
 export class EditUserPostDTO {
   readonly description: string;

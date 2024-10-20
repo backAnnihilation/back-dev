@@ -1,6 +1,6 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { PostsRepository } from '../../infrastructure/posts.repository';
-import { IEditPostCommand } from '../../api/models/input/edit-profile.model';
+import { IEditPostCommand } from '../../api/models/input/edit-post.model';
 import { OutputId, LayerNoticeInterceptor } from '@app/shared';
 
 export class EditPostCommand {

@@ -33,7 +33,7 @@ import { CreatePostCommand } from '../../application/use-cases/create-post.use-c
 import { DeletePostCommand } from '../../application/use-cases/delete-post.use-case';
 import { EditPostCommand } from '../../application/use-cases/edit-post.use-case';
 import { CreatePostInputModel } from '../models/input/create-post.model';
-import { EditPostInputModel } from '../models/input/edit-profile.model';
+import { EditPostInputModel } from '../models/input/edit-post.model';
 import { PostsQueryFilter } from '../models/input/post-query-filter';
 import { PostViewModel } from '../models/output/post-view-type.model';
 import { PostQueryRepository } from '../query-repositories/post.query.repository';
