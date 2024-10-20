@@ -11,12 +11,12 @@ export class ProfilesRepository extends BaseRepository<UserProfile> {
   private userProfiles: Prisma.UserProfileDelegate;
   private profileImages: Prisma.ProfileImageDelegate;
   constructor(
-    private prisma: PrismaService,
-    private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
+    private readonly prisma: PrismaService,
+    txHost: TransactionHost<TransactionalAdapterPrisma>,
   ) {
-    super(prisma, 'profileImage');
-    this.profileImages = this.model;
-    this.userProfiles = this.prisma.userProfile;
+    super(prisma, 'userProfile', txHost);
+    this.profileImages = this.prisma.profileImage;
+    this.userProfiles = this.model;
   }
   async save(
     data: Prisma.UserProfileUncheckedCreateInput,
@@ -140,11 +140,11 @@ export class ProfilesRepository extends BaseRepository<UserProfile> {
     const { followerId, followingId, operation } = dto;
     try {
       await Promise.all([
-        this.userProfiles.update({
+        this.getRepository.update({
           where: { userId: followerId },
           data: { followingCount: { increment: operation } },
         }),
-        this.userProfiles.update({
+        this.getRepository.update({
           where: { userId: followingId },
           data: { followerCount: { increment: operation } },
         }),
