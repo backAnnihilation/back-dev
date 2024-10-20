@@ -2,11 +2,7 @@ import { LayerNoticeInterceptor, OutputId } from '@app/shared';
 import { Transactional } from '@nestjs-cls/transactional';
 import { CommandHandler } from '@nestjs/cqrs';
 import { SubStatus } from '@prisma/client';
-import {
-  BaseUseCase,
-  PrismaService,
-  PrismaTransactionClient,
-} from '@user/core';
+import { BaseUseCase, PrismaService } from '@user/core';
 import { FollowCountOperation } from '../../../profile/api/models/input/follow-counts.model';
 import { ProfilesRepository } from '../../../profile/infrastructure/profiles.repository';
 import { InputSubscriptionDto } from '../../api/models/input-models/sub.model';
@@ -20,23 +16,23 @@ export class SubscribeCommand {
 export class SubscribeUseCase extends BaseUseCase<SubscribeCommand, OutputId> {
   private readonly location = this.constructor.name;
   constructor(
-    prisma: PrismaService,
     private subsRepo: SubsRepository,
     private profilesRepo: ProfilesRepository,
   ) {
-    super(prisma);
+    super();
   }
 
   @Transactional()
-  async onExecute(command: SubscribeCommand, prisma: PrismaTransactionClient) {
+  async onExecute(command: SubscribeCommand) {
     const notice = new LayerNoticeInterceptor<OutputId>();
+    const errorCode = notice.errorCodes.ValidationError;
     const { followerId, followingId } = command.subDto;
-
+   
     if (followerId === followingId) {
       notice.addError(
         'You cannot subscribe to yourself',
         this.location,
-        notice.errorCodes.ValidationError,
+        errorCode,
       );
       return notice;
     }
@@ -47,11 +43,7 @@ export class SubscribeUseCase extends BaseUseCase<SubscribeCommand, OutputId> {
 
     if (subExists) {
       if (subExists.status === SubStatus.active) {
-        notice.addError(
-          'Already subscribed',
-          this.location,
-          notice.errorCodes.ValidationError,
-        );
+        notice.addError('Already subscribed', this.location, errorCode);
         return notice;
       }
       if (subExists.status === SubStatus.inactive) {
@@ -74,7 +66,7 @@ export class SubscribeUseCase extends BaseUseCase<SubscribeCommand, OutputId> {
       followingId,
       operation: FollowCountOperation.INCREMENT,
     });
-
+    
     notice.addData({ id: subscription.id });
     return notice;
   }

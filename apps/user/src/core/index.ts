@@ -29,4 +29,4 @@ export * from './validation/upload-photo-format';
 export * from './api/models/.';
 
 // application
-export * from './application/use-cases/base-prisma-transaction.use-case'
+export * from './application/use-cases/base-use-case';

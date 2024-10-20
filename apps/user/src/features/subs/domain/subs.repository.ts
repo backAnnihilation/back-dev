@@ -7,12 +7,11 @@ import { InputSubscriptionDto } from '../api/models/input-models/sub.model';
 
 @Injectable()
 export class SubsRepository extends BaseRepository<Subs> {
-  private readonly txModel: Prisma.SubsDelegate;
   constructor(
     prisma: PrismaService,
-    private readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
+    txHost: TransactionHost<TransactionalAdapterPrisma>,
   ) {
-    super(prisma, 'subs');
+    super(prisma, 'subs', txHost);
   }
 
   async findFollowerSubscription(subDto: InputSubscriptionDto) {
@@ -60,10 +59,5 @@ export class SubsRepository extends BaseRepository<Subs> {
       console.error(e);
       throw new Error(`Error creating subscription: ${e}`);
     }
-  }
-
-  get getRepository(): Prisma.SubsDelegate {
-    const isTxActive = this.txHost.isTransactionActive();
-    return (isTxActive && this.txHost.tx.subs) || this.model;
   }
 }
