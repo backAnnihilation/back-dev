@@ -15,8 +15,10 @@ import {
 @Injectable()
 export class SubsQueryRepository {
   private readonly subs: Prisma.SubsDelegate;
+  private readonly userProfile: Prisma.UserProfileDelegate;
   constructor(protected prisma: PrismaService) {
     this.subs = this.prisma.subs;
+    this.userProfile = this.prisma.userProfile;
   }
 
   async getSubInfo() {
@@ -63,14 +65,18 @@ export class SubsQueryRepository {
     }
   }
 
-  async getUserFollowCounts(userId: string): Promise<ViewSubsCount> {
+  async getUserFollowCounts(userId: string): Promise<ViewSubsCount | null> {
     try {
-      const [followingCount, followerCount] = await Promise.all([
-        this.subs.count({ where: { followingId: userId } }),
-        this.subs.count({ where: { followerId: userId } }),
-      ]);
+      const profileFollowCounts = await this.userProfile.findUnique({
+        where: { userId },
+        select: {
+          followingCount: true,
+          followerCount: true,
+        },
+      });
+      if (!profileFollowCounts) return null;
 
-      return { followingCount, followerCount };
+      return profileFollowCounts;
     } catch (error) {
       console.log('Error fetching follower/following counts:', error);
       return null;
