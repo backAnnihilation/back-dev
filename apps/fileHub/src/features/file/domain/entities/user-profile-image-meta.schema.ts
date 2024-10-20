@@ -21,14 +21,12 @@ export class ProfileImageMeta {
   createdAt: Date;
   updatedAt: Date;
 
-  static async makeInstance(
-    imageDto: Partial<ProfileImageMeta>,
-  ) {
+  static async makeInstance(imageDto: Partial<ProfileImageMeta>) {
     const notice = new LayerNoticeInterceptor<ProfileImageDocument>();
     const imageMeta = new this() as ProfileImageDocument;
 
     Object.assign(imageMeta, imageDto);
-    await notice.validateFields(imageMeta);
+    await notice.validateEntity(imageMeta);
     notice.addData(imageMeta);
     return notice;
   }

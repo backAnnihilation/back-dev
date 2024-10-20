@@ -6,13 +6,17 @@ import {
   ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { validateOrReject, ValidationError } from 'class-validator';
+import { IEvent } from '@nestjs/cqrs';
+import { validateOrReject } from 'class-validator';
+import { validationErrorsMapper } from '../validation/validation-errors-mapper';
 
 type ExceptionType =
   | InternalServerErrorException
   | NotFoundException
   | BadRequestException
-  | ForbiddenException;
+  | ForbiddenException
+  | UnauthorizedException
+  | ServiceUnavailableException;
 
 export class LayerNoticeInterceptor<D = null> {
   public errorCodes: ErrorCodes;
@@ -35,21 +39,21 @@ export class LayerNoticeInterceptor<D = null> {
     };
   }
 
-  async validateFields(model: any) {
+  async validateEntity<T extends Object>(model: T, ...events: IEvent[]) {
     try {
       await validateOrReject(model);
     } catch (errors) {
-      (errors as ValidationError[]).forEach((e) => {
-        const constraints = Object.values(e.constraints || {});
-        for (const constraint of constraints) {
-          this.addError(
-            constraint,
-            e.property,
-            this.errorCodes.ValidationError,
-          );
-        }
-      });
+      const mappedErrors =
+        validationErrorsMapper.mapErrorToValidationPipeError(errors);
+      const errorNotice: DomainNotification<T> =
+        validationErrorsMapper.mapErrorsToNotification(mappedErrors);
+
+      errorNotice.addEvents(...events);
+      return errorNotice;
     }
+    const domainNotice = new DomainNotification<T>(model);
+    domainNotice.addEvents(...events);
+    return domainNotice;
   }
 
   public addData(data: D): void {
@@ -65,6 +69,10 @@ export class LayerNoticeInterceptor<D = null> {
   }
   get hasError(): boolean {
     return this.code !== 0;
+  }
+
+  protected setCode(code: number): void {
+    this.code = code;
   }
 
   get generateErrorResponse(): ExceptionType {
@@ -109,3 +117,48 @@ type ErrorCodes = {
   UnauthorizedAccess: 401;
   ValidationError: 400;
 };
+
+export class DomainNotification<
+  TData = null,
+> extends LayerNoticeInterceptor<TData> {
+  readonly events: IEvent[] = [];
+
+  addEvents(...events: IEvent[]) {
+    this.events.concat(events);
+  }
+
+  static createError(
+    message: string,
+    key: string | null = null,
+    code: number | null = null,
+  ) {
+    const notification = new DomainNotification();
+    notification.addError(message, key, code);
+    return notification;
+  }
+
+  static merge<T>(
+    mainNotice: DomainNotification<T>,
+    ...notifications: DomainNotification<T>[]
+  ) {
+    const domainNotice = new DomainNotification<T>();
+
+    if (mainNotice.data) {
+      domainNotice.addData(mainNotice.data);
+    }
+    domainNotice.addEvents(...mainNotice.events);
+
+    const addMainErrors = (notice: DomainNotification<T>) => {
+      notice.extensions.forEach(({ message, key }) => {
+        domainNotice.addError(message, key);
+      });
+    };
+    addMainErrors(mainNotice);
+    notifications.forEach((notice) => {
+      domainNotice.events.concat(...notice.events);
+      addMainErrors(notice);
+    });
+
+    return domainNotice;
+  }
+}

@@ -77,7 +77,7 @@ export class UploadPostImageUseCase
     command: UploadPostImageCommand,
   ): Promise<LayerNoticeInterceptor<ResponsePostImagesType>> {
     const notice = new LayerNoticeInterceptor<ResponsePostImagesType>();
-    notice.validateFields;
+    notice.validateEntity;
     const { category, bucket } = this;
     const { imageId, image, postId } = command.imageDto;
     const { originalname, size, mimetype, buffer } = image;

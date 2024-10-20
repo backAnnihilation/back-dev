@@ -35,7 +35,7 @@ export class PostImageMeta {
     const imageMeta = new this() as PostImageMetaDocument;
 
     Object.assign(imageMeta, dto);
-    await notice.validateFields(imageMeta);
+    await notice.validateEntity(imageMeta);
     notice.addData(imageMeta);
     return notice;
   }
