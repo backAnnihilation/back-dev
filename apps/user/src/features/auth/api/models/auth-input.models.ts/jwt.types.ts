@@ -1,4 +1,4 @@
-export interface Payload {
+export interface IPayload {
   userId: string;
   deviceId: string;
   iat: number;

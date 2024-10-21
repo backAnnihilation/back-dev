@@ -1,7 +1,10 @@
-import { RoutingEnum } from '../../../core/routes/routing';
+import { RoutingEnum } from '@app/shared';
+import { BaseRouting } from './base-api.routing';
 
-export class AuthUsersRouting {
-  constructor(private readonly baseUrl = RoutingEnum.auth) {}
+export class AuthUsersRouting extends BaseRouting {
+  constructor() {
+    super(RoutingEnum.auth);
+  }
   login = () => `${this.baseUrl}/signin`;
   passwordRecovery = () => `${this.baseUrl}/password-recovery`;
   confirmPassword = () => `${this.baseUrl}/new-password`;

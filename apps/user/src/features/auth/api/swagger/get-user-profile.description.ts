@@ -22,8 +22,8 @@ export const GetProfileEndpoint = () =>
     ApiBearerAuth('accessToken'),
   );
 
-export class UserProfileResponseDto {
-  @ApiProperty()
+class UserProfileResponseDto {
+  @ApiProperty({})
   email: string;
   @ApiProperty()
   userName: string;

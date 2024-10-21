@@ -1,7 +1,5 @@
-
 describe('Create-user-use-case', () => {
-  beforeAll(async () => {
-  });
+  beforeAll(async () => {});
 
   it('', () => {
     expect(1).toBe(1);

@@ -1,18 +1,56 @@
 import { HttpServer, INestApplication } from '@nestjs/common';
-import { SortDirection } from '../../../core/utils/sorting-base-filter';
+import { SortDirection } from '@app/shared';
 import {
   AuthConstantsType,
-  constantsForDataTesting,
+  constantsTesting,
+  InputConstantsType,
+  profileImages,
 } from '../utils/test-constants';
+import { readFile } from 'fs/promises';
+import { resolve } from 'node:path';
+import { basename } from 'path';
+import { ImageNames } from '../models/image-names.enum';
+
+type ImageDtoType = {
+  filename: string;
+  contentType: string;
+  buffer: Buffer;
+};
 
 export class BaseTestManager {
-  protected readonly constants: AuthConstantsType;
+  protected readonly authConstants: AuthConstantsType;
   protected readonly application: INestApplication<HttpServer>;
+  protected readonly constants: InputConstantsType;
 
   constructor(protected readonly app: INestApplication) {
-    this.constants = constantsForDataTesting.auth;
+    this.authConstants = constantsTesting.auth;
+    this.constants = constantsTesting.inputData;
     this.application = this.app.getHttpServer();
   }
+
+  protected async retrieveImageMeta(
+    imageName: ImageNames,
+  ): Promise<ImageDtoType> {
+    const imagePath = resolve(__dirname, profileImages[imageName]);
+    const baseName = basename(imagePath);
+    const contentType =
+      baseName === 'fresco.jpg'
+        ? 'image/jpeg'
+        : `image/${baseName.split('.')[1]}` || 'image/png';
+
+    const buffer = await this.retrieveFileBuffer(imagePath);
+    const filename = this.parseFileName(baseName) || 'filename';
+
+    return {
+      filename,
+      contentType,
+      buffer,
+    };
+  }
+
+  private retrieveFileBuffer = async (filePath: string) => readFile(filePath);
+  private parseFileName = (fileName: string) => fileName.split('.')[0];
+
   assertMatch(responseData: any, expectedResult: any) {
     expect(responseData).toEqual(expectedResult);
   }

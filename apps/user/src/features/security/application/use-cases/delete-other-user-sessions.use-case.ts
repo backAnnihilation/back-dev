@@ -1,8 +1,9 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 
 import { SecurityRepository } from '../../infrastructure/security.repository';
+import { LayerNoticeInterceptor } from '../../../../../../../libs/shared/src/interceptors/notification';
+
 import { DeleteOtherUserSessionsCommand } from './commands/delete-other-user-sessions.command';
-import { LayerNoticeInterceptor } from '../../../../../core/utils/notification';
 
 @CommandHandler(DeleteOtherUserSessionsCommand)
 export class DeleteOtherUserSessionsUseCase
@@ -10,9 +11,11 @@ export class DeleteOtherUserSessionsUseCase
 {
   constructor(private securityRepo: SecurityRepository) {}
 
-  async execute(command: DeleteOtherUserSessionsCommand): Promise<LayerNoticeInterceptor> {
-    const notice = new LayerNoticeInterceptor()
+  async execute(
+    command: DeleteOtherUserSessionsCommand,
+  ): Promise<LayerNoticeInterceptor> {
+    const notice = new LayerNoticeInterceptor();
     await this.securityRepo.deleteOtherUserSessions(command.userSessionInfo);
-    return notice
+    return notice;
   }
 }

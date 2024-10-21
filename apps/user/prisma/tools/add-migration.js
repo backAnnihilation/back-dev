@@ -1,21 +1,21 @@
-// const execSync = require('child_process').execSync;
-// const path = require('path');
+const { execSync } = require('child_process');
+const { join } = require('path');
+const env = process.env.ENV || 'DEVELOPMENT';
 
-// const migrationName = process.argv[2];
+const migrationName = process.argv[2];
 
-// if (!migrationName) throw new Error(`Migration name wasn't provided`);
+if (!migrationName) {
+  throw new Error(`Migration name wasn't provided`);
+}
 
-// const userProjectPath = path.join(__dirname, '../../../');
-// console.log({ userProjectPath });
+const userDirectory = join(__dirname, '..', '..');
 
-// const command = `npx prisma migrate dev --name ${migrationName}`;
+let command = `npx prisma migrate dev --name ${migrationName} --schema=./prisma/schemas`;
 
-// process.chdir(userProjectPath);
+if (env === 'DEVELOPMENT') {
+  command = `dotenv -e .env.dev -- ${command}`;
+}
 
-// execSync(`npx prisma migrate dev --name ${migrationName}`, {
-//   stdio: 'inherit',
-//   cmd: userProjectPath,
-// });
-// console.log(`Migration ${migrationName} created successfully.`);
+process.chdir(userDirectory);
 
-// execSync(command, { stdio: 'inherit' });
+execSync(command, { stdio: 'inherit' });
