@@ -22,8 +22,8 @@ model UserAccount {
   userSessions                 UserSession[]  @relation("UserSessions")
   userProfile                  UserProfile?
 
-  followers                    Subs[]  @relation("UserFollowers")
-  following                    Subs[]  @relation("UserFollowing")
+  followers                    Subs[]         @relation("UserFollowers")
+  following                    Subs[]         @relation("UserFollowing")
 
   posts                        Post[]
 }

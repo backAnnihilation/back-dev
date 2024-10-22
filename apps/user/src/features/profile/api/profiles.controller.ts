@@ -24,7 +24,7 @@ import { CommandBus } from '@nestjs/cqrs';
 import { Ctx, EventPattern, Payload, RmqContext } from '@nestjs/microservices';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
-import { ImageFilePipe, CurrentUserId, UserNavigate } from '@user/core';
+import { CurrentUserId, UserNavigate } from '@user/core';
 import { UserPayload } from '../../auth/infrastructure/decorators/user-payload.decorator';
 import { AccessTokenGuard } from '../../auth/infrastructure/guards/accessToken.guard';
 import { UserIdExtractor } from '../../auth/infrastructure/guards/set-user-id.guard';
@@ -42,6 +42,7 @@ import { ProfilesQueryRepo } from './query-repositories/profiles.query.repo';
 import { EditProfileEndpoint } from './swagger/edit-profile.description';
 import { FillOutProfileEndpoint } from './swagger/fill-out-profile.description';
 import { GetUserProfileEndpoint } from './swagger/get-profile.description';
+import { ImageFilePipe } from '../../../core/validation/upload-photo-format';
 
 @ApiTags(ApiTagsEnum.Profiles)
 @Controller(RoutingEnum.profiles)

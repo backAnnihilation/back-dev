@@ -1,6 +1,6 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { LayerNoticeInterceptor } from '@app/shared';
-import { BcryptAdapter } from '@user/core/adapters/bcrypt.adapter';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
+import { BcryptAdapter } from '@user/core';
 import { ResponseIdType } from '../../api/models/outputSA.models.ts/user-models';
 import { UsersRepository } from '../../infrastructure/users.repository';
 import { CreateSACommand } from '../commands/create-sa.command';

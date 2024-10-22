@@ -1,12 +1,11 @@
 import {
   BaseImageResponse,
   LayerNoticeInterceptor,
-  OutputId,
   POST_IMAGE_UPLOAD,
 } from '@app/shared';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Transport } from '@nestjs/microservices';
-import { TransportManager } from '@user/core/managers/transport.manager';
+import { TransportManager } from '../../../../core/managers/transport.manager';
 import { ICreatePostCommand } from '../../api/models/input/create-post.model';
 import { PostsRepository } from '../../infrastructure/posts.repository';
 import { CreatePostDTO } from '../dto/create-post.dto';

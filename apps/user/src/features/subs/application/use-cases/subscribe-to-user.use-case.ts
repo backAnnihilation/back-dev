@@ -2,11 +2,12 @@ import { LayerNoticeInterceptor, OutputId } from '@app/shared';
 import { Transactional } from '@nestjs-cls/transactional';
 import { CommandHandler } from '@nestjs/cqrs';
 import { SubStatus } from '@prisma/client';
-import { BaseUseCase, PrismaService } from '@user/core';
+import { BaseUseCase } from '../../../../core/application/use-cases/base-use-case';
 import { FollowCountOperation } from '../../../profile/api/models/input/follow-counts.model';
 import { ProfilesRepository } from '../../../profile/infrastructure/profiles.repository';
 import { InputSubscriptionDto } from '../../api/models/input-models/sub.model';
 import { SubsRepository } from '../../domain/subs.repository';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 
 export class SubscribeCommand {
   constructor(public subDto: InputSubscriptionDto) {}
@@ -22,12 +23,12 @@ export class SubscribeUseCase extends BaseUseCase<SubscribeCommand, OutputId> {
     super();
   }
 
-  @Transactional()
+  @Transactional<TransactionalAdapterPrisma>()
   async onExecute(command: SubscribeCommand) {
     const notice = new LayerNoticeInterceptor<OutputId>();
     const errorCode = notice.errorCodes.ValidationError;
     const { followerId, followingId } = command.subDto;
-   
+
     if (followerId === followingId) {
       notice.addError(
         'You cannot subscribe to yourself',
@@ -66,7 +67,7 @@ export class SubscribeUseCase extends BaseUseCase<SubscribeCommand, OutputId> {
       followingId,
       operation: FollowCountOperation.INCREMENT,
     });
-    
+
     notice.addData({ id: subscription.id });
     return notice;
   }

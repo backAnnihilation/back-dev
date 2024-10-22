@@ -8,8 +8,8 @@
   },
   "moduleNameMapper": {
     "^@app/shared(.*)$": "<rootDir>/../../libs/shared/src/$1",
-    "^@user/core/(.*)$": "<rootDir>/../src/core/$1",
-    "^@user/core(.*)$": "<rootDir>/../src/core/$1"
-  },
-  "testTimeout": 10000
+    "^@app/utils(.*)$": "<rootDir>/../../libs/shared/utils/$1",
+    "^@user/core(.*)$": "<rootDir>/src/core/$1",
+    "^@user/core/(.*)$": "<rootDir>/src/core/$1"
+  }
 }

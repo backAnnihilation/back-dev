@@ -1,7 +1,7 @@
 import { IMAGES_DELIVERED } from '@app/shared';
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
 import { Transport } from '@nestjs/microservices';
-import { TransportManager } from '@user/core';
+import { TransportManager } from '../../../../../core/managers/transport.manager';
 
 export class ProfileImageDeliveryApprovedEvent {
   constructor(public eventId: string) {}

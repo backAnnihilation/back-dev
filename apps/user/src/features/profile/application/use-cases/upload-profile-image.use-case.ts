@@ -1,13 +1,8 @@
-import {
-  ImageType,
-  LayerNoticeInterceptor,
-  MediaType,
-  PROFILE_IMAGE_UPLOAD,
-} from '@app/shared';
+import { LayerNoticeInterceptor, PROFILE_IMAGE_UPLOAD } from '@app/shared';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { Transport } from '@nestjs/microservices';
 import { ImageStatus } from '@prisma/client';
-import { TransportManager } from '@user/core';
+import { TransportManager } from '../../../../core/managers/transport.manager';
 import { UploadProfileImageDto } from '../../api/models/input/upload-file-type.model';
 import { ResponseProfileImageType } from '../../api/models/output/image-notice-type.model';
 import { ProfilesRepository } from '../../infrastructure/profiles.repository';

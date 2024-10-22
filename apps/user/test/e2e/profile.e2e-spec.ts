@@ -1,13 +1,16 @@
 import { HttpStatus, INestApplication } from '@nestjs/common';
 import { TestingModuleBuilder } from '@nestjs/testing';
-import { PrismaService } from '../../src/core/db/prisma/prisma.service';
-import { CaptureGuard } from '../../src/features/auth/infrastructure/guards/validate-capture.guard';
+import { PrismaService, RmqAdapter, TcpAdapter } from '@user/core';
 import { EditProfileInputModel } from '../../src/features/profile/api/models/input/edit-profile.model';
 import { FillOutProfileInputModel } from '../../src/features/profile/api/models/input/fill-out-profile.model';
 import { databaseService, dbCleaner } from '../setupTests.e2e';
 import { initSettings } from '../tools/initSettings';
+import { ProfileTestManager } from '../tools/managers/ProfileTestManager';
 import { UsersTestManager } from '../tools/managers/UsersTestManager';
-import { mockedCaptureGuard } from '../tools/mock/capture-guard.mock';
+import {
+  RmqAdapterMocked,
+  TcpAdapterMocked,
+} from '../tools/mock/transport-adapters.mock';
 import { ImageNames } from '../tools/models/image-names.enum';
 import {
   aDescribe,
@@ -15,19 +18,13 @@ import {
   skipSettings,
 } from '../tools/skipSettings';
 import {
-  constantsTesting,
-  InputConstantsType,
-} from '../tools/utils/test-constants';
-import { ProfileTestManager } from '../tools/managers/ProfileTestManager';
-import {
   initializeTestData,
   PrepareTestOptions,
 } from '../tools/utils/seed-setup';
-import { RmqAdapter, TcpAdapter } from '../../src/core';
 import {
-  RmqAdapterMocked,
-  TcpAdapterMocked,
-} from '../tools/mock/transport-adapters.mock';
+  constantsTesting,
+  InputConstantsType,
+} from '../tools/utils/test-constants';
 
 aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
   'UserProfilesController',
@@ -43,8 +40,6 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
       const testSettings = await initSettings(
         (moduleBuilder: TestingModuleBuilder) =>
           moduleBuilder
-            .overrideGuard(CaptureGuard)
-            .useValue(mockedCaptureGuard)
             .overrideProvider(RmqAdapter)
             .useValue(RmqAdapterMocked)
             .overrideProvider(TcpAdapter)
@@ -66,10 +61,6 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
 
     afterAll(async () => {
       await app.close();
-    });
-
-    it('constant true', () => {
-      expect(1).toBe(1);
     });
 
     describe('profile-testing', () => {
@@ -214,9 +205,9 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
       });
     });
 
-    describe.only('subs', () => {
+    describe('subs', () => {
       afterAll(async () => {
-        // await dbCleaner();
+        await dbCleaner();
       });
 
       beforeAll(async () => {
@@ -232,16 +223,14 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
         );
       });
 
-      it.only(`should subscribe`, async () => {
+      it(`should subscribe`, async () => {
         const { users } = expect.getState();
-        console.log(users[0].accessToken, users[1].id);
-
-        // const sub = await profilesTestManager.subscribe(
-        //   users[0].accessToken,
-        //   users[1].id,
-        // );
-        // expect(sub.followingCount).toBe(1);
-        // expect(sub.followerCount).toBe(0);
+        const sub = await profilesTestManager.subscribe(
+          users[0].accessToken,
+          users[1].id,
+        );
+        expect(sub.followingCount).toBe(1);
+        expect(sub.followerCount).toBe(0);
       });
 
       it(`shouldn't subscribe twice`, async () => {
@@ -274,12 +263,28 @@ aDescribe(skipSettings.for(e2eTestNamesEnum.Profile))(
 
       it('should subscribe after unsubscribe', async () => {
         const { users } = expect.getState();
-        const sub = await profilesTestManager.subscribe(
-          users[0].accessToken,
-          users[1].id,
+        const [firstUser, ...otherUsers] = users;
+
+        for (const user of otherUsers) {
+          await profilesTestManager.subscribe(user.accessToken, firstUser.id);
+        }
+
+        const { followerCount, followingCount } =
+          await profilesTestManager.getUserFollowCounts(firstUser.id);
+        expect(followerCount).toBe(otherUsers.length);
+        expect(followingCount).toBe(0);
+      });
+      it(`all users should unsubscribe from firstUser`, async () => {
+        const { users } = expect.getState();
+        const [firstUser, ...otherUsers] = users;
+
+        for (const user of otherUsers) {
+          await profilesTestManager.unsubscribe(user.accessToken, firstUser.id);
+        }
+        const { followerCount } = await profilesTestManager.getUserFollowCounts(
+          firstUser.id,
         );
-        expect(sub.followingCount).toBe(1);
-        expect(sub.followerCount).toBe(0);
+        expect(followerCount).toBe(0);
       });
     });
   },

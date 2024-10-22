@@ -25,7 +25,7 @@ import {
 import { constantsTesting } from '../tools/utils/test-constants';
 import { AuthService } from '../../src/features/auth/application/services/auth.service';
 
-aDescribe(skipSettings.for(e2eTestNamesEnum.AUTH))('AuthController', () => {
+aDescribe(skipSettings.for(e2eTestNamesEnum.Auth))('AuthController', () => {
   let app: INestApplication;
   let usersTestManager: UsersTestManager;
   let emailMockManager: EmailManagerMock;

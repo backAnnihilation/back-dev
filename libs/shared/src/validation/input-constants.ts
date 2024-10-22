@@ -1,6 +1,6 @@
 export const contentLength = { min: 3, max: 1000 };
 export const questionLength = { min: 10, max: 500 };
-export const descriptionLength = { min: 3, max: 500 };
+export const descriptionLength = { min: 1, max: 500 };
 export const contentPostLength = { min: 20, max: 300 };
 export const aboutLength = { min: 0, max: 200 };
 export const urlLength = { min: 3, max: 100 };

@@ -1,3 +1,5 @@
+import { TransactionHost } from '@nestjs-cls/transactional';
+import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { Injectable } from '@nestjs/common';
 import { Post, PostImage, Prisma } from '@prisma/client';
 import { BaseRepository, PrismaService } from '@user/core';
@@ -5,8 +7,11 @@ import { BaseRepository, PrismaService } from '@user/core';
 @Injectable()
 export class PostsRepository extends BaseRepository<Post> {
   private readonly postImages: Prisma.PostImageDelegate;
-  constructor(private readonly prisma: PrismaService) {
-    super(prisma, 'post');
+  constructor(
+    private readonly prisma: PrismaService,
+    txHost: TransactionHost<TransactionalAdapterPrisma>,
+  ) {
+    super(prisma, 'post', txHost);
     this.postImages = this.prisma.postImage;
   }
 

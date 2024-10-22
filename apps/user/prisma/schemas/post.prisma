@@ -1,7 +1,7 @@
 model Post {
   id                String         @id @default(uuid())
   
-  description       String          
+  description       String?          
   imageUrl          String?         @unique
   imageId           String?         @unique
 
@@ -10,7 +10,7 @@ model Post {
   userAccount       UserAccount    @relation(fields: [userId], references: [id])
   userId            String
 
-  image            PostImage?      
+  image             PostImage?      
 
   @@index([description])
 }

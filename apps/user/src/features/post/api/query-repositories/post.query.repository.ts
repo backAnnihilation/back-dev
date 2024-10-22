@@ -1,11 +1,11 @@
+import { PaginationViewModel } from '@app/shared';
 import { Injectable } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
-import { PaginationViewModel } from '@app/shared';
 import { PrismaService } from '@user/core';
 import { PostsQueryFilter } from '../models/input/post-query-filter';
-import { getPostViewModel } from '../models/output/post.view.model';
 import { PostViewModel } from '../models/output/post-view-type.model';
+import { getPostViewModel } from '../models/output/post.view.model';
 
 @Injectable()
 export class PostQueryRepository {
@@ -46,9 +46,10 @@ export class PostQueryRepository {
     userId: string,
     queryOptions: PostsQueryFilter,
   ): Promise<PaginationViewModel<PostViewModel>> {
-    const { pageNumber, pageSize, skip, sortBy, sortDirection } =
-      PaginationViewModel.parseQuery(queryOptions);
     try {
+      const { pageNumber, pageSize, skip, sortBy, sortDirection } =
+        PaginationViewModel.parseQuery(queryOptions);
+
       const posts = await this.posts.findMany({
         where: { userId },
         skip,
@@ -71,12 +72,16 @@ export class PostQueryRepository {
     try {
       const post = await this.posts.findUnique({
         where: { id },
-        include: { image: true },
+        include: {
+          image: true,
+          userAccount: { include: { userProfile: true } },
+        },
       });
 
       if (!post) return null;
+      console.log({ post });
 
-      return getPostViewModel(post);
+      // return getPostViewModel(post);
     } catch (error) {
       console.error('Database fails operate with find user post', error);
       return null;

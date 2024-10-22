@@ -5,8 +5,8 @@ export class CreatePostDTO {
   readonly userId: string;
 
   constructor(profileDto: ICreatePostDTOModel) {
-    const { description, userId} = profileDto;
-    this.description = description;
+    const { description, userId } = profileDto;
+    this.description = description ?? null;
     this.userId = userId;
   }
 }

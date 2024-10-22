@@ -6,6 +6,11 @@ import {
 } from '@nestjs/common';
 import { validationErrorsMapper } from '@app/shared';
 
+export type ValidationPipeErrorType = {
+  field: string;
+  message: string;
+};
+
 export const pipesSetup = (app: INestApplication) => {
   app.useGlobalPipes(
     new ValidationPipe({
@@ -19,9 +24,4 @@ export const pipesSetup = (app: INestApplication) => {
       },
     }),
   );
-};
-
-export type ValidationPipeErrorType = {
-  field: string;
-  message: string;
 };

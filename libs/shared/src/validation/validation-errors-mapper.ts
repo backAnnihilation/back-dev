@@ -1,18 +1,22 @@
 import { ValidationError } from 'class-validator';
-
-type ValidationErrorResponse = {
-  field: string;
-  message: string;
-}[];
+import { ValidationPipeErrorType } from '@user/core';
+import { DomainNotification } from '../interceptors/notification';
 
 export const validationErrorsMapper = {
-  mapValidationErrorToValidationPipeErrorTArray: (
+  mapErrorToValidationPipeError: (
     errors: ValidationError[],
-  ): ValidationErrorResponse =>
+  ): ValidationPipeErrorType[] =>
     errors.flatMap(({ constraints, property: field }) =>
       Object.entries(constraints).map(([_, message]) => ({
         field,
         message,
       })),
     ),
+  mapErrorsToNotification: (errors: ValidationPipeErrorType[]) => {
+    const resultNotification = new DomainNotification();
+    errors.forEach(({ message, field }) => {
+      resultNotification.addError(message, field, 1);
+    });
+    return resultNotification;
+  },
 };

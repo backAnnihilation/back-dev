@@ -1,24 +1,29 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { LayerNoticeInterceptor } from '@app/shared';
+import { Transactional } from '@nestjs-cls/transactional';
+import { CommandHandler } from '@nestjs/cqrs';
+import { SubStatus } from '@prisma/client';
+import { BaseUseCase } from '../../../../core/application/use-cases/base-use-case';
+import { FollowCountOperation } from '../../../profile/api/models/input/follow-counts.model';
+import { ProfilesRepository } from '../../../profile/infrastructure/profiles.repository';
 import { InputSubscriptionDto } from '../../api/models/input-models/sub.model';
 import { SubsRepository } from '../../domain/subs.repository';
-import { ProfilesRepository } from '../../../profile/infrastructure/profiles.repository';
-import { SubStatus } from '@prisma/client';
-import { FollowCountOperation } from '../../../profile/api/models/input/follow-counts.model';
 
 export class UnsubscribeCommand {
   constructor(public subDto: InputSubscriptionDto) {}
 }
 
 @CommandHandler(UnsubscribeCommand)
-export class UnsubscribeUseCase implements ICommandHandler<UnsubscribeCommand> {
+export class UnsubscribeUseCase extends BaseUseCase<UnsubscribeCommand, null> {
   private location = this.constructor.name;
   constructor(
     private subsRepo: SubsRepository,
     private profilesRepo: ProfilesRepository,
-  ) {}
+  ) {
+    super();
+  }
 
-  async execute(command: UnsubscribeCommand) {
+  @Transactional()
+  async onExecute(command: UnsubscribeCommand) {
     const notice = new LayerNoticeInterceptor<any>();
     const { followerId, followingId } = command.subDto;
 

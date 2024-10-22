@@ -22,7 +22,7 @@ export abstract class BaseRepository<RModel> {
   constructor(
     private readonly db: PrismaService,
     private readonly modelKey: ModelProps,
-    protected readonly txHost?: TransactionHost<TransactionalAdapterPrisma>,
+    protected readonly txHost: TransactionHost<TransactionalAdapterPrisma>,
   ) {
     this.model = this.db[this.modelKey];
   }

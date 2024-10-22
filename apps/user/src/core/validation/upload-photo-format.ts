@@ -5,14 +5,20 @@ import {
   FileTypeValidator,
 } from '@nestjs/common';
 
-export
+type ImageFilePipeOptions = {
+  maxSizeMb: number;
+};
+
 @Injectable()
-class ImageFilePipe extends ParseFilePipe {
-  constructor(readonly options: { maxSizeMb?: number } = {}) {
-    const maxSizeMb = options.maxSizeMb * 1024 || 5 * 1024
+export class ImageFilePipe extends ParseFilePipe {
+  constructor(readonly options: ImageFilePipeOptions) {
+    const maxSizeMb = options.maxSizeMb * 1024;
     super({
       validators: [
-        new MaxFileSizeValidator({ maxSize: maxSizeMb * 1024, message: `File max size: ${maxSizeMb} kb` }, ),
+        new MaxFileSizeValidator({
+          maxSize: maxSizeMb * 1024,
+          message: `The photo must bet less than ${maxSizeMb} Mb`,
+        }),
         new FileTypeValidator({ fileType: /(image\/jpeg|image\/png)/ }),
       ],
     });

@@ -1,6 +1,5 @@
-import { Injectable } from '@nestjs/common';
-import { AxiosAdapter } from '@user/core/adapters/axios.adapter';
 import { FileMetadata } from '@app/shared';
+import { Injectable } from '@nestjs/common';
 import { Post } from '@prisma/client';
 
 @Injectable()

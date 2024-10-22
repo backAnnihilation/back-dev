@@ -94,7 +94,7 @@ describe('LayerNoticeInterceptor', () => {
     const invalidModel = new TestModel();
     invalidModel.testField = 123 as any;
 
-    await interceptor.validateFields(invalidModel);
+    await interceptor.validateEntity(invalidModel);
 
     expect(interceptor.extensions).toHaveLength(1);
     expect(interceptor.code).toBe(validationError);
@@ -105,7 +105,7 @@ describe('LayerNoticeInterceptor', () => {
     const validModel = new TestModel();
     validModel.testField = 'validString';
 
-    await interceptor.validateFields(validModel);
+    await interceptor.validateEntity(validModel);
 
     expect(interceptor.extensions).toHaveLength(0);
     expect(interceptor.hasError).toBe(false);

@@ -3,7 +3,7 @@ import { join } from 'path';
 import { ConfigService } from '@nestjs/config';
 import { Environment } from '@app/shared';
 import { EnvironmentVariables } from '../src/core/config/configuration';
-import { PrismaService } from '../src/core/db/prisma/prisma.service';
+import { PrismaService } from '@user/core';
 import { databaseCleanUp } from './tools/utils/db-cleanUp';
 
 let databaseService: PrismaService;

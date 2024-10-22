@@ -6,7 +6,7 @@ module.exports = {
     alias: {
       '@app/shared': resolve(__dirname, './libs/shared/src/.'),
       '@app/utils': resolve(__dirname, './libs/shared/utils/.'),
-      '@user/core': resolve(__dirname, './apps/user/src/core/'),
+      '@user/core': resolve(__dirname, './apps/user/src/core'),
       '@file/core': resolve(__dirname, './apps/fileHub/src/core/'),
     },
     fallback: {

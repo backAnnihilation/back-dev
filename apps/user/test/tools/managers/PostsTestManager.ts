@@ -1,20 +1,17 @@
-import { HttpStatus, INestApplication } from '@nestjs/common';
-import * as request from 'supertest';
-import { BaseTestManager } from './BaseTestManager';
-import { PostsRouting } from '../routes/posts.routing';
-import { PrismaService } from '../../../src/core';
-import { Prisma } from '@prisma/client';
-import { CreatePostInputModel } from '../../../src/features/post/api/models/input/create-post.model';
-import { PostViewModel } from '../../../src/features/post/api/models/output/post-view-type.model';
-import { EditPostInputModel } from '../../../src/features/post/api/models/input/edit-profile.model';
-import { PostsQueryFilter } from '../../../src/features/post/api/models/input/post-query-filter';
 import { PaginationViewModel } from '@app/shared';
+import { HttpStatus, INestApplication } from '@nestjs/common';
+import { Prisma } from '@prisma/client';
+import * as request from 'supertest';
+import { PrismaService } from '../../../src/core';
+import { AuthUserWithToken } from '../../../src/features/auth/api/models/auth.output.models/auth.user.types';
+import { CreatePostInputModel } from '../../../src/features/post/api/models/input/create-post.model';
+import { EditPostInputModel } from '../../../src/features/post/api/models/input/edit-post.model';
+import { PostsQueryFilter } from '../../../src/features/post/api/models/input/post-query-filter';
+import { PostViewModel } from '../../../src/features/post/api/models/output/post-view-type.model';
 import { SuperTestBody } from '../models/body.response.model';
 import { ImageNames } from '../models/image-names.enum';
-import {
-  AuthUserType,
-  AuthUserWithToken,
-} from '../../../src/features/auth/api/models/auth.output.models/auth.user.types';
+import { PostsRouting } from '../routes/posts.routing';
+import { BaseTestManager } from './BaseTestManager';
 
 export class PostsTestManager extends BaseTestManager {
   private readonly routing: PostsRouting;
@@ -41,7 +38,7 @@ export class PostsTestManager extends BaseTestManager {
   async createPosts(users: AuthUserWithToken[], count: number) {
     for (let i = 0; i < count; i++) {
       const postInputData = this.createInputData({
-        description: `post description ${i}`,
+        description: `post${i} description`,
       });
       const postDto = {
         ...postInputData,

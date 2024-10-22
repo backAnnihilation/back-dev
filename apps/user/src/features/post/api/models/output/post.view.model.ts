@@ -1,4 +1,4 @@
-import { Post, PostImage } from '@prisma/client';
+import { Post, PostImage, UserProfile } from '@prisma/client';
 import { PostViewModel } from './post-view-type.model';
 
 const convertImagesToView = (image: PostImage) => ({
@@ -11,10 +11,12 @@ const convertImagesToView = (image: PostImage) => ({
   createdAt: image.createdAt.toISOString(),
 });
 export const getPostViewModel = (
-  post: Post & { image: PostImage },
+  post: Post & { about: string; userName: string; images?: PostImage[] },
 ): PostViewModel => ({
   id: post.id,
+  userName: post.userName,
+  aboutMe: post.about,
   description: post.description,
   userId: post.userId,
-  image: convertImagesToView(post.image),
+  images: post.images.map(convertImagesToView),
 });

@@ -1,5 +1,5 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BcryptAdapter } from '@user/core/adapters/bcrypt.adapter';
+import { BcryptAdapter } from '@user/core';
 import { SecurityRepository } from '../../../security/infrastructure/security.repository';
 import { AuthRepository } from '../../infrastructure/auth.repository';
 import { LayerNoticeInterceptor } from '@app/shared';

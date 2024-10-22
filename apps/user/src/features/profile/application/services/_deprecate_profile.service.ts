@@ -1,24 +1,19 @@
 import {
   EVENT_COMMANDS,
   ImageType,
-  IPostImageViewModelType,
   IProfileImageViewModelType,
   LayerNoticeInterceptor,
   MediaType,
 } from '@app/shared';
 import { Injectable } from '@nestjs/common';
-import { AxiosAdapter } from '@user/core/adapters/axios.adapter';
+import { Transport } from '@nestjs/microservices';
 import { UploadFileDto } from '../../api/models/input/upload-file-type.model';
 import { ProfilesRepository } from '../../infrastructure/profiles.repository';
-import { Transport } from '@nestjs/microservices';
-import { TransportManager } from '@user/core/managers/transport.manager';
 
 @Injectable()
 export class UserProfileService {
   constructor(
-    private resendAdapter: AxiosAdapter,
     private profilesRepo: ProfilesRepository,
-    private transportManager: TransportManager,
   ) {}
 
   // async uploadProfilePhoto(

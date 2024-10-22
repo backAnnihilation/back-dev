@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
+import { EnvironmentVariables } from '@user/core';
 import { Profile, Strategy } from 'passport-github2';
-import { EnvironmentVariables } from '@user/core/config/configuration';
-import { StrategyType } from '@user/core/infrastructure/guards/models/strategy.enum';
 import { sanitizedDisplayName } from '../../utils/sanitized-display-name';
+import { StrategyType } from '../strategies.enum';
 
 @Injectable()
 export class GithubStrategy extends PassportStrategy(

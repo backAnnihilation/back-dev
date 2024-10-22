@@ -1,7 +1,7 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { UserIdType } from '../../../admin/api/models/outputSA.models.ts/user-models';
 import { AuthRepository } from '../../infrastructure/auth.repository';
-import { BcryptAdapter } from '@user/core/adapters/bcrypt.adapter';
+import { BcryptAdapter } from '@user/core';
 import { LayerNoticeInterceptor } from '@app/shared';
 import { VerificationCredentialsCommand } from './commands/verification-credentials.command';
 

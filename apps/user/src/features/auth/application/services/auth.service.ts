@@ -1,12 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { EnvironmentVariables } from '@user/core';
 import { v4 as uuidv4 } from 'uuid';
-import { EnvironmentVariables } from '@user/core/config/configuration';
 import { UserSessionDto } from '../../../security/api/models/security-input.models/security-session-info.model';
 import {
-  JwtTokens,
   IPayload,
+  JwtTokens,
 } from '../../api/models/auth-input.models.ts/jwt.types';
 
 @Injectable()

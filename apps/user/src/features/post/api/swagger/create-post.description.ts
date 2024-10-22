@@ -50,6 +50,7 @@ export class CreatePostFormDto {
   @ApiProperty({
     description: 'Description of the post. Maximum length is 500 characters.',
     type: 'string',
+    required: false
   })
   description: string;
 }

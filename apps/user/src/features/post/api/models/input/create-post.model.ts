@@ -1,8 +1,10 @@
 import { descriptionLength, FileMetadata, iSValidField } from '@app/shared';
+import { IsOptional } from 'class-validator';
 
 export class CreatePostInputModel {
+  @IsOptional()
   @iSValidField(descriptionLength)
-  description: string;
+  description?: string;
 }
 
 export interface ICreatePostCommand extends CreatePostInputModel {
