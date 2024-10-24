@@ -9,7 +9,7 @@ model PostImage {
   urlLarge          String?  
   urlSmall          String?
 
-  post              Post          @relation(fields: [postId], references: [id])
-  postId            String        @unique
+  post              Post           @relation(fields: [postId], references: [id])
+  postId            String
 }
 

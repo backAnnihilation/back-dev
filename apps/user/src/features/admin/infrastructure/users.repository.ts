@@ -1,7 +1,7 @@
 import { TransactionHost } from '@nestjs-cls/transactional';
 import { TransactionalAdapterPrisma } from '@nestjs-cls/transactional-adapter-prisma';
 import { Injectable } from '@nestjs/common';
-import { Prisma, UserAccount } from '@prisma/client';
+import { UserAccount } from '@prisma/client';
 import { BaseRepository, PrismaService } from '@user/core';
 
 @Injectable()
@@ -11,15 +11,6 @@ export class UsersRepository extends BaseRepository<UserAccount> {
     txHost: TransactionHost<TransactionalAdapterPrisma>,
   ) {
     super(prisma, 'userAccount', txHost);
-  }
-
-  async save(userDto: Prisma.UserAccountCreateInput): Promise<UserAccount> {
-    try {
-      return await this.model.create({ data: userDto });
-    } catch (error) {
-      console.log(error);
-      throw new Error(`user is not saved: ${error}`);
-    }
   }
 
   async getUserById(id: string): Promise<UserAccount | null> {

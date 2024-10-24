@@ -15,9 +15,7 @@ export const pipesSetup = (app: INestApplication | INestMicroservice) => {
       stopAtFirstError: true,
       exceptionFactory(errors: ValidationError[]) {
         const customErrors: ValidationPipeErrorType[] =
-          validationErrorsMapper.mapValidationErrorToValidationPipeErrorTArray(
-            errors,
-          );
+          validationErrorsMapper.mapErrorToValidationPipeError(errors);
 
         throw new BadRequestException(customErrors);
       },

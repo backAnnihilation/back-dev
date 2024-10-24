@@ -6,7 +6,7 @@ import {
   RmqService,
   RoutingEnum,
 } from '@app/shared';
-import { Controller } from '@nestjs/common';
+import { Controller, Get } from '@nestjs/common';
 import { CommandBus } from '@nestjs/cqrs';
 import {
   Ctx,
@@ -71,5 +71,10 @@ export class FilesController {
       context,
       withResponse: true,
     });
+  }
+
+  @Get('test')
+  async test() {
+    return 'here you are'
   }
 }

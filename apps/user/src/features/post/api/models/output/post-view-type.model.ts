@@ -7,4 +7,5 @@ export type PostViewModel = {
   description: string;
   userId: string;
   images: PhotoType[];
+  createdAt: string;
 };

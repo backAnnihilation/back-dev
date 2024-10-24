@@ -31,7 +31,7 @@ const resolveOption = (
   };
 };
 
-const resolveEntitiesOptions = (options: PrepareTestOptions) => ({
+const resolveEntitiesOptions = (options: PrepareTestOptions = {}) => ({
   users: { ...defaultOptions.users, ...options.users },
   profiles: resolveOption(options.profiles, defaultOptions.profiles),
   posts: resolveOption(options.posts, defaultOptions.posts),

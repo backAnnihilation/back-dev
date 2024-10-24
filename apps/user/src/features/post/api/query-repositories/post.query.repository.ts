@@ -25,6 +25,27 @@ export class PostQueryRepository {
         where: {
           description: { contains: description, mode: 'insensitive' },
         },
+        select: {
+          images: {
+            orderBy: { createdAt: 'desc' },
+            select: {
+              createdAt: true,
+              id: true,
+              urlOriginal: true,
+              urlSmall: true,
+            },
+          },
+          userAccount: {
+            select: {
+              userProfile: {
+                select: {
+                  userName: true,
+                  about: true,
+                },
+              },
+            },
+          },
+        },
         skip,
         take: pageSize,
         orderBy: { [sortBy]: sortDirection },
@@ -46,12 +67,38 @@ export class PostQueryRepository {
     userId: string,
     queryOptions: PostsQueryFilter,
   ): Promise<PaginationViewModel<PostViewModel>> {
+    const parsePageSize = (size: string) => {
+      const parsedPageSize = parseInt(size, 10);
+      return !isNaN(parsedPageSize) ? Math.min(parsedPageSize, 50) : 8;
+    };
+    const pageSize = parsePageSize(queryOptions.pageSize);
     try {
-      const { pageNumber, pageSize, skip, sortBy, sortDirection } =
+      const { pageNumber, skip, sortBy, sortDirection } =
         PaginationViewModel.parseQuery(queryOptions);
 
       const posts = await this.posts.findMany({
         where: { userId },
+        select: {
+          images: {
+            orderBy: { createdAt: 'desc' },
+            select: {
+              createdAt: true,
+              id: true,
+              urlOriginal: true,
+              urlSmall: true,
+            },
+          },
+          userAccount: {
+            select: {
+              userProfile: {
+                select: {
+                  userName: true,
+                  about: true,
+                },
+              },
+            },
+          },
+        },
         skip,
         take: pageSize,
         orderBy: { [sortBy]: sortDirection },
@@ -72,16 +119,35 @@ export class PostQueryRepository {
     try {
       const post = await this.posts.findUnique({
         where: { id },
-        include: {
-          image: true,
-          userAccount: { include: { userProfile: true } },
+        select: {
+          description: true,
+          userId: true,
+          createdAt: true,
+          images: {
+            orderBy: { createdAt: 'desc' },
+            select: {
+              createdAt: true,
+              id: true,
+              urlOriginal: true,
+              urlSmall: true,
+            },
+          },
+          userAccount: {
+            select: {
+              userProfile: {
+                select: {
+                  userName: true,
+                  about: true,
+                },
+              },
+            },
+          },
         },
       });
 
       if (!post) return null;
-      console.log({ post });
 
-      // return getPostViewModel(post);
+      return getPostViewModel(post);
     } catch (error) {
       console.error('Database fails operate with find user post', error);
       return null;

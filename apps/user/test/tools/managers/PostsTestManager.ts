@@ -49,18 +49,18 @@ export class PostsTestManager extends BaseTestManager {
   }
 
   async createPost(
-    inputData: CreatePostInputModel & { imageName: ImageNames },
+    inputData: CreatePostInputModel & { imageName?: ImageNames },
     accessToken: string,
     expectedStatus = HttpStatus.CREATED,
   ): Promise<PostViewModel> {
-    let { buffer, contentType, filename } = await this.retrieveImageMeta(
-      inputData.imageName,
-    );
+    const imageName = inputData.imageName || ImageNames.INSTA;
+    let { buffer, contentType, filename } =
+      await this.retrieveImageMeta(imageName);
     let post: PostViewModel;
     await request(this.application)
       .post(this.routing.createPost())
       .auth(accessToken, this.authConstants.authBearer)
-      .send(inputData)
+      .field('description', inputData.description)
       .attach('image', buffer, { filename, contentType })
       .expect(({ body, status }: SuperTestBody<PostViewModel>) => {
         expect(status).toBe(expectedStatus);

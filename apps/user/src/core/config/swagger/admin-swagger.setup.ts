@@ -11,31 +11,31 @@ export const adminSwaggerSetup = (app: INestApplication) => {
     .addBasicAuth()
     .build();
 
-  const adminDocument = SwaggerModule.createDocument(app, adminConfig, {
-    include: [SAController],
-  });
+  // const adminDocument = SwaggerModule.createDocument(app, adminConfig, {
+  //   include: [SAController]
+  // });
+  const adminDocument = SwaggerModule.createDocument(app, adminConfig);
 
-  // let pathsToRemoveFromAdmin = [
-  //   RoutingEnum.auth,
-  //   RoutingEnum.security,
-  //   RoutingEnum.profiles,
-  //   RoutingEnum.posts,
-  //   RoutingEnum.subs,
-  // ];
+  let pathsToRemoveFromAdmin = [
+    RoutingEnum.auth,
+    RoutingEnum.security,
+    RoutingEnum.profiles,
+    RoutingEnum.posts,
+    RoutingEnum.subs,
+  ];
 
-  // const appPaths = Object.keys(adminDocument.paths);
-  // if (appPaths[0].startsWith('/api')) {
-  //   pathsToRemoveFromAdmin = pathsToRemoveFromAdmin.map(
-  //     (path) => `/api/v1${path}`,
-  //   ) as RoutingEnum[];
-  // }
-  // const pathsToDeleteFromAppPaths = appPaths.filter((path) =>
-  //   pathsToRemoveFromAdmin.some((pathToRemove) =>
-  //     path.startsWith(pathToRemove),
-  //   ),
-  // );
-
-  // pathsToDeleteFromAppPaths.forEach((path) => delete adminDocument.paths[path]);
+  const appPaths = Object.keys(adminDocument.paths);
+  if (appPaths[0].startsWith('/api')) {
+    pathsToRemoveFromAdmin = pathsToRemoveFromAdmin.map(
+      (path) => `/api/v1${path}`,
+    ) as RoutingEnum[];
+  }
+  const pathsToDeleteFromAppPaths = appPaths.filter((path) =>
+    pathsToRemoveFromAdmin.some((pathToRemove) =>
+      path.startsWith(pathToRemove),
+    ),
+  );
+  pathsToDeleteFromAppPaths.forEach((path) => delete adminDocument.paths[path]);
 
   SwaggerModule.setup('api/v1/admin/dashboard', app, adminDocument);
 };

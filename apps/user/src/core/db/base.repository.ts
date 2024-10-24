@@ -27,7 +27,7 @@ export abstract class BaseRepository<RModel> {
     this.model = this.db[this.modelKey];
   }
 
-  async saveEntity(data: any): Promise<RModel> {
+  async save(data: any): Promise<RModel> {
     try {
       return await this.getRepository.create({ data });
     } catch (error) {
@@ -36,9 +36,15 @@ export abstract class BaseRepository<RModel> {
     }
   }
 
-  async getById(id: string): Promise<RModel | null> {
+  async getById(id: string, uniq: boolean = true): Promise<RModel | null> {
+    let result: RModel;
     try {
-      return await this.getRepository.findUnique({ where: { id } });
+      if (uniq) {
+        result = await this.getRepository.findUnique({ where: { id } });
+      } else {
+        result = await this.getRepository.findFirst({ where: { id } });
+      }
+      return result;
     } catch (error) {
       console.error(`Failed to get entity: ${error}`);
       return null;
@@ -60,6 +66,7 @@ export abstract class BaseRepository<RModel> {
         data,
       });
     } catch (error) {
+      console.log('fail to update entity', error);
       throw new Error(`Failed to update entity: ${error}`);
     }
   }

@@ -34,4 +34,13 @@ export class PostsRepository extends BaseRepository<Post> {
       throw new Error(error.message);
     }
   }
+
+  async countPostImages(postId: string): Promise<number | null> {
+    try {
+      return this.postImages.count({ where: { postId } });
+    } catch (error) {
+      console.log(`failed count images ${error}`);
+      return null;
+    }
+  }
 }

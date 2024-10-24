@@ -18,7 +18,7 @@ export class ValidatePayloadPipe<T> implements PipeTransform {
       return transformedValue;
     } catch (e) {
       const errorResponse =
-        validationErrorsMapper.mapValidationErrorToValidationPipeErrorTArray(e);
+        validationErrorsMapper.mapErrorToValidationPipeError(e);
       throw new RpcException(errorResponse);
     }
   }

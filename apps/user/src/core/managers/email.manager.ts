@@ -3,14 +3,17 @@ import { EmailAdapter } from '../adapters/email.adapter';
 
 @Injectable()
 export class EmailManager {
-  constructor(private emailAdapter: EmailAdapter) {}
+  private from: string;
+  constructor(private emailAdapter: EmailAdapter) {
+    this.from = `Networking platform👻 <netchill.ru>`;
+  }
 
   async sendEmailMembershipSuccess(
     userEmail: string,
     userLogin: string,
   ): Promise<void> {
     const notificationData = {
-      from: `Cringe Hub👻`,
+      from: this.from,
       subject: 'Membership purchase',
       message: `,
       <p>Thanks ${userLogin} for purchase subscription</p>`,
@@ -24,10 +27,10 @@ export class EmailManager {
     email: string,
     recoveryCode: string,
   ): Promise<string> {
-    const recoveryLink = `https://incta.team/reset-password?recoveryCode=${recoveryCode}`;
+    const recoveryLink = `https://netchill.ru/reset-password?recoveryCode=${recoveryCode}`;
 
     const passwordRecoveryData = {
-      from: `Incta team👻 <incta.team@gmail.com>`,
+      from: this.from,
       subject: 'Password recovery',
       message: `
                 <p>To finish password recovery please follow the link below:
@@ -44,9 +47,9 @@ export class EmailManager {
     email: string,
     confirmationCode: string,
   ): Promise<string> {
-    const confirmationLink = `https://incta.team/confirm-email?code=${confirmationCode}`;
+    const confirmationLink = `https://netchill.ru/confirm-email?code=${confirmationCode}`;
     const confirmationData = {
-      from: `Incta team👻 <incta.team@gmail.com>`,
+      from: this.from,
       subject: 'Email Confirmation',
       message: `<h1>Thank for your registration</h1>
                 <p>To finish registration please follow the link below:
@@ -60,7 +63,7 @@ export class EmailManager {
 
   async sendEmailRegistrationSuccess(email: string, userName: string) {
     const mailOptions = {
-      from: 'Incta team👻 <incta.team@gmail.com>',
+      from: this.from,
       to: email,
       subject: 'Registration Successful',
       message: `<h1>Thank you for registering, ${userName}!</h1>

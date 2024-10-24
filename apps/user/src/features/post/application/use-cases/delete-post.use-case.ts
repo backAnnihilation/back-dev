@@ -1,7 +1,6 @@
-import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { LayerNoticeInterceptor, OutputId } from '@app/shared';
+import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
 import { IDeletePostCommand } from '../../api/models/input/delete-post.model';
-import { UsersRepository } from '../../../admin/infrastructure/users.repository';
 import { PostsRepository } from '../../infrastructure/posts.repository';
 
 export class DeletePostCommand {
@@ -38,6 +37,7 @@ export class DeletePostUseCase implements ICommandHandler<DeletePostCommand> {
       );
       return notice;
     }
+    
     await this.postsRepo.delete(postId);
 
     return notice;

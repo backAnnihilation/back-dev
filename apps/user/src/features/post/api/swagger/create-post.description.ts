@@ -2,12 +2,12 @@ import {
   ApiBearerAuth,
   ApiBody,
   ApiConsumes,
+  ApiNotFoundResponse,
   ApiOperation,
   ApiProperty,
   ApiResponse,
 } from '@nestjs/swagger';
 import { applyDecorators, HttpStatus } from '@nestjs/common';
-
 
 export const CreatePostEndpoint = () =>
   applyDecorators(
@@ -26,6 +26,7 @@ export const CreatePostEndpoint = () =>
       description: 'Bad request - The input data is invalid',
       type: ErrorsResponseDto,
     }),
+    ApiNotFoundResponse({ description: 'User profile not found' }),
     ApiResponse({
       status: HttpStatus.NO_CONTENT,
       description: 'Success - Post was successfully created',
@@ -50,7 +51,7 @@ export class CreatePostFormDto {
   @ApiProperty({
     description: 'Description of the post. Maximum length is 500 characters.',
     type: 'string',
-    required: false
+    required: false,
   })
   description: string;
 }
