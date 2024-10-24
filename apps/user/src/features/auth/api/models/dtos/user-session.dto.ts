@@ -1,4 +1,4 @@
-import { Payload } from '../auth-input.models.ts/jwt.types';
+import { IPayload } from '../auth-input.models.ts/jwt.types';
 
 export class UserSessionDTO {
   ip: string;
@@ -12,11 +12,11 @@ export class UserSessionDTO {
   constructor(
     ipAddress: string,
     userAgentInfo: string,
-    userPayload: Payload,
+    userPayload: IPayload,
     refreshToken: string,
   ) {
     const { deviceId, exp, iat, userId } = userPayload;
-    this.ip = ipAddress;
+    this.ip = ipAddress || '::1';
     this.userAgentInfo = userAgentInfo;
     this.deviceId = deviceId;
     this.userId = userId;

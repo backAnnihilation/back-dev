@@ -5,9 +5,9 @@ import {
   ApiProperty,
   ApiOperation,
 } from '@nestjs/swagger';
-import { UnauthorizedViaTokenApiResponse } from './shared/authorization.response';
+import { UnauthorizedViaTokenApiResponse } from '../../../auth/api/swagger/shared/authorization.response';
 
-export class SecurityViewDeviceModel {
+export class SecurityViewDeviceResponse {
   @ApiProperty({ description: 'IP address of the device' })
   ip: string;
 
@@ -28,7 +28,7 @@ export const GetUserActiveSessionsEndpoint = () =>
       description:
         'Get all current user sessions. In cookie must be refreshToken',
     }),
-    ApiResponse({ status: HttpStatus.OK, type: SecurityViewDeviceModel }),
+    ApiResponse({ status: HttpStatus.OK, type: SecurityViewDeviceResponse }),
     UnauthorizedViaTokenApiResponse,
     ApiSecurity('refreshToken'),
   );

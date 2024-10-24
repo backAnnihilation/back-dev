@@ -1,15 +1,15 @@
 import { Injectable } from '@nestjs/common';
-import { EmailDtoType } from '../models/auth.output.models/auth.user.types';
 import { Prisma } from '@prisma/client';
-import { DatabaseService } from '../../../../../core/db/prisma/prisma.service';
 import { DefaultArgs } from '@prisma/client/runtime/library';
+import { EmailDtoType } from '../models/auth.output.models/auth.user.types';
+import { PrismaService } from '@user/core';
 import { getUserAccountViewModel } from '../models/auth.output.models/auth.view.model';
 import { UserAccountViewModel } from '../models/auth.output.models/auth.output.models';
 
 @Injectable()
 export class AuthQueryRepository {
   private userAccounts: Prisma.UserAccountDelegate<DefaultArgs>;
-  constructor(private prisma: DatabaseService) {
+  constructor(private prisma: PrismaService) {
     this.userAccounts = this.prisma.userAccount;
   }
 
@@ -33,7 +33,7 @@ export class AuthQueryRepository {
     }
   }
 
-  async getById(id: string): Promise<UserAccountViewModel> {
+  async getById(id: string): Promise<UserAccountViewModel | null> {
     try {
       const result = await this.userAccounts.findFirst({ where: { id } });
       if (!result) return null;

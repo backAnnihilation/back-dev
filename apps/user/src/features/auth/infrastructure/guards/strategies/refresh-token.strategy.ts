@@ -3,18 +3,20 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { Request } from 'express';
 import { ExtractJwt, Strategy } from 'passport-jwt';
-import { EnvironmentVariables } from '../../../../../../core/config/configuration';
-import { StrategyType } from '../../../../../../core/infrastructure/guards/models/strategy.enum';
+
+import { EnvironmentVariables } from '../../../../../core/config/configuration';
+import { StrategyType } from '../strategies.enum';
 import { SecurityRepository } from '../../../../security/infrastructure/security.repository';
+import { IPayload } from '../../../api/models/auth-input.models.ts/jwt.types';
 
 @Injectable()
 export class RefreshTokenStrategy extends PassportStrategy(
   Strategy,
-  StrategyType.RefreshToken
+  StrategyType.RefreshToken,
 ) {
   constructor(
     private securityRepo: SecurityRepository,
-    private configService: ConfigService<EnvironmentVariables>
+    configService: ConfigService<EnvironmentVariables>,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromExtractors([cookieExtractor]),
@@ -23,7 +25,7 @@ export class RefreshTokenStrategy extends PassportStrategy(
     });
   }
 
-  async validate(payload: any) {
+  async validate(payload: IPayload) {
     const { iat, deviceId, userId } = payload;
 
     const tokenIssuedAt = new Date(iat * 1000).toISOString();

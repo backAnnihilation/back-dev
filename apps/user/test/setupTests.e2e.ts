@@ -1,31 +1,40 @@
-import { ConfigService } from '@nestjs/config';
-import { EnvironmentVariables } from '../core/config/configuration';
 import { execSync } from 'child_process';
-import { DatabaseService } from '../core/db/prisma/prisma.service';
 import { join } from 'path';
-import { databaseCleanUp } from './tools/utils/cleanUp';
+import { ConfigService } from '@nestjs/config';
+import { Environment } from '@app/shared';
+import { EnvironmentVariables } from '../src/core/config/configuration';
+import { PrismaService } from '@user/core';
+import { databaseCleanUp } from './tools/utils/db-cleanUp';
 
-let databaseService: DatabaseService;
+let databaseService: PrismaService;
 let config: ConfigService<EnvironmentVariables>;
 let dbCleaner: () => Promise<void>;
 beforeAll(async () => {
   config = new ConfigService();
+
+  /**
+   * @description get database url from .env
+   *
+   */
   const dbUrl = config.get('DATABASE_URL_FOR_TESTS');
+  console.log({ dbUrl });
 
-  const workerDir = join(__dirname, '..');
-
+  /**
+   * @description if you need to apply migrations
+   *
+   */
+  // const workerDir = join(__dirname, '..');
   // execSync('npx prisma migrate dev', {
   //   env: { DATABASE_URL: dbUrl },
   //   cwd: workerDir,
   // });
 
-  databaseService = new DatabaseService({
+  databaseService = new PrismaService({
     datasources: {
       db: { url: dbUrl },
     },
-    log: ['query'],
+    // log: ['query'],
   });
-  console.log('connected to test db...');
 
   dbCleaner = databaseCleanUp.bind(null, databaseService);
   await dbCleaner();

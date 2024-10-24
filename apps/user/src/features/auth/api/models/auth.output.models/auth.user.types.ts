@@ -13,3 +13,7 @@ export type AuthUserType = {
   email: string;
   password?: string;
 };
+
+export type AuthUserWithToken = AuthUserType & {
+  accessToken: string;
+};

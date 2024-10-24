@@ -1,10 +1,12 @@
 import { CommandHandler, EventBus, ICommandHandler } from '@nestjs/cqrs';
+
 import { AuthRepository } from '../../infrastructure/auth.repository';
-import { UpdateConfirmationCodeCommand } from './commands/update-confirmation-code.command';
-import { EmailNotificationEvent } from './events/email-notification-event';
 import { createRecoveryCode } from '../helpers/create-recovery-message.helper';
-import { UserService } from '../user.service';
-import { LayerNoticeInterceptor } from '../../../../../core/utils/notification';
+import { UserService } from '../services/user-validation.service';
+import { LayerNoticeInterceptor } from '../../../../../../../libs/shared/src/interceptors/notification';
+
+import { EmailNotificationEvent } from './events/email-notification-event';
+import { UpdateConfirmationCodeCommand } from './commands/update-confirmation-code.command';
 
 @CommandHandler(UpdateConfirmationCodeCommand)
 export class UpdateConfirmationCodeUseCase
@@ -13,11 +15,11 @@ export class UpdateConfirmationCodeUseCase
   constructor(
     private authRepo: AuthRepository,
     private eventBus: EventBus,
-    private userService: UserService
+    private userService: UserService,
   ) {}
 
   async execute(
-    command: UpdateConfirmationCodeCommand
+    command: UpdateConfirmationCodeCommand,
   ): Promise<LayerNoticeInterceptor<boolean>> {
     const { expirationDate, recoveryCode } = createRecoveryCode();
     const { email } = command.updateDto;

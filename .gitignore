@@ -1,12 +1,11 @@
 # Keep environment variables out of version control
-.env
-
-# Keep environment variables out of version control
-.env
+# .env
 
 # compiled output
 /dist
 /node_modules
+
+/apps/copy
 
 # Logs
 logs
@@ -32,9 +31,9 @@ lerna-debug.log*
 *.launch
 .settings/
 *.sublime-workspace
+.vercel
 
 # IDE - VSCode
-/.vscode
 /.vscode
 .vscode/*
 .vscode
@@ -42,5 +41,3 @@ lerna-debug.log*
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
-
-apps/user/.env

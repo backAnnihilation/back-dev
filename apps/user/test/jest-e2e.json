@@ -6,5 +6,12 @@
   "transform": {
     "^.+\\.(t|j)s$": "ts-jest"
   },
-  "setupFilesAfterEnv": ["./setupTests.e2e.ts"]
+  "setupFilesAfterEnv": ["./setupTests.e2e.ts"],
+  "moduleNameMapper": {
+    "^@app/shared(.*)$": "<rootDir>/../../../libs/shared/src/$1",
+    "^@app/utils(.*)$": "<rootDir>/../../../libs/shared/utils/$1",
+    "^@user/core(.*)$": "<rootDir>/../src/core",
+    "^@user/core/(.*)$": "<rootDir>/apps/user/src/core/$1"
+  },
+  "testTimeout": 15000
 }

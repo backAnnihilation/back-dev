@@ -1,0 +1,15 @@
+{
+  "moduleFileExtensions": ["js", "json", "ts"],
+  "rootDir": ".",
+  "testEnvironment": "node",
+  "testRegex": ".unit.test.ts$",
+  "transform": {
+    "^.+\\.(t|j)s$": "ts-jest"
+  },
+  "moduleNameMapper": {
+    "^@app/shared(.*)$": "<rootDir>/../../libs/shared/src/$1",
+    "^@app/utils(.*)$": "<rootDir>/../../libs/shared/utils/$1",
+    "^@user/core(.*)$": "<rootDir>/src/core/$1",
+    "^@user/core/(.*)$": "<rootDir>/src/core/$1"
+  }
+}

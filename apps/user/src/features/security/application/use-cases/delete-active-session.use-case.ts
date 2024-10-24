@@ -1,6 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { LayerNoticeInterceptor } from '../../../../../core/utils/notification';
+
 import { SecurityRepository } from '../../infrastructure/security.repository';
+import { LayerNoticeInterceptor } from '../../../../../../../libs/shared/src/interceptors/notification';
+
 import { DeleteActiveSessionCommand } from './commands/delete-active-session.command';
 
 @CommandHandler(DeleteActiveSessionCommand)
@@ -12,7 +14,7 @@ export class DeleteActiveSessionUseCase
   constructor(private securityRepo: SecurityRepository) {}
 
   async execute(
-    command: DeleteActiveSessionCommand
+    command: DeleteActiveSessionCommand,
   ): Promise<LayerNoticeInterceptor> {
     const notice = new LayerNoticeInterceptor();
     const { deviceId } = command.deleteData;

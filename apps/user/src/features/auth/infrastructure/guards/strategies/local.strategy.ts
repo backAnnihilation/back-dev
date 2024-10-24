@@ -1,16 +1,16 @@
+import { LayerNoticeInterceptor, validationErrorsMapper } from '@app/shared';
 import {
   BadRequestException,
   Injectable,
   UnauthorizedException,
 } from '@nestjs/common';
+import { CommandBus } from '@nestjs/cqrs';
+import { PassportStrategy } from '@nestjs/passport';
 import { ValidationError, validateOrReject } from 'class-validator';
 import { Strategy } from 'passport-local';
 import { UserIdType } from '../../../../admin/api/models/outputSA.models.ts/user-models';
-import { CommandBus } from '@nestjs/cqrs';
-import { PassportStrategy } from '@nestjs/passport';
-import { VerificationCredentialsCommand } from '../../../application/use-cases/commands/verification-credentials.command';
 import { UserCredentialsDto } from '../../../api/models/auth-input.models.ts/verify-credentials.model';
-import { LayerNoticeInterceptor } from '../../../../../../core/utils/notification';
+import { VerificationCredentialsCommand } from '../../../application/use-cases/commands/verification-credentials.command';
 
 @Injectable()
 export class LocalStrategy extends PassportStrategy(Strategy) {
@@ -26,15 +26,13 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
       password,
     });
 
-    const result = await this.commandBus.execute<
+    const resultNotice = await this.commandBus.execute<
       VerificationCredentialsCommand,
       LayerNoticeInterceptor<UserIdType | null>
     >(command);
 
-    if (result.hasError)
-      throw new UnauthorizedException(result.extensions[0].message);
-
-    return result.data;
+    if (resultNotice.hasError) throw resultNotice.generateErrorResponse;
+    return resultNotice.data;
   }
 
   private async validateInputModel(email: string, password: string) {
@@ -51,20 +49,8 @@ export class LocalStrategy extends PassportStrategy(Strategy) {
   private async handleValidationErrors(
     errors: ValidationError[],
   ): Promise<void> {
-    const errorResponse: any = {
-      message: [],
-    };
-
-    for (const error of errors) {
-      const constraints = Object.values(error.constraints || {});
-
-      for (const constraint of constraints) {
-        errorResponse.message.push({
-          field: error.property,
-          message: constraint.trim(),
-        });
-      }
-    }
+    const errorResponse =
+      validationErrorsMapper.mapErrorToValidationPipeError(errors);
     throw new BadRequestException(errorResponse);
   }
 }

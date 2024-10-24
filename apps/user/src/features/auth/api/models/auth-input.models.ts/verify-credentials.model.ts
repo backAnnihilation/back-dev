@@ -1,9 +1,5 @@
-import {
-  frequentLength,
-  passwordLength,
-} from '../../../../../../core/validation/length-constants';
 import { IsString } from 'class-validator';
-import { iSValidField } from '../../../../../../core/validation/validate-input-fields';
+import { frequentLength, iSValidField, passwordLength } from '@app/shared';
 
 export class UserCredentialsDto {
   /**

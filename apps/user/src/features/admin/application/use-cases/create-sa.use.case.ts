@@ -1,8 +1,8 @@
+import { LayerNoticeInterceptor } from '@app/shared';
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BcryptAdapter } from '../../../../../core/adapters/bcrypt.adapter';
-import { LayerNoticeInterceptor } from '../../../../../core/utils/notification';
+import { BcryptAdapter } from '@user/core';
 import { ResponseIdType } from '../../api/models/outputSA.models.ts/user-models';
-import { UsersRepository } from '../../infrastructure/users.repo';
+import { UsersRepository } from '../../infrastructure/users.repository';
 import { CreateSACommand } from '../commands/create-sa.command';
 import { UserModelDTO } from '../dto/create-user.dto';
 
@@ -10,15 +10,28 @@ import { UserModelDTO } from '../dto/create-user.dto';
 export class CreateSAUseCase implements ICommandHandler<CreateSACommand> {
   constructor(
     private bcryptAdapter: BcryptAdapter,
-    private usersRepo: UsersRepository
+    private usersRepo: UsersRepository,
   ) {}
 
   async execute(
-    command: CreateSACommand
+    command: CreateSACommand,
   ): Promise<LayerNoticeInterceptor<ResponseIdType>> {
-    let notice = new LayerNoticeInterceptor<ResponseIdType>();
+    const notice = new LayerNoticeInterceptor<ResponseIdType>();
 
     const { email, userName, password } = command.createData;
+    const theSameUser = await this.usersRepo.getUserByNameOrEmail(
+      userName,
+      email,
+    );
+
+    if (theSameUser) {
+      notice.addError(
+        'User already exists',
+        'sa',
+        notice.errorCodes.ValidationError,
+      );
+      return notice;
+    }
 
     const { passwordHash } = await this.bcryptAdapter.createHash(password);
 
@@ -27,7 +40,7 @@ export class CreateSAUseCase implements ICommandHandler<CreateSACommand> {
       userName,
       email,
       passwordHash,
-      isConfirmed
+      isConfirmed,
     );
 
     const savedUser = await this.usersRepo.save(userDto);

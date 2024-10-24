@@ -1,3 +1,4 @@
+import { ApiTagsEnum, RoutingEnum } from '@app/shared';
 import {
   Body,
   Controller,
@@ -9,24 +10,27 @@ import {
   Res,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiExcludeEndpoint, ApiTags } from '@nestjs/swagger';
 import { Response } from 'express';
-import { CustomThrottlerGuard } from '../../../../../core/infrastructure/guards/custom-throttler.guard';
-import { AuthNavigate } from '../../../../../core/routes/auth-navigate';
-import { ApiTagsEnum, RoutingEnum } from '../../../../../core/routes/routing';
+import { CustomThrottlerGuard } from '../../../../core/infrastructure/guards/custom-throttler.guard';
+import { AuthNavigate } from '../../../../core/routes/auth-navigate';
 import { UserSessionDto } from '../../../security/api/models/security-input.models/security-session-info.model';
 import { CreateSessionCommand } from '../../../security/application/use-cases/commands/create-session.command';
 import { DeleteActiveSessionCommand } from '../../../security/application/use-cases/commands/delete-active-session.command';
-import { AuthenticationApiService } from '../../application/auth-token-response.service';
+import { AuthenticationApiService } from '../../application/services/auth-token-response.service';
 import { ConfirmEmailCommand } from '../../application/use-cases/commands/confirm-email.command';
 import { CreateUserCommand } from '../../application/use-cases/commands/create-user.command';
 import { PasswordRecoveryCommand } from '../../application/use-cases/commands/password-recovery.command';
 import { UpdateConfirmationCodeCommand } from '../../application/use-cases/commands/update-confirmation-code.command';
 import { UpdateIssuedTokenCommand } from '../../application/use-cases/commands/update-Issued-token.command';
 import { UpdatePasswordCommand } from '../../application/use-cases/commands/update-password.command';
+import { CreateOAuthUserCommand } from '../../application/use-cases/create-oauth-user.use-case';
 import { GetClientInfo } from '../../infrastructure/decorators/client-ip.decorator';
+import { UserOauthProvider } from '../../infrastructure/decorators/user-oauth.decorator';
 import { UserPayload } from '../../infrastructure/decorators/user-payload.decorator';
 import { AccessTokenGuard } from '../../infrastructure/guards/accessToken.guard';
+import { GithubOauthGuard } from '../../infrastructure/guards/github-oauth.guard';
+import { GoogleOauthGuard } from '../../infrastructure/guards/google-oauth.guard';
 import { LocalAuthGuard } from '../../infrastructure/guards/local-auth.guard';
 import { RefreshTokenGuard } from '../../infrastructure/guards/refreshToken.guard';
 import { CaptureGuard } from '../../infrastructure/guards/validate-capture.guard';
@@ -35,39 +39,45 @@ import {
   InputEmailDto,
   RecoveryPasswordDto,
 } from '../models/auth-input.models.ts/password-recovery.types';
+import {
+  IGithubProvider,
+  IGoogleProvider,
+} from '../models/auth-input.models.ts/provider-user-info';
 import { RecoveryPassDto } from '../models/auth-input.models.ts/recovery.model';
 import { RegistrationCodeDto } from '../models/auth-input.models.ts/registration-code.model';
 import { CreateUserDto } from '../models/auth-input.models.ts/user-registration.model';
 import { UserCredentialsDto } from '../models/auth-input.models.ts/verify-credentials.model';
 import { UserProfileType } from '../models/auth.output.models/auth.output.models';
 import { AuthQueryRepository } from '../query-repositories/auth.query.repo';
+import { ConfirmPasswordEndpoint } from '../swagger/confirm-password-recovery.description';
 import { GetProfileEndpoint } from '../swagger/get-user-profile.description';
+import { GithubOauthEndpoint } from '../swagger/github.description';
+import { GoogleOauthEndpoint } from '../swagger/google.description';
+import { LogoutEndpoint } from '../swagger/logout-description';
+import { PasswordRecoveryEndpoint } from '../swagger/recovery-password.description';
 import { RefreshTokenEndpoint } from '../swagger/refresh-token.description';
 import { RegistrationConfirmationEndpoint } from '../swagger/registration-confirmation.description';
 import { RegistrationEmailResendingEndpoint } from '../swagger/registration-email-resending.description';
-import { ConfirmPasswordEndpoint } from '../swagger/confirm-password-recovery.description';
-import { PasswordRecoveryEndpoint } from '../swagger/recovery-password.description';
-import { SignInEndpoint } from "../swagger/sign-in.description";
-import { SignUpEndpoint } from "../swagger/sign-up.description";
-import { LogoutEndpoint } from "../swagger/logout-description";
+import { SignInEndpoint } from '../swagger/sign-in.description';
+import { SignUpEndpoint } from '../swagger/sign-up.description';
 
 @ApiTags(ApiTagsEnum.Auth)
 @Controller(RoutingEnum.auth)
 export class AuthController {
   constructor(
     private authQueryRepo: AuthQueryRepository,
-    private authenticationApiService: AuthenticationApiService
+    private authenticationApiService: AuthenticationApiService,
   ) {}
 
   @SignInEndpoint()
-  @UseGuards(CustomThrottlerGuard, LocalAuthGuard, CaptureGuard)
+  @UseGuards(CaptureGuard, CustomThrottlerGuard, LocalAuthGuard)
   @HttpCode(HttpStatus.OK)
   @Post(AuthNavigate.Login)
   async login(
     @UserPayload() userInfo: UserSessionDto,
     @GetClientInfo() clientInfo: ClientInfo,
     @Res({ passthrough: true }) res: Response,
-    @Body() body: UserCredentialsDto
+    @Body() body: UserCredentialsDto,
   ) {
     const command = new CreateSessionCommand({
       clientInfo,
@@ -75,7 +85,7 @@ export class AuthController {
     });
     const { accessToken, refreshToken } =
       await this.authenticationApiService.authOperation(command);
-    
+
     res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
 
     return { accessToken };
@@ -96,7 +106,7 @@ export class AuthController {
   @Post(AuthNavigate.RefreshToken)
   async refreshToken(
     @UserPayload() userInfo: UserSessionDto,
-    @Res({ passthrough: true }) res: Response
+    @Res({ passthrough: true }) res: Response,
   ) {
     const command = new UpdateIssuedTokenCommand(userInfo);
     const { accessToken, refreshToken } =
@@ -110,7 +120,7 @@ export class AuthController {
   @UseGuards(AccessTokenGuard)
   @Get(AuthNavigate.GetProfile)
   async getProfile(
-    @UserPayload() userInfo: UserSessionDto
+    @UserPayload() userInfo: UserSessionDto,
   ): Promise<UserProfileType> {
     const user = await this.authQueryRepo.getById(userInfo.userId);
 
@@ -164,5 +174,43 @@ export class AuthController {
   async registrationEmailResending(@Body() data: InputEmailDto) {
     const command = new UpdateConfirmationCodeCommand(data);
     await this.authenticationApiService.authOperation(command);
+  }
+
+  @GithubOauthEndpoint()
+  @Get(AuthNavigate.GithubLogin)
+  @UseGuards(GithubOauthGuard)
+  githubAuth() {}
+
+  @ApiExcludeEndpoint()
+  @Get(AuthNavigate.GithubCallback)
+  @UseGuards(GithubOauthGuard)
+  async githubLogin(
+    @Res({ passthrough: true }) res: Response,
+    @UserOauthProvider() provider: IGithubProvider,
+  ) {
+    const command = new CreateOAuthUserCommand(provider);
+    const { accessToken, refreshToken } =
+      await this.authenticationApiService.authOperation(command);
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
+    return { accessToken };
+  }
+
+  @GoogleOauthEndpoint()
+  @Get(AuthNavigate.GoogleLogin)
+  @UseGuards(GoogleOauthGuard)
+  googleAuth() {}
+
+  @ApiExcludeEndpoint()
+  @Get(AuthNavigate.GoogleRedirect)
+  @UseGuards(GoogleOauthGuard)
+  async googleLogin(
+    @Res({ passthrough: true }) res: Response,
+    @UserOauthProvider() provider: IGoogleProvider,
+  ) {
+    const command = new CreateOAuthUserCommand(provider);
+    const { accessToken, refreshToken } =
+      await this.authenticationApiService.authOperation(command);
+    res.cookie('refreshToken', refreshToken, { httpOnly: true, secure: true });
+    return { accessToken };
   }
 }

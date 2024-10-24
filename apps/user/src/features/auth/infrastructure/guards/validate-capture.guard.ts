@@ -1,20 +1,14 @@
 import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
-import { CaptureAdapter } from '../../../../../core/adapters/capture.adapter';
+import { CaptureAdapter } from '@user/core';
+import { Environment } from '@app/shared';
 
 @Injectable()
 export class CaptureGuard implements CanActivate {
   constructor(private captureAdapter: CaptureAdapter) {}
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
-    const { captureToken } = request.body;
-    
-    if (captureToken) {
-      const validCapture =
-        await this.captureAdapter.validateCaptureToken(captureToken);
-
-      if (!validCapture) return false;
-    }
-
-    return true;
+    const captchaToken = request.headers['captchatoken'];
+    if (process.env.ENV === Environment.DEVELOPMENT) return true;
+    return this.captureAdapter.isValidCaptchaToken(captchaToken);
   }
 }

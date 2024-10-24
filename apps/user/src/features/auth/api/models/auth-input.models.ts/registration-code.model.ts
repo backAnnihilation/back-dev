@@ -1,5 +1,4 @@
-import { frequentLength } from '../../../../../../core/validation/length-constants';
-import { iSValidField } from '../../../../../../core/validation/validate-input-fields';
+import { iSValidField, frequentLength } from '@app/shared';
 
 export class RegistrationCodeDto {
   @iSValidField(frequentLength)

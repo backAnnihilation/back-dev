@@ -3,7 +3,8 @@ import {
   ApiBody,
   ApiOperation,
   ApiProperty,
-  ApiResponse, ApiSecurity,
+  ApiResponse,
+  ApiSecurity,
 } from '@nestjs/swagger';
 import { SingUpErrorResponse } from './shared/error-message-response';
 import { PasswordDescription } from './shared/password-description';

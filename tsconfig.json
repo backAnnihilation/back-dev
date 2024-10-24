@@ -18,6 +18,16 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "paths": {}
-  }
+    "paths": {
+      "@app/shared": ["libs/shared/src/."],
+      "@app/utils": ["libs/shared/utils/."],
+      "@box/asshole": ["libs/shared/utils/."],
+      "@models/*": ["libs/shared/models/*"],
+      "@config/*": ["libs/shared/config/*"],
+      "@user/core": ["apps/user/src/core"],
+      "@user/core/*": ["apps/user/src/core/*"],
+      "@file/core/*": ["apps/fileHub/src/core/*"]
+    }
+  },
+  "include": ["apps/**/*", "libs/**/*"]
 }

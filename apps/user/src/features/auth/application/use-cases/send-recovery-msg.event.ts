@@ -1,6 +1,6 @@
 import { EventsHandler, IEventHandler } from '@nestjs/cqrs';
-import { EmailManager } from '../../../../../core/managers/email-manager';
 import { SendRecoveryMsgType } from '../../api/models/auth-input.models.ts/password-recovery.types';
+import { EmailManager } from '../../../../core/managers/email.manager';
 
 export class SendRecoveryMessageEvent {
   constructor(public recoveryPasswordDto: SendRecoveryMsgType) {}
@@ -14,7 +14,7 @@ export class SendRecoveryMessageEventHandler
   async handle(event: SendRecoveryMessageEvent): Promise<void> {
     await this.emailManager.sendEmailRecoveryMessage(
       event.recoveryPasswordDto.email,
-      event.recoveryPasswordDto.recoveryCode
+      event.recoveryPasswordDto.recoveryCode,
     );
   }
 }

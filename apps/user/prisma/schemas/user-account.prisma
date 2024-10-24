@@ -1,0 +1,29 @@
+
+enum Provider {
+  google
+  github
+}
+
+model UserAccount {
+  id                           String         @id @default(uuid())
+  userName                     String         @unique
+  email                        String         @unique
+  passwordHash                 String?
+  confirmationCode             String?
+  confirmationExpDate          DateTime?
+  isConfirmed                  Boolean
+  provider                     Provider? 
+  providerId                   String?        @unique
+  passwordRecoveryCode         String?
+  passwordRecoveryExpDate      DateTime?
+  createdAt                    DateTime       @default(now())
+  updatedAt                    DateTime       @updatedAt
+
+  userSessions                 UserSession[]  @relation("UserSessions")
+  userProfile                  UserProfile?
+
+  followers                    Subs[]         @relation("UserFollowers")
+  following                    Subs[]         @relation("UserFollowing")
+
+  posts                        Post[]
+}

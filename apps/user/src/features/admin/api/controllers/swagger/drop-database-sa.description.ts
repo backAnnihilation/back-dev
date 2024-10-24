@@ -1,13 +1,7 @@
 import { applyDecorators, HttpStatus } from '@nestjs/common';
-import {
-  ApiBasicAuth,
-  ApiBearerAuth,
-  ApiOperation,
-  ApiParam,
-  ApiResponse,
-  ApiSecurity
-} from "@nestjs/swagger";
-import { BasicAuthApi } from "./shared/authorization.response";
+import { ApiOperation, ApiResponse } from '@nestjs/swagger';
+
+import { BasicAuthApi } from '../../../../auth/api/swagger/shared/authorization.response';
 
 export const DropDatabaseSaEndpoint = () =>
   applyDecorators(

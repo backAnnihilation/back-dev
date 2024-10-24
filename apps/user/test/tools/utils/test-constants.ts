@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 
-export const constantsForDataTesting = {
+export const constantsTesting = {
   inputData: {
     length01: '01',
     length02: '02',
@@ -21,11 +21,89 @@ export const constantsForDataTesting = {
     EMAIL2: 'test@yandex.ru',
     EMAIL3: 'test@k.io',
     INVALID_EMAIL: 'invalid-email',
+    USER_NAMES: [
+      'Alexander',
+      'Benjamin',
+      'Christopher',
+      'Danielle',
+      'Eleanor',
+      'Frederick',
+      'Gabriela',
+      'Harrison',
+      'Isabella',
+      'Jonathan',
+    ],
+    LAST_NAMES: [
+      'Anderson',
+      'Brownstone',
+      'Carlisle',
+      'Davidson',
+      'Edwards',
+      'Fitzgerald',
+      'Greenfield',
+      'Huntington',
+      'Irving',
+      'Jackson',
+    ],
+    FIRST_NAMES: [
+      'Alex',
+      'Ben',
+      'Chris',
+      'Daniel',
+      'Ella',
+      'Fred',
+      'Gaby',
+      'Harry',
+      'Isa',
+      'John',
+    ],
+    CITIES: [
+      'New York',
+      'Toronto',
+      'London',
+      'Berlin',
+      'Paris',
+      'Sydney',
+      'Tokyo',
+      'Beijing',
+      'Mumbai',
+      'São Paulo',
+    ],
+    COUNTRIES: [
+      'USA',
+      'Canada',
+      'UK',
+      'Germany',
+      'France',
+      'Australia',
+      'Japan',
+      'China',
+      'India',
+      'Brazil',
+    ],
+    BIRTH_DATES: [
+      '01.01.2005',
+      '02.02.2003',
+      '03.03.2000',
+      '04.04.1995',
+      '05.05.1989',
+      '06.06.1985',
+      '07.07.1980',
+      '08.08.1975',
+      '09.09.1970',
+      '10.10.1965',
+    ],
     USER_NAME: 'Pythagoras',
     USER_NAME2: 'Protagoras',
     USER_NAME3: 'Socrates',
     USER_NAME4: 'Aristotle',
-    PASSWORD: 'password',
+    INVALID_PASSWORD: 'securePassword',
+    VALID_PASSWORD: 'validPassword0!',
+    city: 'Rome',
+    country: 'Italy',
+    about:
+      'My interests include science and science-based tools for everyday life',
+    description: 'description',
   },
   auth: {
     authBearer: { type: 'bearer' } as { type: 'bearer' },
@@ -35,8 +113,9 @@ export const constantsForDataTesting = {
   },
 };
 
-export type ConstantsTestType = keyof typeof constantsForDataTesting;
-export type AuthConstantsType = typeof constantsForDataTesting.auth;
+export type ConstantsTestType = keyof typeof constantsTesting;
+export type InputConstantsType = typeof constantsTesting.inputData;
+export type AuthConstantsType = typeof constantsTesting.auth;
 export const feedbacksConstants = {
   createdContent: [
     'content include discussion about nature',
@@ -45,4 +124,10 @@ export const feedbacksConstants = {
     'content include discussion about neuroscience',
     'content include discussion about neurobiology',
   ],
+};
+
+export const profileImages = {
+  fresco: '../images/fresco.jpg',
+  jpeg: '../images/jpeg.jpg',
+  insta: '../images/insta.png',
 };

@@ -1,10 +1,8 @@
 import { CommandHandler, ICommandHandler } from '@nestjs/cqrs';
-import { BcryptAdapter } from '../../../../../core/adapters/bcrypt.adapter';
-import {
-  GetErrors,
-  LayerNoticeInterceptor,
-} from '../../../../../core/utils/notification';
+import { BcryptAdapter } from '@user/core';
+import { SecurityRepository } from '../../../security/infrastructure/security.repository';
 import { AuthRepository } from '../../infrastructure/auth.repository';
+import { LayerNoticeInterceptor } from '@app/shared';
 import { UpdatePasswordCommand } from './commands/update-password.command';
 
 @CommandHandler(UpdatePasswordCommand)
@@ -14,11 +12,12 @@ export class UpdatePasswordUseCase
   private location = this.constructor.name;
   constructor(
     private authRepo: AuthRepository,
-    private bcryptAdapter: BcryptAdapter
+    private bcryptAdapter: BcryptAdapter,
+    private securityRepo: SecurityRepository,
   ) {}
 
   async execute(
-    command: UpdatePasswordCommand
+    command: UpdatePasswordCommand,
   ): Promise<LayerNoticeInterceptor> {
     const notice = new LayerNoticeInterceptor();
     const { recoveryCode, newPassword } = command.updateDto;
@@ -32,15 +31,17 @@ export class UpdatePasswordUseCase
       notice.addError(
         'User not found due to an incorrect or expired code',
         this.location,
-        GetErrors.IncorrectModel
+        notice.errorCodes.ValidationError,
       );
       return notice;
     }
 
-    await this.authRepo.updateUserPassword({
+    await this.authRepo.updatePassword({
       userId: userAccount.id,
       passwordHash,
     });
+
+    await this.securityRepo.deleteActiveSessions(userAccount.id);
 
     return notice;
   }
